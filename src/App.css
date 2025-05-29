@@ -1,0 +1,24 @@
+@import "tailwindcss";
+@theme {
+  --color-background: #0a192f;
+  --color-surface: #112240;
+  --color-primary: #2196f3;
+  --color-primary-hover: #1b81d1;
+  --color-secondary: #7c4dff;
+  --color-accent: #ffc107;
+  --color-text: #e0e0e0;
+  --color-muted: #90a4ae;
+  --color-coolGray: #8c92ac;
+}
+
+.transition-300 {
+  @apply transition-all ease-in-out duration-300;
+}
+
+.login-input {
+  @apply w-full h-12 bg-transparent outline-0 py-2 border-b-2 border-coolGray;
+}
+
+.primary-button {
+  @apply w-full h-12 bg-linear-to-r from-cyan-500 to-blue-500 rounded-lg text-white hover:bg-primary-hover cursor-pointer;
+}
