@@ -1,0 +1,15 @@
+.transition-300 {
+  @apply transition-all ease-in-out duration-300;
+}
+
+.login-input {
+  @apply w-full h-12 bg-transparent outline-0 py-2 border-b-2 border-coolGray;
+}
+
+.primary-button {
+  @apply w-full h-10 bg-primary rounded-lg text-white hover:bg-primary-hover cursor-pointer;
+}
+
+.footer-icon {
+  @apply w-8 h-8 flex justify-center items-center bg-primary rounded-full hover:bg-primary-hover;
+}

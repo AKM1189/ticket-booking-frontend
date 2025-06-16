@@ -1,37 +1,46 @@
 import { NavLink } from "react-router";
-import PrimaryButton from "../../components/button/PrimaryButton";
-import Input from "../../components/input/Input";
 import { routes } from "../../routes";
-import { useState } from "react";
-import { TextInput, Group, Button, Checkbox } from "@mantine/core";
-import { isNotEmpty, useForm } from "@mantine/form";
+import { TextInput, Button } from "@mantine/core";
+import { useForm } from "@mantine/form";
 import { twMerge } from "tailwind-merge";
 import { zodResolver } from "mantine-form-zod-resolver";
-import { loginSchema, signupSchema } from "../../schema/AuthSchema";
+import { signupSchema } from "../../schema/AuthSchema";
+import { useSignupMutation } from "../../api/mutation/authMutation";
+import { Notifications } from "@mantine/notifications";
+import PrimaryButton from "../../ui/button/PrimaryButton";
 
+export type SignupDataType = {
+  name: string | null;
+  email: string | null;
+  password: string | null;
+  confirmPassword: string | null;
+};
 const Signup = () => {
+  const { mutate } = useSignupMutation();
   const form = useForm({
     mode: "uncontrolled",
     initialValues: {
-      name: null,
-      email: null,
-      password: null,
-      confirmPassword: null,
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
     },
     validate: zodResolver(signupSchema),
   });
 
-  const handleLogin = () => {
-    // validateForm();
-    window.alert("Validation Success");
+  const handleLogin = (data: SignupDataType) => {
+    mutate({ data });
   };
+
   return (
     <div className="bg-background flex justify-center items-center min-w-screen min-h-screen py-20">
+      <Notifications />
       <div className="w-[500px] min-h-[500px] bg-surface shadow-2xl rounded-lg text-white p-10 py-14">
         <div className="text-4xl font-bold mb-10 text-center">Signup</div>
         <div className="flex flex-col gap-8">
           <form
-            onSubmit={form.onSubmit((values) => console.log("values", values))}
+            className="auth-text-input"
+            onSubmit={form.onSubmit((values) => handleLogin(values))}
           >
             <TextInput
               label="Name"
@@ -71,7 +80,7 @@ const Signup = () => {
                 root: "mt-5",
                 label: "text-[16px]",
                 input: twMerge(
-                  "login-input",
+                  "login-input bg-green-500",
                   form.errors.password && "border-red-500"
                 ),
                 error: "text-red-500",
@@ -93,14 +102,8 @@ const Signup = () => {
               }}
               {...form.getInputProps("confirmPassword")}
             />
-            <Group justify="flex-end" mt="md">
-              <Button
-                type="submit"
-                className="primary-button mt-5 transition-300"
-              >
-                Submit
-              </Button>
-            </Group>
+            {/* <Group className="w-full"> */}
+            <PrimaryButton className="mt-5" type="submit" value="Submit" />
           </form>
         </div>
         <div className="mt-5 text-center">

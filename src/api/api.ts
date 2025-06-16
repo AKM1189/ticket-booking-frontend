@@ -1,0 +1,57 @@
+import axios from "axios";
+import type { AxiosInstance } from "axios";
+import Cookies from "js-cookie";
+import { endpoints } from "./endpoints";
+
+export const api: AxiosInstance = axios.create({
+  baseURL: "/api",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  withCredentials: true,
+});
+
+api.interceptors.request.use(
+  (config) => {
+    const accessToken = Cookies.get("accessToken");
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  },
+);
+
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error?.response?.status === 401 && !originalRequest._retry) {
+      try {
+        originalRequest._retry = true;
+        const res = await api.get(endpoints.auth.refresh);
+        if (res?.data) {
+          console.log("res data", res?.data);
+          const newAccessToken = res.data.accessToken;
+          const inFifteenMinutes = new Date(
+            new Date().getTime() + 15 * 60 * 1000,
+          );
+          Cookies.set("accessToken", newAccessToken, {
+            expires: inFifteenMinutes,
+          });
+          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+
+          return api(originalRequest);
+        }
+      } catch (error) {
+        Cookies.remove("accessToken");
+        Cookies.remove("refreshToken");
+        return Promise.reject(error);
+      }
+    }
+    return Promise.reject(error);
+  },
+);

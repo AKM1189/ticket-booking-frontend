@@ -1,0 +1,15 @@
+@theme {
+  --color-background: #00072d;
+  --color-surface: #051650;
+  --color-primary: #1a43bf;
+  --color-primary-hover: #153cb0;
+  --color-surface-hover: #213269;
+  --color-secondary: #7c4dff;
+  --color-accent: #ffc107;
+  --color-text: #e0e0e0;
+  --color-muted: #90a4ae;
+  --color-coolGray: #8c92ac;
+  --color-notification: #0a2472;
+  --color-lightGray: #ededed;
+  --color-darkGray: #808080;
+}

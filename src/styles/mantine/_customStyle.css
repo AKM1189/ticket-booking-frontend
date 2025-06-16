@@ -1,0 +1,81 @@
+/* Text Input */
+.auth-text-input {
+  .mantine-TextInput-input,
+  .mantine-PasswordInput-input,
+  .mantine-PasswordInput-innerInput {
+    background-color: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    color: var(--color-text) !important;
+    border-bottom: 1px solid var(--color-coolGray) !important;
+    padding: 0 !important;
+    height: 48px !important;
+  }
+
+  .mantine-TextInput-input[data-error="true"]::placeholder,
+  .mantine-PasswordInput-innerInput[data-invalid="true"]::placeholder {
+    color: var(--color-text) !important;
+  }
+}
+
+/* Notification Icon */
+.mantine-Notification-icon {
+  color: red !important;
+  background-color: transparent !important;
+  width: 30px !important;
+  height: 30px !important;
+}
+
+.mantine-Notification-closeButton:hover {
+  background-color: var(--color-surface) !important;
+}
+
+/* Pin Input */
+.mantine-PinInput-input {
+  background-color: transparent !important;
+  border: 1px solid var(--color-secondary) !important;
+  color: white !important;
+}
+
+/* Carousel */
+.mantine-Carousel-indicator[data-active] {
+  background-color: oklch(96.8% 0.007 247.896) !important;
+}
+
+/* Select Box */
+.mantine-Select-option:hover {
+  background-color: var(--color-surface-hover) !important;
+}
+
+.mantine-Popover-dropdown {
+  padding: 3px 0 3px 3px !important;
+  border-color: #3d3d3d !important;
+  border-radius: 7px !important;
+  background-color: var(--color-surface) !important;
+  color: var(--color-text) !important;
+}
+
+/* AutoComplete Input */
+
+.mantine-Autocomplete-option {
+  font-size: 16px !important;
+}
+.mantine-Autocomplete-option:hover {
+  background-color: var(--color-surface-hover) !important;
+}
+
+/* Pagination */
+
+.mantine-Pagination-control:not([data-active]),
+.mantine-Pagination-control:not([data-active]):hover {
+  background-color: transparent;
+  color: var(--color-text);
+  border: 0;
+}
+.mantine-Pagination-root {
+  --pagination-active-bg: var(
+    --color-primary
+  ); /* Change background color of active item */
+  --pagination-active-color: #ffffff; /* Change text color of active item */
+  --pagination-control-radius: 5px; /* Optional: Rounded corners */
+}
