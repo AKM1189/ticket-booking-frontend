@@ -5,20 +5,15 @@ import { useRef } from "react";
 import { IconChevronRight } from "@tabler/icons-react";
 import { IconChevronLeft } from "@tabler/icons-react";
 
-const images = [
-  "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-1.png",
-  "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-2.png",
-  "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-3.png",
-  "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-4.png",
-  "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-5.png",
-];
-
-function CustomCarousel() {
-  const autoplay = useRef(Autoplay({ delay: 5000 }));
+type ImageCarouselType = {
+  images: string[];
+};
+const ImageCarousel = ({ images }: ImageCarouselType) => {
+  const autoplay = useRef(Autoplay({ delay: 3000 }));
 
   const slides = images.map((url) => (
     <Carousel.Slide key={url}>
-      <Image src={url} />
+      <img className="w-[400px] h-[200px] rounded-md" src={url} />
     </Carousel.Slide>
   ));
 
@@ -27,9 +22,9 @@ function CustomCarousel() {
       withIndicators={false}
       // height={700}
       flex={1}
-      controlSize={40}
-      nextControlIcon={<IconChevronRight size={30} />}
-      previousControlIcon={<IconChevronLeft size={30} />}
+      withControls={false}
+      slideSize="33.33333%"
+      slideGap="md"
       emblaOptions={{
         loop: true,
       }}
@@ -51,6 +46,6 @@ function CustomCarousel() {
       {slides}
     </Carousel>
   );
-}
+};
 
-export default CustomCarousel;
+export default ImageCarousel;

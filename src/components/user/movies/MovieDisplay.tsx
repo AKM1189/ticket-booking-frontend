@@ -4,51 +4,37 @@ import {
   TicketIcon,
   DateIcon,
   ClockIcon,
+  CloseIcon,
 } from "@/assets/svgs";
-import { CloseIcon } from "@mantine/core";
 
 import { movieType } from "@/constants/movieConstants";
 import type { MovieType } from "@/types/MovieTypes";
 import { twMerge } from "tailwind-merge";
 import MovieCard from "../home/MovieCard";
 
-import YouTube, { type YouTubeProps } from "react-youtube";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import { NavLink } from "react-router";
+import { routes } from "@/routes";
+import PlayTrailer from "./PlayTrailer";
 
 interface MoviesProps {
   movieList: MovieType[];
 }
 export const MovieList = ({ movieList }: MoviesProps) => {
   const [selectedMovie, setSelectedMovie] = useState<MovieType | null>(null);
-  const onPlayerReady: YouTubeProps["onReady"] = (event) => {
-    // access to player in all event handlers via event.target
-    event.target.pauseVideo();
-  };
 
-  const opts = useMemo<YouTubeProps["opts"]>(
-    () => ({
-      height: "390",
-      width: "100%",
-      playerVars: {
-        // https://developers.google.com/youtube/player_parameters
-        // autoplay: 1,
-      },
-    }),
-    [],
-  );
+  // useEffect(() => {
+  //   if (selectedMovie) {
+  //     document.body.style.overflow = "hidden";
+  //   } else {
+  //     document.body.style.overflow = "";
+  //   }
 
-  useEffect(() => {
-    if (selectedMovie) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-
-    // Optional: clean up on unmount just in case
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [selectedMovie]);
+  //   // Optional: clean up on unmount just in case
+  //   return () => {
+  //     document.body.style.overflow = "";
+  //   };
+  // }, [selectedMovie]);
 
   return (
     <div className="movie-grid flex flex-col gap-16 items-center max-w-screen">
@@ -64,7 +50,9 @@ export const MovieList = ({ movieList }: MoviesProps) => {
             <div className="flex flex-col justify-between w-full">
               <div className="flex flex-col gap-5">
                 <div className="flex justify-between">
-                  <div className="text-3xl font-semibold">{movie.name}</div>
+                  <NavLink to={routes.user.movies + "/" + movie.id}>
+                    <div className="text-3xl font-semibold">{movie.name}</div>
+                  </NavLink>
                   <div
                     className={twMerge(
                       "text-xs",
@@ -124,27 +112,10 @@ export const MovieList = ({ movieList }: MoviesProps) => {
           </div>
         ))}
       {selectedMovie && (
-        <div
-          className="fixed top-0 left-0 w-screen h-screen bg-black/20 flex items-center justify-center"
-          onClick={() => setSelectedMovie(null)}
-        >
-          <div
-            className="relative w-full max-w-4xl p-20"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <CloseIcon
-              // size="10"
-              className="absolute top-0 right-0 cursor-pointer"
-              onClick={() => setSelectedMovie(null)}
-            />
-            <YouTube
-              videoId={selectedMovie.trailerId}
-              opts={opts}
-              onReady={onPlayerReady}
-              className="w-full h-full"
-            />
-          </div>
-        </div>
+        <PlayTrailer
+          videoId={selectedMovie.trailerId}
+          onClose={() => setSelectedMovie(null)}
+        />
       )}
     </div>
   );

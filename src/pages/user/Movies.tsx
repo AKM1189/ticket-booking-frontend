@@ -6,7 +6,7 @@ import { twMerge } from "tailwind-merge";
 import { ListIcon, GridIcon } from "@/assets/svgs/DisplayIcons";
 import { MovieGrid, MovieList } from "@/components/user/movies/MovieDisplay";
 import type { FilterListType, LabelType } from "@/types/MovieTypes";
-import { useMovieStore } from "@/store/movieStore";
+import { useMovieStore } from "@/store/useMovieStore";
 import { motion } from "motion/react";
 
 const Movies = () => {

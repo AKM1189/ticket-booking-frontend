@@ -11,42 +11,42 @@ const movies = [
   {
     id: 1,
     name: "AKM",
-    poster: "/movie02.jpg",
+    posterUrl: "/movie02.jpg",
   },
   {
     id: 2,
     name: "Marvel",
-    poster: "/movie03.jpg",
+    posterUrl: "/movie03.jpg",
   },
   {
     id: 3,
     name: "AKM",
-    poster: "/movie02.jpg",
+    posterUrl: "/movie02.jpg",
   },
   {
     id: 4,
     name: "Marvel",
-    poster: "/movie03.jpg",
+    posterUrl: "/movie03.jpg",
   },
   {
     id: 5,
     name: "AKM",
-    poster: "/movie02.jpg",
+    posterUrl: "/movie02.jpg",
   },
   {
     id: 6,
     name: "Marvel",
-    poster: "/movie03.jpg",
+    posterUrl: "/movie03.jpg",
   },
   {
     id: 7,
     name: "AKM",
-    poster: "/movie02.jpg",
+    posterUrl: "/movie02.jpg",
   },
   {
     id: 8,
     name: "Marvel",
-    poster: "/movie03.jpg",
+    posterUrl: "/movie03.jpg",
   },
 ];
 

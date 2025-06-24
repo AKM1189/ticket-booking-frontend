@@ -1,11 +1,11 @@
 import DateIcon from "@/assets/svgs/DateIcon";
-import LocationIcon from "@/assets/svgs/LocationIcon";
+import { LocationIcon } from "@/assets/svgs";
 import MovieIcon from "@/assets/svgs/MovieIcon";
 import { Autocomplete, Button, Select } from "@mantine/core";
 
 interface MovieSearchBoxProps {
-  selectedMovie: string | undefined;
-  setSelectedMovie: (value: string) => void;
+  selectedMovie?: string | undefined;
+  setSelectedMovie?: (value: string) => void;
 }
 
 const MovieSearchCard = ({

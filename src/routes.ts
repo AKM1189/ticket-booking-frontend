@@ -8,6 +8,7 @@ export const routes = {
     about: "/about",
     contactUs: "/contact-us",
     order: "/order",
+    ticketPlan: "/ticket-plan",
   },
   auth: {
     login: "/login",

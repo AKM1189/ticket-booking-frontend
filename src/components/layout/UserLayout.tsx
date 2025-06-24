@@ -16,7 +16,7 @@ const UserLayout = () => {
   return (
     <div className="min-h-screen h-full min-w-screen bg-background">
       <Navbar />
-      <div className="relative text-text max-w-screen">
+      <div className="text-text max-w-screen">
         <Outlet />
       </div>
       <Footer />
@@ -25,7 +25,7 @@ const UserLayout = () => {
           className="fixed bottom-10 right-5 z-[99999] cursor-pointer"
           onClick={() => scrollTo({ y: 0 })}
         >
-          <div className="absolute top-1 left-1 w-8 h-8 bg-white rounded-full z-[-10]"></div>
+          <div className="absolute top-2 left-2 w-8 h-8 bg-white rounded-full z-[-10]"></div>
           <UpArrowIcon color="var(--color-primary)" />
         </div>
       )}
