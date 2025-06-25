@@ -12,7 +12,7 @@ import type { MovieType } from "@/types/MovieTypes";
 import { twMerge } from "tailwind-merge";
 import MovieCard from "../home/MovieCard";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { NavLink } from "react-router";
 import { routes } from "@/routes";
 import PlayTrailer from "./PlayTrailer";

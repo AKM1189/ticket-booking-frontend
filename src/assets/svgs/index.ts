@@ -15,3 +15,7 @@ export {
   GoogleIcon,
   InstagramIcon,
 } from "./SocialMediaIcons";
+
+export { default as SearchIcon } from "./SearchIcon";
+export { default as SubtitleIcon } from "./SubtitleIcon";
+export { default as VideoIcon } from "./VideoIcon";

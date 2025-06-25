@@ -1,9 +1,6 @@
 import { ClockIcon, DateIcon, LocationFillIcon } from "@/assets/svgs";
-import SearchIcon from "@/assets/svgs/SearchIcon";
-import SubtitleIcon from "@/assets/svgs/SubtitleIcon";
-import MovieSearchCard from "@/components/user/home/MovieSearchCard";
-import MovieInfo from "@/components/user/movieDetail/MovieInfo";
-import { Input, Select, TextInput } from "@mantine/core";
+import { SearchIcon, SubtitleIcon } from "@/assets/svgs/";
+import { Select, TextInput } from "@mantine/core";
 import { twMerge } from "tailwind-merge";
 
 const TicketPlan = () => {
