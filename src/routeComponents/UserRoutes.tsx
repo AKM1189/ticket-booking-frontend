@@ -4,6 +4,7 @@ import { routes } from "@/routes";
 import { Home, About, Movies } from "@/pages";
 import MovieDetail from "@/pages/user/MovieDetail";
 import TicketPlan from "@/pages/user/TicketPlan";
+import SeatPlan from "@/pages/user/SeatPlan";
 
 const UserRoutes = () => {
   return (
@@ -18,6 +19,7 @@ const UserRoutes = () => {
             path={routes.user.ticketPlan + "/:id"}
             element={<TicketPlan />}
           />
+          <Route path={routes.user.seatPlan + "/:id"} element={<SeatPlan />} />
         </Route>
       </Routes>
     </div>

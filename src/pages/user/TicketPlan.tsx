@@ -1,9 +1,13 @@
 import { ClockIcon, DateIcon, LocationFillIcon } from "@/assets/svgs";
 import SearchIcon from "@/assets/svgs/SearchIcon";
+import SeatIcon from "@/assets/svgs/SeatsIcon";
 import SubtitleIcon from "@/assets/svgs/SubtitleIcon";
 import MovieSearchCard from "@/components/user/home/MovieSearchCard";
 import MovieInfo from "@/components/user/movieDetail/MovieInfo";
-import { Input, Select, TextInput } from "@mantine/core";
+import { routes } from "@/routes";
+import { Button, Input, Modal, Select, TextInput } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import { NavLink } from "react-router";
 import { twMerge } from "tailwind-merge";
 
 const TicketPlan = () => {
@@ -82,6 +86,9 @@ const TicketPlan = () => {
       borderColor: "var(--color-surface-hover)",
     },
   };
+
+  const [opened, { open, close }] = useDisclosure(false);
+
   return (
     <div className="relative">
       <div
@@ -221,7 +228,10 @@ const TicketPlan = () => {
               </div>
             </div>
             <div className="flex-1 flex gap-10 px-10">
-              <div className="w-24 h-10 bg-surface-hover flex items-center justify-center rounded-md shadow-md text-sm cursor-pointer hover:bg-primary transition-300 select-none">
+              <div
+                className="w-24 h-10 bg-surface-hover flex items-center justify-center rounded-md shadow-md text-sm cursor-pointer hover:bg-primary transition-300 select-none"
+                onClick={open}
+              >
                 7:30 AM
               </div>
               <div className="w-24 h-10 bg-surface-hover flex items-center justify-center rounded-md shadow-md text-sm cursor-pointer hover:bg-primary transition-300">
@@ -255,6 +265,70 @@ const TicketPlan = () => {
             </div>
           </div>
         </div>
+
+        <Modal
+          opened={opened}
+          onClose={close}
+          // title="Confirm Movie"
+          centered
+          classNames={{
+            content: "!bg-surface !min-w-[650px] pb-10",
+            header: "!bg-surface !text-text",
+            title: "!text-xl !font-semibold",
+            close: "!text-blueGray hover:!bg-surface-hover",
+          }}
+        >
+          {/* Modal content */}
+          <div className="text-text flex gap-15 p-5">
+            <img src="/movie03.jpg" className="rounded-md w-[250px]" />
+            <div className="flex flex-col justify-between">
+              <div>
+                <div className="text-3xl font-semibold">ALONE</div>
+                <div className="flex flex-col gap-5">
+                  <div className="flex gap-5 mt-5 text-sm">
+                    <div className="flex gap-2 items-center">
+                      <ClockIcon color={"var(--color-blueGray)"} size={20} />2
+                      hrs 50 min
+                    </div>
+                    <div className="flex gap-2 items-center">
+                      <SubtitleIcon color={"var(--color-blueGray)"} size={20} />
+                      English
+                    </div>
+                  </div>
+                  <div className="flex gap-16 mt-3 text-sm">
+                    <div className="flex flex-col gap-5">
+                      <div className="">
+                        <span className="text-xs text-muted">Cinema</span>
+                        <div className="mt-1">Kantharyar</div>
+                      </div>
+                      <div className="">
+                        <span className="text-xs text-muted">Date</span>
+                        <div className="mt-1">26/6/2025</div>
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-5">
+                      <div>
+                        <span className="text-xs text-muted">Theatre</span>
+                        <div className="mt-1">Theatre 1</div>
+                      </div>
+                      <div>
+                        <span className="text-xs text-muted">Time</span>
+                        <div className="mt-1">10:00 AM</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <NavLink to={routes.user.seatPlan + "/" + movie.id}>
+                <Button
+                  leftSection={<SeatIcon color="var(--color-blueGray)" />}
+                >
+                  Select Seats
+                </Button>
+              </NavLink>
+            </div>
+          </div>
+        </Modal>
       </div>
     </div>
   );

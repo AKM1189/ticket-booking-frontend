@@ -9,6 +9,7 @@ export const routes = {
     contactUs: "/contact-us",
     order: "/order",
     ticketPlan: "/ticket-plan",
+    seatPlan: "/seat-plan",
   },
   auth: {
     login: "/login",
