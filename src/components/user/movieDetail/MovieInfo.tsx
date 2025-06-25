@@ -11,7 +11,7 @@ import { routes } from "@/routes";
 
 interface MovieInfoType {
   movie: MovieDetailType;
-  isTicketPlan: boolean;
+  isTicketPlan?: boolean;
 }
 const MovieInfo = ({ movie, isTicketPlan = false }: MovieInfoType) => {
   const [showTrailer, setShowTrailer] = useState(false);

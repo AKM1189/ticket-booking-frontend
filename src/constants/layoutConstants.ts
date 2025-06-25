@@ -6,11 +6,15 @@ export const navbarMenus = [
     path: routes.user.home,
   },
   {
-    label: "About",
+    label: "Movies",
+    path: routes.user.movies,
+  },
+  {
+    label: "About us",
     path: routes.user.about,
   },
   {
-    label: "Movies",
-    path: routes.user.movies,
+    label: "Contact",
+    path: routes.user.contact,
   },
 ];

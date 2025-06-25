@@ -6,6 +6,7 @@ export const routes = {
     home: "/",
     movies: "/movies",
     about: "/about",
+    contact: "/contact",
     contactUs: "/contact-us",
     order: "/order",
     ticketPlan: "/ticket-plan",

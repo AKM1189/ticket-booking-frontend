@@ -1,11 +1,13 @@
-import ImageCarousel from "@/components/user/movieDetail/ImageCarousel";
-import MovieInfo from "@/components/user/movieDetail/MovieInfo";
-import Review from "@/components/user/movieDetail/Review";
-import Summary from "@/components/user/movieDetail/Summary";
 import { useMovieStore } from "@/store/useMovieStore";
 import CustomTabs from "@/ui/tabs/CustomTabs";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useParams } from "react-router";
+import {
+  ImageCarousel,
+  MovieInfo,
+  Review,
+  Summary,
+} from "@/components/user/movieDetail";
 
 const MovieDetail = () => {
   const { id } = useParams();
