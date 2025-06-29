@@ -1,9 +1,11 @@
 import MovieSearchCard from "@/components/user/home/MovieSearchCard";
 import { MovieFrame } from "@/components/user/movies";
 import { useState } from "react";
+import { useParams } from "react-router";
 
 const Movies = () => {
   const [selectedMovie, setSelectedMovie] = useState<string | undefined>();
+  const { type } = useParams();
 
   return (
     <div>
@@ -27,7 +29,7 @@ const Movies = () => {
             />
           </div>
           <div className="mt-[300px]">
-            <MovieFrame />
+            <MovieFrame type={type} />
           </div>
         </div>
       </div>

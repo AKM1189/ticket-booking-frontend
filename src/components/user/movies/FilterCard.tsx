@@ -44,7 +44,7 @@ const FilterCard = ({
       <ul className="py-5">
         {data?.length > 0 &&
           data?.map((item) => (
-            <li className="mb-5">
+            <li className="mb-5" key={item.id}>
               <Checkbox
                 key={item.id}
                 label={item.label}

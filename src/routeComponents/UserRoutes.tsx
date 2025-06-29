@@ -13,8 +13,11 @@ const UserRoutes = () => {
         <Route path={routes.user.home} element={<UserLayout />}>
           <Route index element={<Home />} />
           <Route path={routes.user.about} element={<About />} />
+          <Route
+            path={routes.user.movies + "/sortBy/:type?"}
+            element={<Movies />}
+          />
           <Route path={routes.user.movies + "/:id"} element={<MovieDetail />} />
-          <Route path={routes.user.movies} element={<Movies />} />
           <Route
             path={routes.user.ticketPlan + "/:id"}
             element={<TicketPlan />}

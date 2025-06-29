@@ -42,7 +42,7 @@ const MovieDetail = () => {
         imageUrl: null,
       },
       {
-        id: 2,
+        id: 3,
         name: "John Wick",
         role: "Actor",
         imageUrl: null,

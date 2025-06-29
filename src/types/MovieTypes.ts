@@ -60,3 +60,9 @@ export type ReviewType = {
   review: string;
   reviewedDate: string;
 };
+
+export enum SortType {
+  showing = "Now Showing",
+  comingSoon = "Coming Soon",
+  trending = "Trending",
+}

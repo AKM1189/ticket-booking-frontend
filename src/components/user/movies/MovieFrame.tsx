@@ -3,12 +3,12 @@ import { Pagination } from "@mantine/core";
 import { twMerge } from "tailwind-merge";
 import { ListIcon, GridIcon } from "@/assets/svgs/DisplayIcons";
 import { MovieGrid, MovieList, FilterCard } from "@/components/user/movies";
-import type { LabelType } from "@/types/MovieTypes";
+import { SortType, type LabelType } from "@/types/MovieTypes";
 import { useMovieStore } from "@/store/useMovieStore";
 import { motion } from "motion/react";
 import { useState } from "react";
 
-const MovieFrame = () => {
+const MovieFrame = ({ type }: { type: string | undefined }) => {
   const langList = [
     { id: 1, label: "English" },
     { id: 2, label: "Tamil" },
@@ -77,7 +77,9 @@ const MovieFrame = () => {
 
   const { filterList, setFilterList } = useMovieStore();
 
-  const [sortBy, setSortBy] = useState<LabelType | null>(sortList[0]);
+  const [sortBy, setSortBy] = useState<SortType>(
+    type === "now-showing" ? SortType.showing : SortType.comingSoon,
+  );
   const [activeDisplay, setActiveDisplay] = useState(1);
 
   const [pagination, setPagination] = useState({
@@ -107,7 +109,7 @@ const MovieFrame = () => {
       ),
     },
   ];
-
+  console.log("type", type);
   return (
     <div className="w-full grid grid-cols-10">
       <div className="col-span-2">
@@ -148,16 +150,16 @@ const MovieFrame = () => {
 
             {sortList?.map((item) => (
               <span
-                key={item.id}
+                key={item}
                 className={twMerge(
                   "p-5 py-2 cursor-pointer text-sm transition-300 border border-surface-hover rounded-full select-none text-nowrap",
-                  item.id === sortBy?.id
+                  item === sortBy
                     ? "bg-primary/100 rounded-full"
                     : "bg-primary/0",
                 )}
                 onClick={() => setSortBy(item)}
               >
-                {item.label}
+                {item}
               </span>
             ))}
           </div>
@@ -167,6 +169,7 @@ const MovieFrame = () => {
               <div
                 className="px-3 h-[36px] rounded-full bg-background border border-surface-hover min-w-14 flex justify-center items-center cursor-pointer select-none"
                 onClick={() => setActiveDisplay(item.id)}
+                key={item.id}
               >
                 {item.icon}
               </div>

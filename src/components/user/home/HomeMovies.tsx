@@ -5,6 +5,7 @@ import { useRef } from "react";
 import { NavLink } from "react-router";
 import { routes } from "../../../routes";
 import MovieCard from "./MovieCard";
+import { SortType } from "@/types/MovieTypes";
 
 type MoviesType = typeof movies;
 const movies = [
@@ -59,8 +60,12 @@ const HomeMovies = () => {
         </div>
       </div>
       <div className="flex flex-col gap-10">
-        <MovieCarousel movies={movies} menu="Now Showing" />
-        <MovieCarousel movies={movies} menu="Comming Soon" delay={2500} />
+        <MovieCarousel movies={movies} menu={SortType.showing} />
+        <MovieCarousel
+          movies={movies}
+          menu={SortType.comingSoon}
+          delay={2500}
+        />
       </div>
     </div>
   );
@@ -75,6 +80,7 @@ interface MovieCarouselProps {
 }
 const MovieCarousel = ({ movies, menu, delay = 2000 }: MovieCarouselProps) => {
   const autoplay = useRef(Autoplay({ delay }));
+  const sortBy = menu === SortType.showing ? "now-showing" : "coming-soon";
 
   const slides = movies.map((movie: any) => (
     <Carousel.Slide key={movie.id} className="min-h-[500px]">
@@ -86,7 +92,10 @@ const MovieCarousel = ({ movies, menu, delay = 2000 }: MovieCarouselProps) => {
     <div>
       <div className="mt-10 flex justify-between">
         <span className="text-xl font-semibold">{menu}</span>
-        <NavLink to={routes.user.movies} className="text-accent underline">
+        <NavLink
+          to={routes.user.movies + "/sortBy/" + sortBy}
+          className="text-accent underline"
+        >
           See All
         </NavLink>
       </div>
