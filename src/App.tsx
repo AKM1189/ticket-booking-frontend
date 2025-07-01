@@ -1,4 +1,4 @@
-import { BrowserRouter } from "react-router";
+import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createTheme, MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
@@ -20,8 +20,8 @@ function App() {
       <MantineProvider theme={theme}>
         <Notifications />
         <BrowserRouter>
-          <AuthRoutes />
           <UserRoutes />
+          {/* <AuthRoutes /> */}
         </BrowserRouter>
       </MantineProvider>
     </QueryClientProvider>

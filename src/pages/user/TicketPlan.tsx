@@ -1,16 +1,17 @@
 import { ClockIcon, DateIcon, LocationFillIcon } from "@/assets/svgs";
 import SearchIcon from "@/assets/svgs/SearchIcon";
-import SeatIcon from "@/assets/svgs/SeatsIcon";
 import SubtitleIcon from "@/assets/svgs/SubtitleIcon";
-import MovieSearchCard from "@/components/user/home/MovieSearchCard";
-import MovieInfo from "@/components/user/movieDetail/MovieInfo";
-import { routes } from "@/routes";
+import ScheduleList from "@/components/user/ticketPlan/ScheduleList";
 import { Button, Input, Modal, Select, TextInput } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-import { NavLink } from "react-router";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router";
 import { twMerge } from "tailwind-merge";
+import { date } from "zod/v4";
 
 const TicketPlan = () => {
+  const [selectedDate, setSelectedDate] = useState<string>("All");
+  const [dateList, setDateList] = useState<string[] | null>(null);
+  const { id } = useParams();
   const movie = {
     id: 1,
     name: "ALONE",
@@ -73,6 +74,27 @@ const TicketPlan = () => {
     ],
   };
 
+  const schedules = [
+    {
+      id: 1,
+      location: "Kantharyar",
+      schedules: ["7:00 AM", "10:30 AM", "01:30 PM", "07:30 PM"],
+      movie,
+    },
+    {
+      id: 2,
+      location: "Kantharyar",
+      schedules: ["7:00 AM", "10:30 AM", "01:30 PM", "07:30 PM"],
+      movie,
+    },
+    {
+      id: 3,
+      location: "Kantharyar",
+      schedules: ["7:00 AM", "10:30 AM", "01:30 PM", "07:30 PM"],
+      movie,
+    },
+  ];
+
   const selectBoxStyle = {
     root: {
       minWidth: "300px",
@@ -86,8 +108,26 @@ const TicketPlan = () => {
       borderColor: "var(--color-surface-hover)",
     },
   };
+  // const date = new Date();
 
-  const [opened, { open, close }] = useDisclosure(false);
+  //     date.setDate(date.getDate() + i);
+  // useEffect(() => {
+  //   const days = ["All"];
+  //   for (let i = 0; i < 4; i++) {
+  //     days.push(date.toISOString().split("T")[0]);
+  //     console.log("ticket-plan", i);
+  //   }
+  //   setDateList(days);
+  // }, []);
+
+  // const arr = [date.toISOString().split("T")[0]];
+  // function toIoStr(date) {
+  //   return date.toISOString().split("T")[0];
+  // }
+  // const dates = Array.from({ length: 3 }, (_, i) =>
+  //   toIoStr(date.setDate(date.getDate())),
+  // );
+  // console.log(dates);
 
   return (
     <div className="relative">
@@ -98,7 +138,9 @@ const TicketPlan = () => {
           <div className="flex items-center gap-10 relative bottom-20 translate-x-[25%]">
             <img src="/movie03.jpg" className="rounded-md w-[250px]" />
             <div className="ms-10">
-              <div className="text-4xl font-bold mb-5">{movie.name}</div>
+              <div className="text-4xl font-bold mb-5">
+                {movie.name} {id}
+              </div>
               <div className="text-blueGray flex flex-col gap-5">
                 <div>
                   {movie.languages.map((item, index) => (
@@ -138,53 +180,24 @@ const TicketPlan = () => {
           </div>
 
           <div className="absolute bottom-0 left-0 w-full px-[300px] h-[150px] flex items-center justify-between bg-surface/90">
-            {/* <div className="flex gap-20">
-              <Select
-                label={
-                  <div className="flex gap-2">
-                    <LocationIcon color="var(--color-accent)" />
-                    Date
-                  </div>
-                }
-                placeholder="Select Date"
-                size="md"
-                data={["React", "Angular", "Vue", "Native", "PHP", "NodeJs"]}
-                styles={selectBoxStyle}
-                className="max-sm:!w-full"
-              />
-              <Select
-                label={
-                  <div className="flex gap-2">
-                    <LocationIcon color="var(--color-accent)" />
-                    Experience
-                  </div>
-                }
-                placeholder="Select Experience"
-                size="md"
-                data={["React", "Angular", "Vue", "Native", "PHP", "NodeJs"]}
-                styles={selectBoxStyle}
-                className="max-sm:!w-full"
-              />
-            </div> */}
-
-            {/* <div className="flex "> */}
-            {/* <div>Select Date:</div> */}
-            <div className="w-[150px] h-[50px] bg-surface-hover rounded-md flex justify-center items-center cursor-pointer hover:bg-primary transition-300 select-none shadow-md">
+            {/* <div
+              className="w-[150px] h-[50px] bg-surface-hover rounded-md flex justify-center items-center cursor-pointer hover:bg-primary transition-300 select-none shadow-md"
+              onClick={}
+            >
               All
-            </div>
-            <div className="w-[150px] h-[50px] bg-surface-hover rounded-md flex justify-center items-center cursor-pointer hover:bg-primary transition-300 select-none shadow-md">
-              20/03/2025
-            </div>
-            <div className="w-[150px] h-[50px] bg-surface-hover rounded-md flex justify-center items-center cursor-pointer hover:bg-primary transition-300 select-none shadow-md">
-              20/03/2025
-            </div>
-            <div className="w-[150px] h-[50px] bg-surface-hover rounded-md flex justify-center items-center cursor-pointer hover:bg-primary transition-300 select-none shadow-md">
-              20/03/2025
-            </div>
-            <div className="w-[150px] h-[50px] bg-surface-hover rounded-md flex justify-center items-center cursor-pointer hover:bg-primary transition-300 select-none shadow-md">
-              20/03/2025
-            </div>
-            {/* </div> */}
+            </div> */}
+            {/* {dateList?.map((item) => (
+              <div
+                className={twMerge(
+                  "w-[150px] h-[50px] rounded-md bg-surface-hover flex justify-center items-center cursor-pointer hover:bg-primary transition-300 select-none shadow-md",
+                  selectedDate === item && "bg-primary",
+                )}
+                key={item}
+                onClick={() => setSelectedDate(item)}
+              >
+                {item}
+              </div>
+            ))} */}
           </div>
         </div>
       </div>
@@ -219,116 +232,17 @@ const TicketPlan = () => {
           />
           {/* </div> */}
         </div>
-        <div className="bg-surface mt-10 rounded-md">
-          <div className="group w-full h-[100px] flex items-center border-b border-surface-hover">
-            <div className="w-[400px] h-full border-r border-surface-hover flex items-center justify-between px-10">
-              <div>akm</div>
-              <div className="bg-surface-hover group-hover:bg-primary rounded-full p-2">
-                <LocationFillIcon color="var(--color-blueGray)" />
-              </div>
+        <div className="bg-surface mt-10 rounded-md overflow-hidden">
+          {/* {schedules?.map((item) => (
+            <div key={item.id}>
+              <ScheduleList
+                location={item.location}
+                schedules={item.schedules}
+                movie={item.movie}
+              />
             </div>
-            <div className="flex-1 flex gap-10 px-10">
-              <div
-                className="w-24 h-10 bg-surface-hover flex items-center justify-center rounded-md shadow-md text-sm cursor-pointer hover:bg-primary transition-300 select-none"
-                onClick={open}
-              >
-                7:30 AM
-              </div>
-              <div className="w-24 h-10 bg-surface-hover flex items-center justify-center rounded-md shadow-md text-sm cursor-pointer hover:bg-primary transition-300">
-                7:30 AM
-              </div>
-              <div className="w-24 h-10 bg-surface-hover flex items-center justify-center rounded-md shadow-md text-sm cursor-pointer hover:bg-primary transition-300">
-                7:30 AM
-              </div>
-              <div className="w-24 h-10 bg-surface-hover flex items-center justify-center rounded-md shadow-md text-sm cursor-pointer hover:bg-primary transition-300">
-                10:30 AM
-              </div>
-            </div>
-          </div>
-          <div className="w-full h-[100px] flex items-center">
-            <div className="w-[400px] h-full border-r border-surface-hover flex items-center px-10">
-              akm
-            </div>
-            <div className="flex-1 flex gap-10 px-10">
-              <div className="w-24 h-10 bg-surface-hover flex items-center justify-center rounded-md shadow-md text-sm cursor-pointer hover:bg-primary transition-300 select-none">
-                7:30 AM
-              </div>
-              <div className="w-24 h-10 bg-surface-hover flex items-center justify-center rounded-md shadow-md text-sm cursor-pointer hover:bg-primary transition-300">
-                7:30 AM
-              </div>
-              <div className="w-24 h-10 bg-surface-hover flex items-center justify-center rounded-md shadow-md text-sm cursor-pointer hover:bg-primary transition-300">
-                7:30 AM
-              </div>
-              <div className="w-24 h-10 bg-surface-hover flex items-center justify-center rounded-md shadow-md text-sm cursor-pointer hover:bg-primary transition-300">
-                10:30 AM
-              </div>
-            </div>
-          </div>
+          ))} */}
         </div>
-
-        <Modal
-          opened={opened}
-          onClose={close}
-          // title="Confirm Movie"
-          centered
-          classNames={{
-            content: "!bg-surface !min-w-[650px] pb-10",
-            header: "!bg-surface !text-text",
-            title: "!text-xl !font-semibold",
-            close: "!text-blueGray hover:!bg-surface-hover",
-          }}
-        >
-          {/* Modal content */}
-          <div className="text-text flex gap-15 p-5">
-            <img src="/movie03.jpg" className="rounded-md w-[250px]" />
-            <div className="flex flex-col justify-between">
-              <div>
-                <div className="text-3xl font-semibold">ALONE</div>
-                <div className="flex flex-col gap-5">
-                  <div className="flex gap-5 mt-5 text-sm">
-                    <div className="flex gap-2 items-center">
-                      <ClockIcon color={"var(--color-blueGray)"} size={20} />2
-                      hrs 50 min
-                    </div>
-                    <div className="flex gap-2 items-center">
-                      <SubtitleIcon color={"var(--color-blueGray)"} size={20} />
-                      English
-                    </div>
-                  </div>
-                  <div className="flex gap-16 mt-3 text-sm">
-                    <div className="flex flex-col gap-5">
-                      <div className="">
-                        <span className="text-xs text-muted">Cinema</span>
-                        <div className="mt-1">Kantharyar</div>
-                      </div>
-                      <div className="">
-                        <span className="text-xs text-muted">Date</span>
-                        <div className="mt-1">26/6/2025</div>
-                      </div>
-                    </div>
-                    <div className="flex flex-col gap-5">
-                      <div>
-                        <span className="text-xs text-muted">Theatre</span>
-                        <div className="mt-1">Theatre 1</div>
-                      </div>
-                      <div>
-                        <span className="text-xs text-muted">Time</span>
-                        <div className="mt-1">10:00 AM</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <NavLink to={routes.user.seatPlan + "/" + movie.id}>
-                <Button
-                  leftSection={<SeatIcon color="var(--color-blueGray)" />}
-                >
-                  Select Seats
-                </Button>
-              </NavLink>
-            </div>
-          </div>
-        </Modal>
       </div>
     </div>
   );

@@ -44,13 +44,15 @@ export const MovieList = ({ movieList }: MoviesProps) => {
             className="movie-grid w-full h-[400px] flex gap-10"
             key={movie.id}
           >
-            <div className="!min-w-[300px] h-[400px] rounded-md overflow-hidden">
-              <img src={movie.posterUrl} className="!min-w-[300px] h-full" />
-            </div>
+            <NavLink to={"/" + routes.user.movies + "/" + movie.id}>
+              <div className="!min-w-[300px] h-[400px] rounded-md overflow-hidden">
+                <img src={movie.posterUrl} className="!min-w-[300px] h-full" />
+              </div>
+            </NavLink>
             <div className="flex flex-col justify-between w-full">
               <div className="flex flex-col gap-5">
                 <div className="flex justify-between">
-                  <NavLink to={routes.user.movies + "/" + movie.id}>
+                  <NavLink to={"/" + routes.user.movies + "/" + movie.id}>
                     <div className="text-3xl font-semibold">{movie.name}</div>
                   </NavLink>
                   <div
@@ -94,10 +96,12 @@ export const MovieList = ({ movieList }: MoviesProps) => {
                 )}
               </div>
               <div className="flex justify-between text-sm py-5 border-y-[1px] border-coolGray">
-                <span className="flex gap-2 items-center cursor-pointer">
-                  <TicketIcon color="var(--color-accent)" />
-                  Book Ticket
-                </span>
+                <NavLink to={"/" + routes.user.ticketPlan + "/" + movie.id}>
+                  <span className="flex gap-2 items-center cursor-pointer">
+                    <TicketIcon color="var(--color-accent)" />
+                    Book Ticket
+                  </span>
+                </NavLink>
                 <span
                   className="flex gap-2 items-center cursor-pointer"
                   onClick={() => {

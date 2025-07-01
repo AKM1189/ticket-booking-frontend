@@ -7,7 +7,7 @@ export const navbarMenus = [
   },
   {
     label: "Movies",
-    path: routes.user.movies,
+    path: `${routes.user.movies}/sortBy/now-showing`,
   },
   {
     label: "About us",

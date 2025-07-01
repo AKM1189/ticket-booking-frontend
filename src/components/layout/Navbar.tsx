@@ -24,7 +24,7 @@ const Navbar = () => {
       <div className="text-base font-semibold uppercase">Logo</div>
       <ul className="flex items-center justify-start gap-10 text-base font-semibold z-10">
         {navbarMenus.map((menu) => (
-          <NavLink to={menu.path} key={menu.label}>
+          <NavLink to={"/" + menu.path} key={menu.label}>
             <li
               className={twMerge(
                 "border-b-2 border-transparent py-7 px-3 transition-300 hover:text-accent",
