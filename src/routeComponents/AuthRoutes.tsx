@@ -8,13 +8,9 @@ const AuthRoutes = () => {
   console.log("data", data);
   return (
     <div>
-      <Routes>
-        <Route path={routes.auth.login} element={<Login />} />
-        <Route path={routes.auth.signup} element={<Signup />} />
-        <Route path={routes.auth.forgotPassword} element={<ForgotPassword />} />
-        <Route path={routes.auth.otp} element={<OTP />} />
-        <Route path={routes.auth.resetPassword} element={<ResetPassword />} />
-      </Routes>
+      {/* <Routes> */}
+      <Route path={`/${routes.auth.login}`}></Route>
+      {/* // </Routes> */}
     </div>
   );
 };

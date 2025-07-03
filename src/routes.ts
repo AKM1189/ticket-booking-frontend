@@ -13,11 +13,11 @@ export const routes = {
     seatPlan: "seat-plan",
   },
   auth: {
-    login: "/login",
-    signup: "/signup",
-    forgotPassword: "/forgot-password",
-    otp: "/otp",
-    resetPassword: "/reset-password",
+    login: "login",
+    signup: "signup",
+    forgotPassword: "forgot-password",
+    otp: "otp",
+    resetPassword: "reset-password",
   },
   notFound: "/not-found",
 };

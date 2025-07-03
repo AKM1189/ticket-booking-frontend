@@ -2,15 +2,19 @@ import { ClockIcon, DateIcon, LocationFillIcon } from "@/assets/svgs";
 import SearchIcon from "@/assets/svgs/SearchIcon";
 import SeatIcon from "@/assets/svgs/SeatsIcon";
 import SubtitleIcon from "@/assets/svgs/SubtitleIcon";
-import MovieSearchCard from "@/components/user/home/MovieSearchCard";
-import MovieInfo from "@/components/user/movieDetail/MovieInfo";
+import ScheduleList from "@/components/user/ticketPlan/ScheduleList";
 import { routes } from "@/routes";
 import { Button, Input, Modal, Select, TextInput } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { NavLink } from "react-router";
+import { useEffect, useState } from "react";
+import { NavLink, useParams } from "react-router";
 import { twMerge } from "tailwind-merge";
+import { date } from "zod/v4";
 
 const TicketPlan = () => {
+  const [selectedDate, setSelectedDate] = useState<string>("All");
+  const [dateList, setDateList] = useState<string[] | null>(null);
+  const { id } = useParams();
   const movie = {
     id: 1,
     name: "ALONE",
@@ -73,6 +77,27 @@ const TicketPlan = () => {
     ],
   };
 
+  const schedules = [
+    {
+      id: 1,
+      location: "Kantharyar",
+      schedules: ["7:00 AM", "10:30 AM", "01:30 PM", "07:30 PM"],
+      movie,
+    },
+    {
+      id: 2,
+      location: "Kantharyar",
+      schedules: ["7:00 AM", "10:30 AM", "01:30 PM", "07:30 PM"],
+      movie,
+    },
+    {
+      id: 3,
+      location: "Kantharyar",
+      schedules: ["7:00 AM", "10:30 AM", "01:30 PM", "07:30 PM"],
+      movie,
+    },
+  ];
+
   const selectBoxStyle = {
     root: {
       minWidth: "300px",
@@ -86,9 +111,18 @@ const TicketPlan = () => {
       borderColor: "var(--color-surface-hover)",
     },
   };
-
   const [opened, { open, close }] = useDisclosure(false);
-  console.log("running");
+
+  useEffect(() => {
+    const days = ["All"];
+    for (let i = 0; i < 4; i++) {
+      const date = new Date();
+      date.setDate(date.getDate() + i);
+      days.push(date.toISOString().split("T")[0]);
+    }
+    setDateList(days);
+  }, []);
+
   return (
     <div className="relative">
       <div
@@ -98,7 +132,9 @@ const TicketPlan = () => {
           <div className="flex items-center gap-10 relative bottom-20 translate-x-[25%]">
             <img src="/movie03.jpg" className="rounded-md w-[250px]" />
             <div className="ms-10">
-              <div className="text-4xl font-bold mb-5">{movie.name}</div>
+              <div className="text-4xl font-bold mb-5">
+                {movie.name} {id}
+              </div>
               <div className="text-blueGray flex flex-col gap-5">
                 <div>
                   {movie.languages.map((item, index) => (
@@ -136,21 +172,24 @@ const TicketPlan = () => {
           </div>
 
           <div className="absolute bottom-0 left-0 w-full px-[300px] h-[150px] flex items-center justify-between bg-surface/90">
-            <div className="w-[150px] h-[50px] bg-surface-hover rounded-md flex justify-center items-center cursor-pointer hover:bg-primary transition-300 select-none shadow-md">
+            {/* <div
+              className="w-[150px] h-[50px] bg-surface-hover rounded-md flex justify-center items-center cursor-pointer hover:bg-primary transition-300 select-none shadow-md"
+              onClick={}
+            >
               All
-            </div>
-            <div className="w-[150px] h-[50px] bg-surface-hover rounded-md flex justify-center items-center cursor-pointer hover:bg-primary transition-300 select-none shadow-md">
-              20/03/2025
-            </div>
-            <div className="w-[150px] h-[50px] bg-surface-hover rounded-md flex justify-center items-center cursor-pointer hover:bg-primary transition-300 select-none shadow-md">
-              20/03/2025
-            </div>
-            <div className="w-[150px] h-[50px] bg-surface-hover rounded-md flex justify-center items-center cursor-pointer hover:bg-primary transition-300 select-none shadow-md">
-              20/03/2025
-            </div>
-            <div className="w-[150px] h-[50px] bg-surface-hover rounded-md flex justify-center items-center cursor-pointer hover:bg-primary transition-300 select-none shadow-md">
-              20/03/2025
-            </div>
+            </div> */}
+            {dateList?.map((item) => (
+              <div
+                className={twMerge(
+                  "w-[150px] h-[50px] rounded-md bg-surface-hover flex justify-center items-center cursor-pointer hover:bg-primary transition-300 select-none shadow-md",
+                  selectedDate === item && "bg-primary",
+                )}
+                key={item}
+                onClick={() => setSelectedDate(item)}
+              >
+                {item}
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -181,56 +220,22 @@ const TicketPlan = () => {
             leftSection={<SearchIcon color={"var(--color-accent)"} />}
           />
         </div>
-        <div className="bg-surface mt-10 rounded-md">
-          <div className="group w-full h-[100px] flex items-center border-b border-surface-hover">
-            <div className="w-[400px] h-full border-r border-surface-hover flex items-center justify-between px-10">
-              <div>akm</div>
-              <div className="bg-surface-hover group-hover:bg-primary rounded-full p-2">
-                <LocationFillIcon color="var(--color-blueGray)" />
-              </div>
+        <div className="bg-surface mt-10 rounded-md overflow-hidden">
+          {schedules?.map((item) => (
+            <div key={item.id}>
+              <ScheduleList
+                location={item.location}
+                schedules={item.schedules}
+                movie={item.movie}
+              />
             </div>
-            <div className="flex-1 flex gap-10 px-10">
-              <div
-                className="w-24 h-10 bg-surface-hover flex items-center justify-center rounded-md shadow-md text-sm cursor-pointer hover:bg-primary transition-300 select-none"
-                onClick={open}
-              >
-                7:30 AM
-              </div>
-              <div className="w-24 h-10 bg-surface-hover flex items-center justify-center rounded-md shadow-md text-sm cursor-pointer hover:bg-primary transition-300">
-                7:30 AM
-              </div>
-              <div className="w-24 h-10 bg-surface-hover flex items-center justify-center rounded-md shadow-md text-sm cursor-pointer hover:bg-primary transition-300">
-                7:30 AM
-              </div>
-              <div className="w-24 h-10 bg-surface-hover flex items-center justify-center rounded-md shadow-md text-sm cursor-pointer hover:bg-primary transition-300">
-                10:30 AM
-              </div>
-            </div>
-          </div>
-          {/* <div className="w-full h-[100px] flex items-center">
-            <div className="w-[400px] h-full border-r border-surface-hover flex items-center px-10">
-              akm
-            </div>
-            <div className="flex-1 flex gap-10 px-10">
-              <div className="w-24 h-10 bg-surface-hover flex items-center justify-center rounded-md shadow-md text-sm cursor-pointer hover:bg-primary transition-300 select-none">
-                7:30 AM
-              </div>
-              <div className="w-24 h-10 bg-surface-hover flex items-center justify-center rounded-md shadow-md text-sm cursor-pointer hover:bg-primary transition-300">
-                7:30 AM
-              </div>
-              <div className="w-24 h-10 bg-surface-hover flex items-center justify-center rounded-md shadow-md text-sm cursor-pointer hover:bg-primary transition-300">
-                7:30 AM
-              </div>
-              <div className="w-24 h-10 bg-surface-hover flex items-center justify-center rounded-md shadow-md text-sm cursor-pointer hover:bg-primary transition-300">
-                10:30 AM
-              </div>
-            </div>
-          </div> */}
+          ))}
         </div>
 
         <Modal
           opened={opened}
           onClose={close}
+          // title="Confirm Movie"
           centered
           classNames={{
             content: "!bg-surface !min-w-[650px] pb-10",
@@ -239,6 +244,7 @@ const TicketPlan = () => {
             close: "!text-blueGray hover:!bg-surface-hover",
           }}
         >
+          {/* Modal content */}
           <div className="text-text flex gap-15 p-5">
             <img src="/movie03.jpg" className="rounded-md w-[250px]" />
             <div className="flex flex-col justify-between">
@@ -279,7 +285,7 @@ const TicketPlan = () => {
                   </div>
                 </div>
               </div>
-              <NavLink to={"/" + routes.user.seatPlan + "/" + movie.id}>
+              <NavLink to={routes.user.seatPlan + "/" + movie.id}>
                 <Button
                   leftSection={<SeatIcon color="var(--color-blueGray)" />}
                 >
@@ -290,12 +296,6 @@ const TicketPlan = () => {
           </div>
         </Modal>
       </div>
-
-      <NavLink to={"/" + routes.user.seatPlan + "/" + movie.id}>
-        <Button leftSection={<SeatIcon color="var(--color-blueGray)" />}>
-          Select Seats
-        </Button>
-      </NavLink>
     </div>
   );
 };
