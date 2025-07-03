@@ -1,18 +1,26 @@
 import type { IconProps } from "@tabler/icons-react";
 import React from "react";
 
-const SeatIcon = (props: IconProps) => {
+const SeatIcon = ({
+  color,
+  size,
+  isSelected,
+}: {
+  color?: string;
+  size?: string;
+  isSelected?: boolean;
+}) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width={props.size || "30"}
-      height={props.size || "30"}
+      width={size || "30"}
+      height={size || "30"}
       viewBox="0 0 24 24"
-      fill="none"
-      stroke={props.color || "currentColor"}
-      stroke-width="1"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      fill={isSelected ? "var(--color-primary)" : "none"}
+      stroke={color || "currentColor"}
+      strokeWidth="1"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       className="icon icon-tabler icons-tabler-outline icon-tabler-armchair"
     >
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />

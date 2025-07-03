@@ -93,7 +93,7 @@ const MovieCarousel = ({ movies, menu, delay = 2000 }: MovieCarouselProps) => {
       <div className="mt-10 flex justify-between">
         <span className="text-xl font-semibold">{menu}</span>
         <NavLink
-          to={routes.user.movies + "/sortBy/" + sortBy}
+          to={"/" + routes.user.movies + "/sortBy/" + sortBy}
           className="text-accent underline"
         >
           See All

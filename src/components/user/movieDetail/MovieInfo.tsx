@@ -100,7 +100,7 @@ const MovieInfo = ({ movie, isTicketPlan = false }: MovieInfoType) => {
             </div>
             {!isTicketPlan && (
               <div>
-                <NavLink to={routes.user.ticketPlan + "/" + movie.id}>
+                <NavLink to={"/" + routes.user.ticketPlan + "/" + movie.id}>
                   <Button className="!rounded-full !w-[150px] !h-[50px]">
                     Book Ticket
                   </Button>

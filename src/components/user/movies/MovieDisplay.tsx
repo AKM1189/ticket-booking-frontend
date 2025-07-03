@@ -50,7 +50,7 @@ export const MovieList = ({ movieList }: MoviesProps) => {
             <div className="flex flex-col justify-between w-full">
               <div className="flex flex-col gap-5">
                 <div className="flex justify-between">
-                  <NavLink to={routes.user.movies + "/" + movie.id}>
+                  <NavLink to={"/" + routes.user.movies + "/" + movie.id}>
                     <div className="text-3xl font-semibold">{movie.name}</div>
                   </NavLink>
                   <div

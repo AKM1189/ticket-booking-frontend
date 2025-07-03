@@ -9,7 +9,7 @@ const MovieCard = ({ movie }: { movie: MovieType }) => {
   const navigate = useNavigate();
 
   const handleNavigate = () => {
-    navigate(`${routes.user.movies}/${movie.id}`);
+    navigate(`/${routes.user.movies}/${movie.id}`);
   };
   return (
     <div className="bg-surface group">

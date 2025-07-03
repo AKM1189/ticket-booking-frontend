@@ -20,7 +20,7 @@ function App() {
       <MantineProvider theme={theme}>
         <Notifications />
         <BrowserRouter>
-          <AuthRoutes />
+          {/* <AuthRoutes /> */}
           <UserRoutes />
         </BrowserRouter>
       </MantineProvider>

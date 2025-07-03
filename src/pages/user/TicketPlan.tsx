@@ -88,7 +88,7 @@ const TicketPlan = () => {
   };
 
   const [opened, { open, close }] = useDisclosure(false);
-
+  console.log("running");
   return (
     <div className="relative">
       <div
@@ -114,7 +114,6 @@ const TicketPlan = () => {
                       className="px-4 py-2 border border-surface-hover rounded-full"
                     >
                       {item.label}
-                      {/* {index !== movie.genres.length - 1 && "|"}{" "} */}
                     </span>
                   ))}
                 </div>
@@ -133,42 +132,10 @@ const TicketPlan = () => {
                   </span>
                 </div>
               </div>
-              {/* <div></div> */}
             </div>
           </div>
 
           <div className="absolute bottom-0 left-0 w-full px-[300px] h-[150px] flex items-center justify-between bg-surface/90">
-            {/* <div className="flex gap-20">
-              <Select
-                label={
-                  <div className="flex gap-2">
-                    <LocationIcon color="var(--color-accent)" />
-                    Date
-                  </div>
-                }
-                placeholder="Select Date"
-                size="md"
-                data={["React", "Angular", "Vue", "Native", "PHP", "NodeJs"]}
-                styles={selectBoxStyle}
-                className="max-sm:!w-full"
-              />
-              <Select
-                label={
-                  <div className="flex gap-2">
-                    <LocationIcon color="var(--color-accent)" />
-                    Experience
-                  </div>
-                }
-                placeholder="Select Experience"
-                size="md"
-                data={["React", "Angular", "Vue", "Native", "PHP", "NodeJs"]}
-                styles={selectBoxStyle}
-                className="max-sm:!w-full"
-              />
-            </div> */}
-
-            {/* <div className="flex "> */}
-            {/* <div>Select Date:</div> */}
             <div className="w-[150px] h-[50px] bg-surface-hover rounded-md flex justify-center items-center cursor-pointer hover:bg-primary transition-300 select-none shadow-md">
               All
             </div>
@@ -184,7 +151,6 @@ const TicketPlan = () => {
             <div className="w-[150px] h-[50px] bg-surface-hover rounded-md flex justify-center items-center cursor-pointer hover:bg-primary transition-300 select-none shadow-md">
               20/03/2025
             </div>
-            {/* </div> */}
           </div>
         </div>
       </div>
@@ -193,31 +159,27 @@ const TicketPlan = () => {
       <div className="px-[300px] mt-20">
         <div className="mb-10 flex items-center justify-between">
           <div className="max-w-[300px]">
-            <Select
+            {/* <Select
               placeholder="Select Experience"
               size="md"
               data={["All", "2D", "3D", "4DX", "IMAX"]}
               styles={selectBoxStyle}
               className="max-sm:!w-full"
-            />
+            /> */}
           </div>
 
           <TextInput
             placeholder="Search Location"
-            // key={form.key("email")}
             classNames={{
               root: "!w-[300px]",
               label: "text-[16px]",
               input: twMerge(
                 "login-input !text-text !border-0 !border-b !border-surface-hover !w-full !h-[42px] mt-[2px] !text-base !ps-10",
-                // form.errors.email && "border-red-500"
               ),
               error: "text-red-500",
             }}
             leftSection={<SearchIcon color={"var(--color-accent)"} />}
-            // {...form.getInputProps("email")}
           />
-          {/* </div> */}
         </div>
         <div className="bg-surface mt-10 rounded-md">
           <div className="group w-full h-[100px] flex items-center border-b border-surface-hover">
@@ -245,7 +207,7 @@ const TicketPlan = () => {
               </div>
             </div>
           </div>
-          <div className="w-full h-[100px] flex items-center">
+          {/* <div className="w-full h-[100px] flex items-center">
             <div className="w-[400px] h-full border-r border-surface-hover flex items-center px-10">
               akm
             </div>
@@ -263,13 +225,12 @@ const TicketPlan = () => {
                 10:30 AM
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
 
         <Modal
           opened={opened}
           onClose={close}
-          // title="Confirm Movie"
           centered
           classNames={{
             content: "!bg-surface !min-w-[650px] pb-10",
@@ -278,7 +239,6 @@ const TicketPlan = () => {
             close: "!text-blueGray hover:!bg-surface-hover",
           }}
         >
-          {/* Modal content */}
           <div className="text-text flex gap-15 p-5">
             <img src="/movie03.jpg" className="rounded-md w-[250px]" />
             <div className="flex flex-col justify-between">
@@ -319,7 +279,7 @@ const TicketPlan = () => {
                   </div>
                 </div>
               </div>
-              <NavLink to={routes.user.seatPlan + "/" + movie.id}>
+              <NavLink to={"/" + routes.user.seatPlan + "/" + movie.id}>
                 <Button
                   leftSection={<SeatIcon color="var(--color-blueGray)" />}
                 >
@@ -330,6 +290,12 @@ const TicketPlan = () => {
           </div>
         </Modal>
       </div>
+
+      <NavLink to={"/" + routes.user.seatPlan + "/" + movie.id}>
+        <Button leftSection={<SeatIcon color="var(--color-blueGray)" />}>
+          Select Seats
+        </Button>
+      </NavLink>
     </div>
   );
 };
