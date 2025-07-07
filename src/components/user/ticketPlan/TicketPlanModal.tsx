@@ -1,5 +1,4 @@
-import { ClockIcon, SubtitleIcon } from "@/assets/svgs";
-import SeatIcon from "@/assets/svgs/SeatsIcon";
+import { ClockIcon, SubtitleIcon, SeatIcon } from "@/assets/svgs";
 import { routes } from "@/routes";
 import type { MovieDetailType } from "@/types/MovieTypes";
 import { Button, Modal } from "@mantine/core";
@@ -72,7 +71,7 @@ const TicketPlanModal = ({ movie, opened, close }: TicketPlanModal) => {
             className="text-center"
           > */}
           <Button
-            leftSection={<SeatIcon color="var(--color-blueGray)" />}
+            leftSection={<SeatIcon color="white" />}
             onClick={() => {
               close();
               navigate(`/${routes.user.seatPlan}/${movie.id}`);
