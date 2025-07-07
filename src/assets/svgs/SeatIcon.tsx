@@ -45,8 +45,8 @@ export const ReverseSeatIcon = ({
 }) => {
   return (
     <svg
-      width="45"
-      height="50"
+      width={size || "45"}
+      height={size || "50"}
       viewBox="12 18 45 50"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
