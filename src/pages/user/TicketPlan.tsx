@@ -1,7 +1,10 @@
-import { ClockIcon, DateIcon, LocationFillIcon } from "@/assets/svgs";
-import SearchIcon from "@/assets/svgs/SearchIcon";
-import SeatIcon from "@/assets/svgs/SeatsIcon";
-import SubtitleIcon from "@/assets/svgs/SubtitleIcon";
+import {
+  ClockIcon,
+  DateIcon,
+  SeatIcon,
+  SearchIcon,
+  SubtitleIcon,
+} from "@/assets/svgs";
 import ScheduleList from "@/components/user/ticketPlan/ScheduleList";
 import { routes } from "@/routes";
 import { Button, Input, Modal, Select, TextInput } from "@mantine/core";
@@ -9,7 +12,6 @@ import { useDisclosure } from "@mantine/hooks";
 import { useEffect, useState } from "react";
 import { NavLink, useParams } from "react-router";
 import { twMerge } from "tailwind-merge";
-import { date } from "zod/v4";
 
 const TicketPlan = () => {
   const [selectedDate, setSelectedDate] = useState<string>("All");

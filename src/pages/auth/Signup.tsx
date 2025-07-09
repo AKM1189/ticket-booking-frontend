@@ -102,7 +102,6 @@ const Signup = () => {
               }}
               {...form.getInputProps("confirmPassword")}
             />
-            {/* <Group className="w-full"> */}
             <PrimaryButton className="mt-5" type="submit" value="Submit" />
           </form>
         </div>

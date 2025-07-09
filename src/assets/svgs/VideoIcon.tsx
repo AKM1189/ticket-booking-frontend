@@ -9,9 +9,9 @@ const VideoIcon = (props: IconProps) => {
       viewBox="0 0 24 24"
       fill="none"
       stroke={props.color || "currentColor"}
-      stroke-width="1"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWdith="1"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       className="icon icon-tabler icons-tabler-outline icon-tabler-brand-parsinta"
     >
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />

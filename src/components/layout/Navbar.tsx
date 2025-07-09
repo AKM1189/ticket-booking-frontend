@@ -11,10 +11,18 @@ const Navbar = () => {
 
   useEffect(() => {
     for (let menu of navbarMenus) {
-      if (location?.pathname === menu?.path) {
+      console.log("location", location?.pathname, "menu", menu?.path);
+      if (
+        location?.pathname === routes.user.home ||
+        location?.pathname === "/" + menu?.path
+      ) {
         setActiveMenu(menu?.label);
         return;
       }
+      // else if () {
+      //   setActiveMenu(menu?.label);
+      //   return;
+      // }
       setActiveMenu(null);
     }
   }, [location.pathname]);
@@ -24,10 +32,10 @@ const Navbar = () => {
       <div className="text-base font-semibold uppercase">Logo</div>
       <ul className="flex items-center justify-start gap-10 text-base font-semibold z-10">
         {navbarMenus.map((menu) => (
-          <NavLink to={"/" + menu.path} key={menu.label}>
+          <NavLink to={menu.path} key={menu.label}>
             <li
               className={twMerge(
-                "border-b-2 border-transparent py-7 px-3 transition-300 hover:text-accent",
+                "border-b-2 border-transparent py-3 px-3 transition-300 hover:text-accent",
                 menu?.label === activeMenu && "text-accent",
               )}
             >
