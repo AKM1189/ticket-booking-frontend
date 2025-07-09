@@ -51,7 +51,7 @@ const Signup = () => {
                 label: "text-[16px]",
                 input: twMerge(
                   "login-input",
-                  form.errors.name && "border-red-500"
+                  form.errors.name && "border-red-500",
                 ),
                 error: "text-red-500",
               }}
@@ -66,7 +66,7 @@ const Signup = () => {
                 label: "text-[16px]",
                 input: twMerge(
                   "login-input",
-                  form.errors.email && "border-red-500"
+                  form.errors.email && "border-red-500",
                 ),
                 error: "text-red-500",
               }}
@@ -81,7 +81,7 @@ const Signup = () => {
                 label: "text-[16px]",
                 input: twMerge(
                   "login-input bg-green-500",
-                  form.errors.password && "border-red-500"
+                  form.errors.password && "border-red-500",
                 ),
                 error: "text-red-500",
               }}
@@ -96,7 +96,7 @@ const Signup = () => {
                 label: "text-[16px]",
                 input: twMerge(
                   "login-input",
-                  form.errors.confirmPassword && "border-red-500"
+                  form.errors.confirmPassword && "border-red-500",
                 ),
                 error: "text-red-500",
               }}
@@ -106,12 +106,22 @@ const Signup = () => {
             <PrimaryButton className="mt-5" type="submit" value="Submit" />
           </form>
         </div>
-        <div className="mt-5 text-center">
+        <div className="mt-5 text-center text-sm">
           Already have an account?{" "}
-          <NavLink to={routes.auth.login} className="text-blue-500 underline">
+          <NavLink
+            to={"/" + routes.auth.login}
+            className="text-blue-500 underline"
+          >
             Login now
           </NavLink>
         </div>
+
+        <NavLink
+          to={"/" + routes.user.home}
+          className="text-sm mt-5 flex items-center gap-2 ps-10 sm:ps-40 w-full text-muted"
+        >
+          Back To Home
+        </NavLink>
       </div>
     </div>
   );

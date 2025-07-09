@@ -6,6 +6,7 @@ import MovieDetail from "@/pages/user/MovieDetail";
 import TicketPlan from "@/pages/user/TicketPlan";
 import SeatPlan from "@/pages/user/SeatPlan";
 import { Login, Signup, ForgotPassword, OTP, ResetPassword } from "@/pages";
+import AuthLayout from "@/pages/auth/AuthLayout";
 
 const UserRoutes = () => {
   return (
@@ -25,12 +26,15 @@ const UserRoutes = () => {
         />
         <Route path={routes.user.seatPlan + "/:id"} element={<SeatPlan />} />
       </Route>
+
+      <Route path="/" element={<AuthLayout />}>
+        <Route path={routes.auth.login} element={<Login />} />
+        <Route path={routes.auth.signup} element={<Signup />} />
+        <Route path={routes.auth.forgotPassword} element={<ForgotPassword />} />
+        <Route path={routes.auth.otp} element={<OTP />} />
+        <Route path={routes.auth.resetPassword} element={<ResetPassword />} />
+      </Route>
     </Routes>
-    // <Route path={routes.auth.login} element={<Login />} />
-    // <Route path={routes.auth.signup} element={<Signup />} />
-    // <Route path={routes.auth.forgotPassword} element={<ForgotPassword />} />
-    // <Route path={routes.auth.otp} element={<OTP />} />
-    // <Route path={routes.auth.resetPassword} element={<ResetPassword />} />
   );
 };
 
