@@ -8,6 +8,7 @@ import SeatPlan from "@/pages/user/SeatPlan";
 import { Login, Signup, ForgotPassword, OTP, ResetPassword } from "@/pages";
 import AuthLayout from "@/pages/auth/AuthLayout";
 import Contact from "@/pages/user/Contact";
+import Checkout from "@/pages/user/Checkout";
 
 const UserRoutes = () => {
   return (
@@ -27,6 +28,7 @@ const UserRoutes = () => {
           element={<TicketPlan />}
         />
         <Route path={routes.user.seatPlan + "/:id"} element={<SeatPlan />} />
+        <Route path={routes.user.checkout + "/:id"} element={<Checkout />} />
       </Route>
 
       <Route path="/" element={<AuthLayout />}>

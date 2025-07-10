@@ -4,8 +4,10 @@ import "@/styles/css/seatStyle.css";
 import { twMerge } from "tailwind-merge";
 import SeatLists from "@/components/user/ticketPlan/SeatList";
 import { Button, Tooltip } from "@mantine/core";
-import { useParams } from "react-router";
+import { NavLink, useNavigate, useParams } from "react-router";
 import dayjs from "dayjs";
+import SeatPlanHeader from "@/components/user/seatPlan/seatPlanHeader";
+import { routes } from "@/routes";
 
 export interface Seat {
   id: string;
@@ -163,40 +165,11 @@ const SeatPlan = () => {
 
   return (
     <div className="relative">
-      <div
-        className={`relative w-full h-[600px] bg-[url("/movie-bg-6.jpg")] bg-no-repeat bg-cover`}
-      >
-        <div className="relative w-full h-full bg-background/90 flex flex-col gap-5 justify-center">
-          <div className="flex justify-center items-center gap-10 relative bottom-20">
-            <div className="ms-10">
-              <div className="text-6xl font-bold mb-5">
-                {movie.name} {id}
-              </div>
-              <div className="text-blueGray text-center text-xl">
-                English - 2D
-              </div>
-            </div>
-          </div>
-
-          <div className="absolute bottom-0 left-0 w-full text-center h-[150px] flex items-center justify-between bg-surface/90 px-[150px]">
-            <Button>Back</Button>
-            <div className="flex gap-2 items-center">
-              <div className="uppercase">
-                {dayjs().format("ddd, MMM DD YYYY")}
-              </div>
-              <div>09:40</div>
-            </div>
-            <div className="text-left">
-              <div className="text-lg font-semibold">05:00</div>
-              Mins Left
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="mt-50">
+      <SeatPlanHeader movie={movie} id={id} />
+      <div className="mt-32">
         <div className="text-center uppercase text-3xl font-semibold mb-20">
           <hr className="mx-auto text-blueGray w-[200px] mb-3" />
-          <div className="inline py-3 px-20 border-b border-blueGray">
+          <div className="inline py-3 px-20 border-b border-blueGray text-blueGray">
             Screen
           </div>
         </div>
@@ -266,8 +239,24 @@ const SeatPlan = () => {
             );
           })}
         </div>
-        <div className="mt-6 text-center">
-          <h4>Selected Seats: {selectedSeats.join(", ") || "None"}</h4>
+        <div className="mt-6 p-5 px-10 bg-surface max-w-[1100px] min-h-[120px] mx-auto flex justify-between items-center rounded-sm">
+          <div>
+            <h4 className="mb-2">Selected Seats </h4>
+            <div className="text-accent text-2xl font-bold max-w-[300px] text-wrap">
+              {selectedSeats.join(", ") || "None"}
+            </div>
+          </div>
+
+          <div>
+            <h4 className="mb-2"> Total Price</h4>
+            <div className="text-2xl text-accent font-bold">15000 Ks</div>
+          </div>
+
+          <div>
+            <NavLink to={"/" + routes.user.checkout + "/" + id}>
+              <Button className="!rounded-full">Proceed</Button>
+            </NavLink>
+          </div>
         </div>
       </div>
     </div>

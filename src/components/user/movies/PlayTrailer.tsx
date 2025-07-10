@@ -1,16 +1,22 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import YouTube, { type YouTubeProps } from "react-youtube";
 
 import { CloseIcon } from "@/assets/svgs";
+import { Skeleton } from "@mantine/core";
+
+import "@/styles/css/skeletonStyle.css";
 
 interface PlayTrailerType {
   videoId: string;
   onClose: () => void;
 }
 const PlayTrailer = ({ videoId, onClose }: PlayTrailerType) => {
+  const [loading, setLoading] = useState(true);
+
   const onPlayerReady: YouTubeProps["onReady"] = (event) => {
     // access to player in all event handlers via event.target
     event.target.pauseVideo();
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -47,12 +53,14 @@ const PlayTrailer = ({ videoId, onClose }: PlayTrailerType) => {
         >
           <CloseIcon size={40} />
         </div>
-        <YouTube
-          videoId={videoId}
-          opts={opts}
-          onReady={onPlayerReady}
-          className="w-full h-full"
-        />
+        <Skeleton visible={loading}>
+          <YouTube
+            videoId={videoId}
+            opts={opts}
+            onReady={onPlayerReady}
+            className="w-full h-full"
+          />
+        </Skeleton>
       </div>
     </div>
   );
