@@ -11,7 +11,7 @@ export const showNotification = ({
   notifications.show({
     title,
     message,
-    autoClose: 5000,
+    autoClose: false,
     icon:
       type === StatusType.success ? (
         <IoCheckmarkCircleSharp className="icon text-green-500" size="2rem" />
@@ -24,6 +24,7 @@ export const showNotification = ({
       root: {
         position: "relative",
         backgroundColor: "var(--color-notification)",
+        display: "flex",
       },
       title: {
         color: "white",
@@ -32,24 +33,25 @@ export const showNotification = ({
         color: "var(--color-text)",
       },
       body: {
-        marginLeft: 30,
+        // marginLeft: 30,
+        // paddingTop: 12,
       },
       closeButton: {
-        position: "absolute",
-        top: 17,
-        right: 10,
+        // position: "absolute",
+        // top: 17,
+        // right: 10,
         color: "var(--color-text)",
         "&:hover": {
           background: "rgba(0, 0, 0, 0.1)",
         },
       },
       icon: {
-        position: "absolute",
-        top: 17,
-        left: 10,
-        width: "2.5rem",
-        height: "2.5rem",
-        fontSize: "1.5rem",
+        // position: "absolute",
+        // top: 17,
+        // left: 10,
+        // width: "2.5rem",
+        // height: "2.5rem",
+        // fontSize: "1.5rem",
       },
     },
   });
