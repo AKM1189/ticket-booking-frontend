@@ -3,6 +3,7 @@ import { useSchedulesQuery } from "@/api/query/user/scheduleQuery";
 import { SeatIcon } from "@/assets/svgs/SeatIcon";
 import ScheduleList from "@/components/user/ticketPlan/ScheduleList";
 import type { MovieDetailType } from "@/types/MovieTypes";
+import type { ScheduleType } from "@/types/ScheduleTypes";
 import { minsToHMin } from "@/utils/timeFormatter";
 import { Badge, Image, TextInput } from "@mantine/core";
 import { IconCalendar, IconClock, IconSearch } from "@tabler/icons-react";
@@ -49,26 +50,31 @@ const TicketPlan = () => {
 
   useEffect(() => {
     refetch();
-    // if (showDate === "") {
-    //   setSelectedDate(showDate ?? dayjs().format("YYYY-MM-DD"));
-    // }
+
     console.log("selected Date", selectedDate, movieId);
   }, [selectedDate]);
 
   useEffect(() => {
-    const days: string[] = [];
-    for (let i = 0; i <= 4; i++) {
-      const date = new Date();
-      date.setDate(date.getDate() + i);
-      days.push(date.toISOString().split("T")[0]);
-    }
-    setDateList(days);
+    // const days: string[] = [];
+    // for (let i = 0; i <= 4; i++) {
+    //   const date = new Date();
+    //   date.setDate(date.getDate() + i);
+    //   days.push(date.toISOString().split("T")[0]);
+    // }
+
     setSelectedDate(showDate ?? dayjs().format("YYYY-MM-DD"));
   }, []);
 
   useEffect(() => {
     setMovie(data?.data);
-    console.log("data", data);
+    const showDates: string[] = [];
+
+    data?.data?.schedules?.map((s: ScheduleType) => {
+      if (!showDates.includes(s?.showDate)) {
+        showDates.push(s?.showDate);
+      }
+    });
+    setDateList(showDates);
   }, [data]);
 
   return (
