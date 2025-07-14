@@ -43,3 +43,5 @@ export type ScheduleInputType = {
   totalSeats: number;
   isActive: boolean;
 };
+
+export type ScheduleDetailType = {};
