@@ -108,7 +108,6 @@ const SeatPlan = () => {
       );
     }
   };
-  console.log("seat grid", seatGrid);
   return (
     <div className="relative">
       <div
