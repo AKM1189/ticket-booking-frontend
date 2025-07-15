@@ -1,0 +1,7 @@
+:where([data-visible])::before {
+  background-color: var(--color-background) !important;
+}
+
+:where([data-visible])::after {
+  background-color: var(--color-surface) !important;
+}

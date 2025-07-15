@@ -3,14 +3,14 @@ export const routes = {
     home: "/dashboard",
   },
   user: {
-    home: "",
+    home: "/",
     movies: "movies",
     about: "about",
     contact: "contact",
-    contactUs: "contact-us",
     order: "order",
     ticketPlan: "ticket-plan",
     seatPlan: "seat-plan",
+    checkout: "checkout",
   },
   auth: {
     login: "login",

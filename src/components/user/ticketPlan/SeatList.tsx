@@ -11,15 +11,18 @@ interface SeatListType {
 const SeatLists = ({ seat, selectedSeats, handleSeatClick }: SeatListType) => {
   return (
     <Tooltip
-      label="7500"
+      label={
+        <div>
+          {seat.price}
+          <div>kyats</div>
+        </div>
+      }
       arrowOffset={20}
       arrowSize={8}
       withArrow
-      //   opened
-      //   position="top-start"
+      hidden={seat?.isBooked}
       classNames={{
-        tooltip: "!bg-surface-hover !text-text",
-        // arrow: "!bg-accent",
+        tooltip: "!bg-surface-light !text-text font-semibold",
       }}
     >
       <div
@@ -42,14 +45,16 @@ const SeatLists = ({ seat, selectedSeats, handleSeatClick }: SeatListType) => {
               ? "var(--color-accent)"
               : "var(--color-surface-hover)"
           }
-          size="50"
+          size="60"
           isSelected={selectedSeats.includes(seat.id)}
         />
         {!seat.isBooked && (
           <div
             className={twMerge(
               "text-center absolute top-3 w-full text-xs z-99 select-none",
-              selectedSeats.includes(seat.id) ? "text-white" : "text-blueGray",
+              selectedSeats.includes(seat.id)
+                ? "text-background"
+                : "text-blueGray",
             )}
           >
             {" "}
