@@ -91,12 +91,12 @@ export const ListIcon = (props: IconProps) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="22"
-      height="22"
+      width={props.size || "22"}
+      height={props.size || "22"}
       viewBox="0 0 24 24"
       fill="none"
       stroke={props.color || "currentColor"}
-      strokeWdith="2"
+      strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
       className="icon icon-tabler icons-tabler-outline icon-tabler-menu-2"

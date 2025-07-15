@@ -4,12 +4,15 @@ import "@/styles/css/seatStyle.css";
 import { twMerge } from "tailwind-merge";
 import SeatLists from "@/components/user/ticketPlan/SeatList";
 import { Button, Tooltip } from "@mantine/core";
-import { useParams } from "react-router";
+import { NavLink, useNavigate, useParams } from "react-router";
 import dayjs from "dayjs";
+import SeatPlanHeader from "@/components/user/seatPlan/SeatPlanHeader";
+import { routes } from "@/routes";
 
 export interface Seat {
   id: string;
   isBooked: boolean;
+  price: number;
 }
 const SeatPlan = () => {
   const { id } = useParams();
@@ -76,27 +79,74 @@ const SeatPlan = () => {
     ],
   };
   const generateSeats = (
-    rows: number = 8,
-    cols: number = 14, // 4 + 6 + 4
+    seatsPerRow: any[], // seat count for A, B, C, ...
     booked: string[] = [],
   ): Seat[][] => {
     const seatGrid: Seat[][] = [];
-    for (let row = 0; row < rows; row++) {
-      const rowLabel = String.fromCharCode(65 + row); // A, B, C, ...
+
+    for (let row = 0; row < seatsPerRow.length; row++) {
+      // const rowLabel = String.fromCharCode(65 + row); // A, B, C...
       const rowSeats: Seat[] = [];
-      for (let col = 1; col <= cols; col++) {
-        const seatId = `${rowLabel}${col}`;
+
+      for (let col = 1; col <= seatsPerRow[row].seatCount; col++) {
+        const seatId = `${seatsPerRow[row].rowLabel}${col}`;
         rowSeats.push({
           id: seatId,
           isBooked: booked.includes(seatId),
+          price: seatsPerRow[row].price, // or vary per row if needed
         });
       }
+
       seatGrid.push(rowSeats);
     }
+
     return seatGrid;
   };
-
-  const seatGrid = generateSeats(8, 14, ["A2", "B5", "C3"]);
+  const seatGrid = generateSeats(
+    [
+      {
+        rowLabel: "A",
+        seatCount: 14,
+        price: 5000,
+      },
+      {
+        rowLabel: "B",
+        seatCount: 14,
+        price: 5000,
+      },
+      {
+        rowLabel: "C",
+        seatCount: 14,
+        price: 7000,
+      },
+      {
+        rowLabel: "D",
+        seatCount: 14,
+        price: 7000,
+      },
+      {
+        rowLabel: "E",
+        seatCount: 14,
+        price: 7000,
+      },
+      {
+        rowLabel: "F",
+        seatCount: 14,
+        price: 7000,
+      },
+      {
+        rowLabel: "G",
+        seatCount: 14,
+        price: 10000,
+      },
+      {
+        rowLabel: "H",
+        seatCount: 14,
+        price: 10000,
+      },
+    ], // A has 10 seats, B has 12, etc.
+    ["A2", "B5", "C3"],
+  );
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
 
   const handleSeatClick = (seat: Seat) => {
@@ -108,42 +158,24 @@ const SeatPlan = () => {
       );
     }
   };
+
+  const getTotalPrice = () => {
+    return seatGrid
+      .flat()
+      .filter((seat) => selectedSeats.includes(seat.id))
+      .reduce((total, seat) => total + seat.price, 0);
+  };
+  const numGroups = 3;
+
+  const groupSize = Math.ceil(seatGrid.length / numGroups);
+
   return (
     <div className="relative">
-      <div
-        className={`relative w-full h-[600px] bg-[url("/movie-bg-6.jpg")] bg-no-repeat bg-cover`}
-      >
-        <div className="relative w-full h-full bg-background/90 flex flex-col gap-5 justify-center">
-          <div className="flex justify-center items-center gap-10 relative bottom-20">
-            <div className="ms-10">
-              <div className="text-6xl font-bold mb-5">
-                {movie.name} {id}
-              </div>
-              <div className="text-blueGray text-center text-xl">
-                English - 2D
-              </div>
-            </div>
-          </div>
-
-          <div className="absolute bottom-0 left-0 w-full text-center h-[150px] flex items-center justify-between bg-surface/90 px-[150px]">
-            <Button>Back</Button>
-            <div className="flex gap-2 items-center">
-              <div className="uppercase">
-                {dayjs().format("ddd, MMM DD YYYY")}
-              </div>
-              <div>09:40</div>
-            </div>
-            <div className="text-left">
-              <div className="text-lg font-semibold">05:00</div>
-              Mins Left
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="mt-50">
+      <SeatPlanHeader movie={movie} id={id} />
+      <div className="mt-32">
         <div className="text-center uppercase text-3xl font-semibold mb-20">
           <hr className="mx-auto text-blueGray w-[200px] mb-3" />
-          <div className="inline py-3 px-20 border-b border-blueGray">
+          <div className="inline py-3 px-20 border-b border-blueGray text-blueGray">
             Screen
           </div>
         </div>
@@ -151,55 +183,18 @@ const SeatPlan = () => {
           <img src="/screen-thumb.png" className="w-[800px]" alt="Screen" />
         </div>
 
-        {/* <div className="flex flex-col gap-3 items-center">
-        {seatGrid.map((row, rowIndex) => (
-          <div key={rowIndex} className=" flex gap-10">
-            <div className="grid grid-cols-4 gap-x-3 gap-y-6">
-              {row.slice(0, 4).map((seat) => (
-                <SeatLists
-                  seat={seat}
-                  selectedSeats={selectedSeats}
-                  handleSeatClick={handleSeatClick}
-                />
-              ))}
-            </div>
-
-            <div className="grid grid-cols-6 gap-x-3 gap-y-6">
-              {row.slice(4, 10).map((seat) => (
-                <SeatLists
-                  seat={seat}
-                  selectedSeats={selectedSeats}
-                  handleSeatClick={handleSeatClick}
-                />
-              ))}
-            </div>
-
-            <div className="grid grid-cols-4 gap-x-3 gap-y-6">
-              {row.slice(10, 14).map((seat) => (
-                <SeatLists
-                  seat={seat}
-                  selectedSeats={selectedSeats}
-                  handleSeatClick={handleSeatClick}
-                />
-              ))}
-            </div>
-          </div>
-        ))}
-      </div> */}
-
         <div className="grid grid-rows-3 gap-y-0 items-center">
-          {/* 3 rows: front, middle, back */}
-          {[0, 1, 2].map((rowGroupIndex) => {
-            // slice the seatGrid into groups: rows 0-1, 2, 3-4
-            const startRow =
-              rowGroupIndex === 0 ? 0 : rowGroupIndex === 1 ? 2 : 6;
-            const endRow =
-              rowGroupIndex === 0 ? 2 : rowGroupIndex === 1 ? 6 : 10;
+          {[...Array(numGroups)].map((_, groupIndex) => {
+            const startRow = groupIndex * groupSize;
+            const endRow = startRow + groupSize;
             const rowGroup = seatGrid.slice(startRow, endRow);
 
             return (
-              <div key={rowGroupIndex} className="flex gap-20 justify-center">
-                {/* Column 1: First 4 seats */}
+              <div
+                key={groupIndex}
+                className="flex gap-12 mt-12 justify-center"
+              >
+                {/* Column 1: First seats */}
                 <div className="grid grid-rows-2 gap-y-2">
                   {rowGroup.map((row, i) => (
                     <div key={i} className="grid grid-cols-4">
@@ -215,7 +210,7 @@ const SeatPlan = () => {
                   ))}
                 </div>
 
-                {/* Column 2: Middle 6 seats */}
+                {/* Column 2: Middle seats */}
                 <div className="grid grid-rows-2 gap-y-2">
                   {rowGroup.map((row, i) => (
                     <div key={i} className="grid grid-cols-6">
@@ -231,7 +226,7 @@ const SeatPlan = () => {
                   ))}
                 </div>
 
-                {/* Column 3: Last 4 seats */}
+                {/* Column 3: Last seats */}
                 <div className="grid grid-rows-2 gap-y-2">
                   {rowGroup.map((row, i) => (
                     <div key={i} className="grid grid-cols-4">
@@ -250,11 +245,26 @@ const SeatPlan = () => {
             );
           })}
         </div>
-        <Tooltip label="7500">
-          <button>Hello</button>
-        </Tooltip>
-        <div className="mt-6 text-center">
-          <h4>Selected Seats: {selectedSeats.join(", ") || "None"}</h4>
+        <div className="mt-6 p-5 px-10 bg-surface max-w-[1100px] min-h-[120px] mx-auto flex justify-between items-center rounded-sm">
+          <div>
+            <h4 className="mb-2">Selected Seats </h4>
+            <div className="text-accent text-2xl font-bold max-w-[300px] text-wrap">
+              {selectedSeats.join(", ") || "None"}
+            </div>
+          </div>
+
+          <div>
+            <h4 className="mb-2"> Total Price</h4>
+            <div className="text-2xl text-accent font-bold">
+              {getTotalPrice()} Ks
+            </div>
+          </div>
+
+          <div>
+            <NavLink to={"/" + routes.user.checkout + "/" + id}>
+              <Button className="!rounded-full">Proceed</Button>
+            </NavLink>
+          </div>
         </div>
       </div>
     </div>

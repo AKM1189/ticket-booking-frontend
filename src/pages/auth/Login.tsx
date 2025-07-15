@@ -96,7 +96,7 @@ const Login = () => {
         </div>
 
         <NavLink
-          to={"/" + routes.user.home}
+          to={routes.user.home}
           className="text-sm mt-5 flex items-center gap-2 ps-10 sm:ps-40 w-full text-muted"
         >
           Back To Home

@@ -17,3 +17,15 @@
 .title {
   @apply text-xl font-semibold uppercase;
 }
+
+.heading1 {
+  @apply text-7xl md:text-lg uppercase;
+}
+
+.heading2 {
+  @apply text-5xl md:text-base uppercase;
+}
+
+.paragraph {
+  @apply text-sm md:text-base;
+}

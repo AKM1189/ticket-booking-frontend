@@ -55,7 +55,7 @@ const HomeMovies = () => {
   return (
     <div className="min-h-[500px]">
       <div className="flex justify-between items-baseline">
-        <div className="text-5xl inline uppercase font-bold pb-5 border-b-4 border-accent">
+        <div className="md:text-5xl text-3xl inline uppercase font-bold pb-5 border-b-4 border-accent">
           Movies
         </div>
       </div>

@@ -25,20 +25,23 @@ function HomeCarousel() {
   return (
     <Carousel
       withIndicators={false}
-      height={600}
       flex={1}
+      // height={600}
       controlSize={40}
-      nextControlIcon={<IconChevronRight size={30} />}
-      previousControlIcon={<IconChevronLeft size={30} />}
+      nextControlIcon={<IconChevronRight />}
+      previousControlIcon={<IconChevronLeft />}
       emblaOptions={{
         loop: true,
       }}
       plugins={[autoplay.current]}
       // onMouseEnter={autoplay.current.stop}
       // onMouseLeave={() => autoplay.current.play()}
+      classNames={{
+        container: "!max-h-[600px]",
+        control: "!bg-surface !text-white !border-surface",
+      }}
       styles={{
         indicator: {
-          width: "50px",
           background: "oklch(92.9% 0.013 255.508)",
         },
         control: {

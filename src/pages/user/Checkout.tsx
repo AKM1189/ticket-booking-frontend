@@ -1,6 +1,5 @@
-import SeatPlanHeader from "@/components/user/seatPlan/seatPlanHeader";
+import SeatPlanHeader from "@/components/user/seatPlan/SeatPlanHeader";
 import { Button, TextInput } from "@mantine/core";
-import React from "react";
 import { useParams } from "react-router";
 import { twMerge } from "tailwind-merge";
 
