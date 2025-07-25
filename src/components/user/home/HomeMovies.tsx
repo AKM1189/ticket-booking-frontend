@@ -1,7 +1,7 @@
 import { Carousel } from "@mantine/carousel";
 import { Button, Image } from "@mantine/core";
 import Autoplay from "embla-carousel-autoplay";
-import { useRef } from "react";
+import { useRef, useMemo } from "react";
 import { NavLink } from "react-router";
 import { routes } from "../../../routes";
 import MovieCard from "./MovieCard";
@@ -82,11 +82,16 @@ const MovieCarousel = ({ movies, menu, delay = 2000 }: MovieCarouselProps) => {
   const autoplay = useRef(Autoplay({ delay }));
   const sortBy = menu === SortType.showing ? "now-showing" : "coming-soon";
 
-  const slides = movies.map((movie: any) => (
-    <Carousel.Slide key={movie.id} className="min-h-[500px]">
-      <MovieCard movie={movie} />
-    </Carousel.Slide>
-  ));
+  // Memoize slides to prevent recreation on every render
+  const slides = useMemo(
+    () =>
+      movies.map((movie: any) => (
+        <Carousel.Slide key={movie.id} className="min-h-[500px]">
+          <MovieCard movie={movie} />
+        </Carousel.Slide>
+      )),
+    [movies],
+  );
 
   return (
     <div>

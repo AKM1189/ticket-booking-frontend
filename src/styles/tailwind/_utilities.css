@@ -29,3 +29,19 @@
 .paragraph {
   @apply text-sm md:text-base;
 }
+
+.dashboard-btn {
+  @apply !text-sm !h-[38px];
+}
+
+.dashboard-bg {
+  @apply !bg-surface !border-0 !text-text;
+}
+
+.dashboard-input {
+  @apply !bg-surface !text-text !border-surface-hover;
+}
+
+.input-control {
+  @apply !text-text hover:!bg-surface-hover !border-0;
+}

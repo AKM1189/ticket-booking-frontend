@@ -1,7 +1,7 @@
 import { Carousel } from "@mantine/carousel";
 import { Image } from "@mantine/core";
 import Autoplay from "embla-carousel-autoplay";
-import { useRef } from "react";
+import { useRef, useMemo } from "react";
 import { IconChevronRight } from "@tabler/icons-react";
 import { IconChevronLeft } from "@tabler/icons-react";
 
@@ -11,11 +11,16 @@ type ImageCarouselType = {
 const ImageCarousel = ({ images }: ImageCarouselType) => {
   const autoplay = useRef(Autoplay({ delay: 3000 }));
 
-  const slides = images.map((url) => (
-    <Carousel.Slide key={url}>
-      <img className="w-[400px] h-[200px] rounded-md" src={url} />
-    </Carousel.Slide>
-  ));
+  // Memoize slides to prevent recreation on every render
+  const slides = useMemo(
+    () =>
+      images.map((url) => (
+        <Carousel.Slide key={url}>
+          <img className="w-[400px] h-[200px] rounded-md" src={url} />
+        </Carousel.Slide>
+      )),
+    [images],
+  );
 
   return (
     <Carousel

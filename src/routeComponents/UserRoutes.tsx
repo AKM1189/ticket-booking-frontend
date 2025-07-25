@@ -9,6 +9,7 @@ import { Login, Signup, ForgotPassword, OTP, ResetPassword } from "@/pages";
 import AuthLayout from "@/pages/auth/AuthLayout";
 import Contact from "@/pages/user/Contact";
 import Checkout from "@/pages/user/Checkout";
+import AdminAccessDemo from "@/components/AdminAccessDemo";
 
 const UserRoutes = () => {
   return (
@@ -29,6 +30,7 @@ const UserRoutes = () => {
         />
         <Route path={routes.user.seatPlan + "/:id"} element={<SeatPlan />} />
         <Route path={routes.user.checkout + "/:id"} element={<Checkout />} />
+        <Route path={routes.admin.demo} element={<AdminAccessDemo />} />
       </Route>
 
       <Route path="/" element={<AuthLayout />}>

@@ -9,3 +9,5 @@ export { default as OTP } from "./auth/OTP";
 export { default as Home } from "./user/Home";
 export { default as About } from "./user/About";
 export { default as Movies } from "./user/Movies";
+// admin
+export { default as AdminPanel } from "./admin/AdminPanel";

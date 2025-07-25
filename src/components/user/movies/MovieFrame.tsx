@@ -6,7 +6,7 @@ import { MovieGrid, MovieList, FilterCard } from "@/components/user/movies";
 import { SortType, type LabelType } from "@/types/MovieTypes";
 import { useMovieStore } from "@/store/useMovieStore";
 import { motion } from "motion/react";
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 
 const MovieFrame = ({ type }: { type: string | undefined }) => {
   const langList = [
@@ -87,29 +87,32 @@ const MovieFrame = ({ type }: { type: string | undefined }) => {
     currentPage: 1,
   });
 
-  const displayIcons = [
-    {
-      id: 1,
-      icon: (
-        <ListIcon
-          color={
-            activeDisplay === 1 ? "var(--color-accent)" : "var(--color-muted)"
-          }
-        />
-      ),
-    },
-    {
-      id: 2,
-      icon: (
-        <GridIcon
-          color={
-            activeDisplay === 2 ? "var(--color-accent)" : "var(--color-muted)"
-          }
-        />
-      ),
-    },
-  ];
-  console.log("type", type);
+  // Memoize display icons to prevent recreation on every render
+  const displayIcons = useMemo(
+    () => [
+      {
+        id: 1,
+        icon: (
+          <ListIcon
+            color={
+              activeDisplay === 1 ? "var(--color-accent)" : "var(--color-muted)"
+            }
+          />
+        ),
+      },
+      {
+        id: 2,
+        icon: (
+          <GridIcon
+            color={
+              activeDisplay === 2 ? "var(--color-accent)" : "var(--color-muted)"
+            }
+          />
+        ),
+      },
+    ],
+    [activeDisplay],
+  );
   return (
     <div className="w-full grid grid-cols-10">
       <div className="col-span-2">

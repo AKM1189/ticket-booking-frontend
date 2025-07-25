@@ -12,7 +12,7 @@ import type { MovieType } from "@/types/MovieTypes";
 import { twMerge } from "tailwind-merge";
 import MovieCard from "../home/MovieCard";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { NavLink } from "react-router";
 import { routes } from "@/routes";
 import PlayTrailer from "./PlayTrailer";
@@ -23,23 +23,10 @@ interface MoviesProps {
 export const MovieList = ({ movieList }: MoviesProps) => {
   const [selectedMovie, setSelectedMovie] = useState<MovieType | null>(null);
 
-  // useEffect(() => {
-  //   if (selectedMovie) {
-  //     document.body.style.overflow = "hidden";
-  //   } else {
-  //     document.body.style.overflow = "";
-  //   }
-
-  //   // Optional: clean up on unmount just in case
-  //   return () => {
-  //     document.body.style.overflow = "";
-  //   };
-  // }, [selectedMovie]);
-
-  return (
-    <div className="movie-grid flex flex-col gap-16 items-center max-w-screen">
-      {movieList?.length > 0 &&
-        movieList?.map((movie) => (
+  // Memoize movie list elements to prevent recreation on every render
+  const movieElements = useMemo(() => {
+    return movieList?.length > 0
+      ? movieList.map((movie) => (
           <div
             className="movie-grid w-full h-[400px] flex gap-10"
             key={movie.id}
@@ -114,7 +101,13 @@ export const MovieList = ({ movieList }: MoviesProps) => {
               </div>
             </div>
           </div>
-        ))}
+        ))
+      : [];
+  }, [movieList]);
+
+  return (
+    <div className="movie-grid flex flex-col gap-16 items-center max-w-screen">
+      {movieElements}
       {selectedMovie && (
         <PlayTrailer
           videoId={selectedMovie.trailerId}
@@ -126,11 +119,17 @@ export const MovieList = ({ movieList }: MoviesProps) => {
 };
 
 export const MovieGrid = ({ movieList }: MoviesProps) => {
+  // Memoize movie grid elements to prevent recreation on every render
+  const movieGridElements = useMemo(() => {
+    return movieList?.length > 0
+      ? movieList.map((movie) => <MovieCard key={movie.id} movie={movie} />)
+      : [];
+  }, [movieList]);
+
   return (
     <div className="movie-grid flex flex-col gap-16 items-center">
       <div className="movie-grid grid [grid-template-columns:repeat(auto-fit,_minmax(150px,_1fr))] gap-5 w-full">
-        {movieList?.length > 0 &&
-          movieList?.map((movie) => <MovieCard movie={movie} />)}
+        {movieGridElements}
       </div>
     </div>
   );

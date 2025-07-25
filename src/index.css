@@ -47,3 +47,11 @@ body {
 ::-webkit-scrollbar-corner {
   background: #2d3748;
 }
+
+.recharts-tooltip-cursor {
+  color: red !important;
+}
+
+.recharts-rectangle {
+  color: blue !important;
+}

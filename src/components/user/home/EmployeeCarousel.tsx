@@ -1,7 +1,7 @@
 import type { EmployeeType } from "@/types/EmployeeTypes";
 import { Carousel } from "@mantine/carousel";
 import Autoplay from "embla-carousel-autoplay";
-import { useRef } from "react";
+import { useRef, useMemo } from "react";
 
 type EmployeeCarousel = {
   employees: EmployeeType[];
@@ -9,21 +9,28 @@ type EmployeeCarousel = {
 const EmployeeCarousel = ({ employees }: EmployeeCarousel) => {
   const autoplay = useRef(Autoplay({ delay: 2000 }));
 
-  const slides = employees.map((employee: any) => (
-    <Carousel.Slide key={employee.id}>
-      <div className="text-center">
-        <div className="h-[350px] rounded-xl overflow-hidden">
-          <img
-            className="w-full h-full object-cover min-w-[250px]"
-            src={employee.image}
-            alt=""
-          />
-        </div>
-        <div className="text-xl font-semibold mt-5">{employee.name}</div>
-        <div className="text-accent mt-2 uppercase">{employee.position}</div>
-      </div>
-    </Carousel.Slide>
-  ));
+  // Memoize slides to prevent recreation on every render
+  const slides = useMemo(
+    () =>
+      employees.map((employee: any) => (
+        <Carousel.Slide key={employee.id}>
+          <div className="text-center">
+            <div className="h-[350px] rounded-xl overflow-hidden">
+              <img
+                className="w-full h-full object-cover min-w-[250px]"
+                src={employee.image}
+                alt=""
+              />
+            </div>
+            <div className="text-xl font-semibold mt-5">{employee.name}</div>
+            <div className="text-accent mt-2 uppercase">
+              {employee.position}
+            </div>
+          </div>
+        </Carousel.Slide>
+      )),
+    [employees],
+  );
 
   return (
     <div>

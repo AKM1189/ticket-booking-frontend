@@ -4,7 +4,7 @@ import VideoIcon from "@/assets/svgs/VideoIcon";
 import PlayTrailer from "@/components/user/movies/PlayTrailer";
 import type { MovieDetailType } from "@/types/MovieTypes";
 import { Button } from "@mantine/core";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import RatingModal from "./RatingModal";
 import { NavLink } from "react-router";
 import { routes } from "@/routes";
@@ -42,22 +42,30 @@ const MovieInfo = ({ movie, isTicketPlan = false }: MovieInfoType) => {
               <div className="text-4xl font-bold mb-5">{movie.name}</div>
               <div className="text-blueGray flex flex-col gap-5">
                 <div>
-                  {movie.languages.map((item, index) => (
-                    <span key={item}>
-                      {item} {index !== movie.languages.length - 1 && ","}{" "}
-                    </span>
-                  ))}
+                  {useMemo(
+                    () =>
+                      movie.languages.map((item, index) => (
+                        <span key={item}>
+                          {item} {index !== movie.languages.length - 1 && ","}{" "}
+                        </span>
+                      )),
+                    [movie.languages],
+                  )}
                 </div>
                 <div className="flex gap-3">
-                  {movie.genres.map((item, index) => (
-                    <span
-                      key={item.id}
-                      className="px-4 py-2 border border-surface-hover rounded-full"
-                    >
-                      {item.label}
-                      {/* {index !== movie.genres.length - 1 && "|"}{" "} */}
-                    </span>
-                  ))}
+                  {useMemo(
+                    () =>
+                      movie.genres.map((item, index) => (
+                        <span
+                          key={item.id}
+                          className="px-4 py-2 border border-surface-hover rounded-full"
+                        >
+                          {item.label}
+                          {/* {index !== movie.genres.length - 1 && "|"}{" "} */}
+                        </span>
+                      )),
+                    [movie.genres],
+                  )}
                 </div>
                 <div className="flex gap-5 items-center">
                   <span className="flex items-center gap-2">

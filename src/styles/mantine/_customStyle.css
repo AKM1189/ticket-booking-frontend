@@ -51,7 +51,7 @@
   padding: 3px 0 3px 3px !important;
   border-color: var(--color-surface-hover) !important;
   border-radius: 7px !important;
-  background-color: var(--color-surface) !important;
+  background-color: var(--color-coolBlue) !important;
   color: var(--color-text) !important;
 }
 
@@ -78,4 +78,8 @@
   ); /* Change background color of active item */
   --pagination-active-color: #ffffff; /* Change text color of active item */
   --pagination-control-radius: 5px; /* Optional: Rounded corners */
+}
+
+.mantine-MultiSelect-option:hover {
+  background-color: var(--color-surface) !important;
 }

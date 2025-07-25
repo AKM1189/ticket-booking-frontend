@@ -16,7 +16,7 @@ const UserLayout = () => {
   return (
     <div className="min-h-screen h-full min-w-screen bg-background">
       <Navbar />
-      <div className="text-text max-w-screen">
+      <div className="text-text max-w-[2000px] m-auto">
         <Outlet />
       </div>
       <Footer />

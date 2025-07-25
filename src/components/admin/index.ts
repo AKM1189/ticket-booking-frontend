@@ -1,0 +1,9 @@
+export { default as AdminLayout } from "./layout/AdminLayout";
+export { default as AdminDashboard } from "./dashboard/AdminDashboard";
+export { default as StatsCard } from "./dashboard/StatsCard";
+export { default as MovieManagement } from "./movies/MovieManagement";
+export { default as TheaterManagement } from "./theaters/TheaterManagement";
+export { default as ScheduleManagement } from "./schedules/ScheduleManagement";
+export { default as GenreManagement } from "./genres/GenreManagement";
+export { default as BookingManagement } from "./bookings/BookingManagement";
+export { default as SeatLayoutViewer } from "./theaters/SeatLayoutViewer";

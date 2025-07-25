@@ -1,0 +1,11 @@
+:where(tr):where([data-striped="odd"]:nth-of-type(2n + 1)),
+:where(tr)[data-hover] {
+  background-color: var(--color-surface) !important;
+  border-bottom: calc(0.0625rem * var(--mantine-scale)) solid
+    var(--color-surface-hover);
+  /* border-bottom: var(--color-darkGray) !important; */
+}
+
+.mantine-Table-td {
+  padding: 12px 0 12px 10px !important;
+}

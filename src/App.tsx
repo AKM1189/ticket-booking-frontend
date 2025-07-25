@@ -6,7 +6,7 @@ import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 import "./App.css";
 
-import { AuthRoutes, UserRoutes } from "@/routeComponents";
+import { AuthRoutes, UserRoutes, AdminRoutes } from "@/routeComponents";
 import { customMantineTheme, MantineComponentOverrides } from "@/styles";
 
 function App() {
@@ -22,6 +22,7 @@ function App() {
         <BrowserRouter>
           {/* <AuthRoutes /> */}
           <UserRoutes />
+          <AdminRoutes />
           {/* <AuthRoutes /> */}
         </BrowserRouter>
       </MantineProvider>

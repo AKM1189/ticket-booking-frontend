@@ -62,7 +62,7 @@ const About = () => {
       <div
         className={`relative w-full h-[500px] bg-[url("/movie-bg-11.jpg")] bg-no-repeat bg-cover`}
       >
-        <div className="relative w-full h-full bg-background/70 flex flex-col gap-5 justify-center">
+        <div className="relative w-full h-full bg-surface/70 flex flex-col gap-5 justify-center">
           <div className="flex justify-center items-center gap-10 uppercase text-5xl font-bold">
             About Us
           </div>

@@ -1,7 +1,7 @@
+import React, { useMemo } from "react";
 import type { MovieType } from "@/types/MovieTypes";
 import { Button } from "@mantine/core";
 import dayjs from "dayjs";
-import React from "react";
 
 const SeatPlanHeader = ({
   movie,
@@ -10,6 +10,11 @@ const SeatPlanHeader = ({
   movie: MovieType;
   id: string | undefined;
 }) => {
+  // Memoize the formatted date to prevent recalculation on every render
+  const formattedDate = useMemo(() => {
+    return dayjs().format("ddd, MMM DD YYYY");
+  }, []);
+
   return (
     <div
       className={`relative w-full h-[500px] bg-[url("/movie-bg-6.jpg")] bg-no-repeat bg-cover`}
@@ -29,9 +34,7 @@ const SeatPlanHeader = ({
         <div className="absolute bottom-0 left-0 w-full text-center h-[120px] flex items-center justify-between bg-surface/90 px-[150px]">
           <Button>Back</Button>
           <div className="flex gap-2 items-center">
-            <div className="uppercase">
-              {dayjs().format("ddd, MMM DD YYYY")}
-            </div>
+            <div className="uppercase">{formattedDate}</div>
             <div>09:40</div>
           </div>
           <div className="text-left">
