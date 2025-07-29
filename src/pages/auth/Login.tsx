@@ -1,4 +1,4 @@
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 import PrimaryButton from "../../ui/button/PrimaryButton";
 import { routes } from "../../routes";
 import { useState } from "react";
@@ -17,6 +17,7 @@ export type LoginDataType = {
 const Login = () => {
   const [checked, setChecked] = useState(false);
   const { mutate } = useLoginMutation();
+  const navigate = useNavigate();
 
   const form = useForm({
     mode: "uncontrolled",
@@ -27,6 +28,18 @@ const Login = () => {
     validate: zodResolver(loginSchema),
   });
 
+  const handleLogin = (values: LoginDataType) => {
+    mutate(
+      { data: values },
+      {
+        onSuccess: (res) => {
+          console.log("res", res);
+          // navigate(routes.admin.dashboard);
+        },
+      },
+    );
+  };
+
   return (
     <div className="bg-background flex justify-center items-center min-w-screen min-h-screen">
       <div className="w-[500px] min-h-[500px] max-h-[650px] bg-surface shadow-2xl rounded-lg text-white p-10 py-10">
@@ -34,7 +47,7 @@ const Login = () => {
         <div className="flex flex-col gap-8">
           <form
             className="auth-text-input"
-            onSubmit={form.onSubmit((values) => mutate({ data: values }))}
+            onSubmit={form.onSubmit((values) => handleLogin(values))}
           >
             <TextInput
               label="Email"

@@ -15,7 +15,7 @@ export const login = async (data: LoginDataType) => {
 
 export const getCurrentUser = async () => {
   const response = await api.get(endpoints.auth.me);
-  return response;
+  return response?.data;
 };
 
 export const forgotPassword = async (data: { email: string }) => {

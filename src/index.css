@@ -19,12 +19,12 @@ body {
   overflow-x: hidden;
 }
 
-.mantine-Notification-root {
-  display: block !important;
+/* .mantine-Notification-root {
+  display: flex !important;
   opacity: 1 !important;
   visibility: visible !important;
   z-index: 9999 !important;
-}
+} */
 
 ::-webkit-scrollbar {
   width: 3px;

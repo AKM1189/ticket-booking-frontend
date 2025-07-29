@@ -1,5 +1,8 @@
 export const endpoints = {
-  admin: {},
+  admin: {
+    movies: "/admin/movies",
+    genres: "/admin/genres",
+  },
   user: {},
 
   auth: {

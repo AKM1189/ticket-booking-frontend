@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Title,
   Button,
@@ -25,6 +25,8 @@ import {
 import { useForm } from "@mantine/form";
 import type { LabelType } from "@/types/MovieTypes";
 import { GridIcon } from "@/assets/svgs";
+import { useGenreQuery } from "@/api/query/admin/genreQuery";
+import { getGenre } from "@/api/function/admin/genreApi";
 
 // Mock data with extended genre information
 interface ExtendedGenre extends LabelType {
@@ -112,12 +114,22 @@ const colorOptions = [
 ];
 
 const GenreManagement = () => {
+  const { data } = useGenreQuery();
   const [genres, setGenres] = useState<ExtendedGenre[]>(mockGenres);
   const [searchTerm, setSearchTerm] = useState("");
   const [opened, { open, close }] = useDisclosure(false);
   const [editingGenre, setEditingGenre] = useState<ExtendedGenre | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
 
+  // useEffect(() => {
+  //   const getGenres = async () => {
+  //     const data = await getGenre();
+  //     return data;
+  //   };
+  //   console.log("genres", getGenres());
+  // }, []);
+
+  console.log("genres", data);
   const form = useForm({
     initialValues: {
       label: "",

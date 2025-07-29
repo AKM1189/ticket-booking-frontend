@@ -1,4 +1,4 @@
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, useNavigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createTheme, MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
@@ -15,6 +15,7 @@ function App() {
     ...customMantineTheme,
     ...MantineComponentOverrides,
   });
+
   return (
     <QueryClientProvider client={queryClient}>
       <MantineProvider theme={theme}>

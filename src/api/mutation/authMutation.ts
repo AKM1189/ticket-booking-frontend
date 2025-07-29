@@ -15,7 +15,7 @@ import { StatusType } from "../../types/NotificationType";
 import { useNavigate } from "react-router";
 import { routes } from "../../routes";
 
-export const useSignupMutation = () => {
+export const useSignupMutation = (resetFields: () => void) => {
   return useMutation({
     mutationFn: ({ data }: { data: SignupDataType }) => signup(data),
     onSuccess: () => {
@@ -24,6 +24,7 @@ export const useSignupMutation = () => {
         message: "You have signed up successfully!",
         type: StatusType.success,
       });
+      resetFields();
     },
     onError: (error) => {
       if (error instanceof AxiosError) {
@@ -42,7 +43,6 @@ export const useLoginMutation = () => {
   return useMutation({
     mutationFn: ({ data }: { data: LoginDataType }) => login(data),
     onSuccess: (response) => {
-      console.log("login info", response);
       showNotification({
         title: "Login Success",
         message: "You have logged in successfully!",

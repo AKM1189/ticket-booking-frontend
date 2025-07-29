@@ -1,6 +1,6 @@
 import { NavLink } from "react-router";
 import { routes } from "../../routes";
-import { TextInput, Button } from "@mantine/core";
+import { TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { twMerge } from "tailwind-merge";
 import { zodResolver } from "mantine-form-zod-resolver";
@@ -13,10 +13,10 @@ export type SignupDataType = {
   name: string | null;
   email: string | null;
   password: string | null;
+  role: string;
   confirmPassword: string | null;
 };
 const Signup = () => {
-  const { mutate } = useSignupMutation();
   const form = useForm({
     mode: "uncontrolled",
     initialValues: {
@@ -28,7 +28,9 @@ const Signup = () => {
     validate: zodResolver(signupSchema),
   });
 
-  const handleLogin = (data: SignupDataType) => {
+  const { mutate } = useSignupMutation(form.reset);
+
+  const handleSignup = (data: SignupDataType) => {
     mutate({ data });
   };
 
@@ -40,7 +42,9 @@ const Signup = () => {
         <div className="flex flex-col gap-8">
           <form
             className="auth-text-input"
-            onSubmit={form.onSubmit((values) => handleLogin(values))}
+            onSubmit={form.onSubmit((values) =>
+              handleSignup({ ...values, role: "user" }),
+            )}
           >
             <TextInput
               label="Name"
