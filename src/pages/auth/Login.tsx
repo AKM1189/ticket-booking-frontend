@@ -34,7 +34,7 @@ const Login = () => {
       {
         onSuccess: (res) => {
           console.log("res", res);
-          // navigate(routes.admin.dashboard);
+          // navigate(routes.admin.dashboard);//
         },
       },
     );
