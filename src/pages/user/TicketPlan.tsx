@@ -7,7 +7,7 @@ import {
 } from "@/assets/svgs";
 import ScheduleList from "@/components/user/ticketPlan/ScheduleList";
 import { routes } from "@/routes";
-import { Button, Input, Modal, Select, TextInput } from "@mantine/core";
+import { Button, Modal, TextInput } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useEffect, useState } from "react";
 import { NavLink, useParams } from "react-router";
@@ -100,20 +100,7 @@ const TicketPlan = () => {
     },
   ];
 
-  const selectBoxStyle = {
-    root: {
-      minWidth: "300px",
-    },
-    label: {
-      marginBottom: "10px",
-    },
-    input: {
-      background: "transparent",
-      color: "var(--color-text)",
-      borderColor: "var(--color-surface-hover)",
-    },
-  };
-  const [opened, { open, close }] = useDisclosure(false);
+  const [opened, { close }] = useDisclosure(false);
 
   useEffect(() => {
     const days = ["All"];
@@ -146,7 +133,7 @@ const TicketPlan = () => {
                   ))}
                 </div>
                 <div className="flex gap-3">
-                  {movie.genres.map((item, index) => (
+                  {movie.genres.map((item) => (
                     <span
                       key={item.id}
                       className="px-4 py-2 border border-surface-hover rounded-full"

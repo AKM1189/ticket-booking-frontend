@@ -29,7 +29,7 @@ const Navbar = () => {
   useEffect(() => {
     setIsNavOpen(false);
 
-    for (let menu of navbarMenus) {
+    for (const menu of navbarMenus) {
       console.log("location", location?.pathname, "menu", menu?.path);
       if (
         location?.pathname === routes.user.home ||

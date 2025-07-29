@@ -2,8 +2,7 @@ import { ClockIcon, SubtitleIcon, SeatIcon } from "@/assets/svgs";
 import { routes } from "@/routes";
 import type { MovieDetailType } from "@/types/MovieTypes";
 import { Button, Modal } from "@mantine/core";
-import React from "react";
-import { NavLink, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 
 type TicketPlanModal = {
   movie: MovieDetailType;

@@ -1,8 +1,8 @@
 import { useForm } from "@mantine/form";
 import { useVerifyOtpMutation } from "../../api/mutation/authMutation";
-import { forgotPasswordSchema, otpSchema } from "../../schema/AuthSchema";
+import { otpSchema } from "../../schema/AuthSchema";
 import { zodResolver } from "mantine-form-zod-resolver";
-import { PinInput, TextInput } from "@mantine/core";
+import { PinInput } from "@mantine/core";
 import PrimaryButton from "../../ui/button/PrimaryButton";
 import { NavLink } from "react-router";
 import { routes } from "../../routes";

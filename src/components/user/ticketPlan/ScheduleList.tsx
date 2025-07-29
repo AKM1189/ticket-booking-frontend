@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from "react";
+import { useMemo, useCallback } from "react";
 import { LocationFillIcon } from "@/assets/svgs";
 import { useDisclosure } from "@mantine/hooks";
 import TicketPlanModal from "./TicketPlanModal";

@@ -1,4 +1,4 @@
-import { BrowserRouter, useNavigate } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createTheme, MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
@@ -6,7 +6,7 @@ import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 import "./App.css";
 
-import { AuthRoutes, UserRoutes, AdminRoutes } from "@/routeComponents";
+import { UserRoutes, AdminRoutes } from "@/routeComponents";
 import { customMantineTheme, MantineComponentOverrides } from "@/styles";
 
 function App() {
@@ -21,10 +21,8 @@ function App() {
       <MantineProvider theme={theme}>
         <Notifications />
         <BrowserRouter>
-          {/* <AuthRoutes /> */}
           <UserRoutes />
           <AdminRoutes />
-          {/* <AuthRoutes /> */}
         </BrowserRouter>
       </MantineProvider>
     </QueryClientProvider>

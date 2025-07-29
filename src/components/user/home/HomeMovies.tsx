@@ -1,5 +1,4 @@
 import { Carousel } from "@mantine/carousel";
-import { Button, Image } from "@mantine/core";
 import Autoplay from "embla-carousel-autoplay";
 import { useRef, useMemo } from "react";
 import { NavLink } from "react-router";

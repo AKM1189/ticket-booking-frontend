@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { RatingIcon } from "@/assets/svgs";
 import type { MovieDetailType } from "@/types/MovieTypes";
 import { Button } from "@mantine/core";

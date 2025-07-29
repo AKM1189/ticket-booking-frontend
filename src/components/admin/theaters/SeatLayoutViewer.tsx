@@ -1,6 +1,6 @@
 import { Card, Text, Group, Badge } from "@mantine/core";
 import type { SeatLayoutType } from "@/types/AdminTypes";
-import { useCallback } from "react";
+import { useCallback, type JSX } from "react";
 
 interface SeatLayoutViewerProps {
   layout: SeatLayoutType;
@@ -9,11 +9,11 @@ interface SeatLayoutViewerProps {
 
 const SeatLayoutViewer = ({ layout, theaterName }: SeatLayoutViewerProps) => {
   const generateSeatGrid = useCallback(() => {
-    const rows = [];
+    const rows: JSX.Element[] = [];
     const rowLabels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     for (let row = 0; row < layout.rows; row++) {
       const rowLabel = rowLabels[row];
-      const seats = [];
+      const seats: JSX.Element[] = [];
 
       for (let seat = 1; seat <= layout.seatsPerRow; seat++) {
         const seatId = `${rowLabel}${seat}`;

@@ -1,9 +1,5 @@
-import type { IconProps } from "@tabler/icons-react";
-import React from "react";
-
 export const SeatIcon = ({
   color,
-  fill,
   size,
 }: {
   color?: string;
@@ -36,7 +32,6 @@ export const ReverseSeatIcon = ({
   color,
   fill,
   size,
-  isSelected,
 }: {
   color?: string;
   fill?: string;

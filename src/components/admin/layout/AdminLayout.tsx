@@ -47,7 +47,7 @@ const AdminLayout = ({
     console.log("theme", mode);
   }, [mode]);
 
-  const handleThemeChange = (e) => {
+  const handleThemeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     if (e.target)
       if (value === "dark") {

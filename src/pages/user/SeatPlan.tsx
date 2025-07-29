@@ -1,11 +1,8 @@
-import { ReverseSeatIcon } from "@/assets/svgs";
-import React, { useState } from "react";
+import { useState } from "react";
 import "@/styles/css/seatStyle.css";
-import { twMerge } from "tailwind-merge";
 import SeatLists from "@/components/user/ticketPlan/SeatList";
-import { Button, Tooltip } from "@mantine/core";
-import { NavLink, useNavigate, useParams } from "react-router";
-import dayjs from "dayjs";
+import { Button } from "@mantine/core";
+import { NavLink, useParams } from "react-router";
 import SeatPlanHeader from "@/components/user/seatPlan/SeatPlanHeader";
 import { routes } from "@/routes";
 

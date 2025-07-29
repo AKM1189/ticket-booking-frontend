@@ -48,7 +48,7 @@ export const useLoginMutation = () => {
         message: "You have logged in successfully!",
         type: StatusType.success,
       });
-      var inFifteenMinutes = new Date(new Date().getTime() + 1 * 60 * 1000);
+      const inFifteenMinutes = new Date(new Date().getTime() + 1 * 60 * 1000);
       Cookies.set("accessToken", response.accessToken, {
         expires: inFifteenMinutes,
       });

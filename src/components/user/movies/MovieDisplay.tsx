@@ -4,7 +4,6 @@ import {
   TicketIcon,
   DateIcon,
   ClockIcon,
-  CloseIcon,
 } from "@/assets/svgs";
 
 import { movieType } from "@/constants/movieConstants";

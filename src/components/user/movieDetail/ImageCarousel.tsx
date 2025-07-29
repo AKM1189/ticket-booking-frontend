@@ -1,9 +1,6 @@
 import { Carousel } from "@mantine/carousel";
-import { Image } from "@mantine/core";
 import Autoplay from "embla-carousel-autoplay";
 import { useRef, useMemo } from "react";
-import { IconChevronRight } from "@tabler/icons-react";
-import { IconChevronLeft } from "@tabler/icons-react";
 
 type ImageCarouselType = {
   images: string[];

@@ -17,7 +17,7 @@ export type LoginDataType = {
 const Login = () => {
   const [checked, setChecked] = useState(false);
   const { mutate } = useLoginMutation();
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const form = useForm({
     mode: "uncontrolled",
@@ -34,7 +34,7 @@ const Login = () => {
       {
         onSuccess: (res) => {
           console.log("res", res);
-          // navigate(routes.admin.dashboard);// testing deployment
+          navigate(routes.admin.dashboard); // testing deployment
         },
       },
     );

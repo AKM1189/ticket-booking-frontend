@@ -1,4 +1,4 @@
-import type { MovieType, LabelType } from "./MovieTypes";
+import type { MovieType } from "./MovieTypes";
 
 export type TheaterType = {
   id: number;
