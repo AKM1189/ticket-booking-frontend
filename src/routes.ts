@@ -15,7 +15,7 @@ export const routes = {
     checkout: "checkout",
   },
   auth: {
-    login: "login",
+    login: "/login",
     signup: "signup",
     forgotPassword: "forgot-password",
     otp: "otp",

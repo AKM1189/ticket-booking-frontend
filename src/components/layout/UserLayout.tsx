@@ -4,22 +4,27 @@ import { Navbar, Footer } from "@/components/layout";
 import { useEffect } from "react";
 import { useWindowScroll } from "@mantine/hooks";
 import { UpArrowIcon } from "@/assets/svgs";
-import { useGetUser } from "@/api/query/authQuery";
-import { useAuthStore } from "@/store/authStore";
+// import { useGetUser } from "@/api/query/authQuery";
+// import { useAuthStore } from "@/store/authStore";
 
 const UserLayout = () => {
   const location = useLocation();
   const [scroll, scrollTo] = useWindowScroll();
 
-  const { data } = useGetUser();
-  const { setUser } = useAuthStore();
+  // const { data, isSuccess, isError, error, refetch } = useGetUser();
+  // const { user, setUser } = useAuthStore();
 
-  useEffect(() => {
-    if (data) {
-      console.log("user", data);
-      // setUser(data);
-    }
-  }, [data]);
+  // useEffect(() => {
+  //   refetch();
+
+  //   if (user) {
+  //     console.log("user", data);
+  //     setUser(data);
+  //   }
+  //   if (isError) {
+  //     console.log("user error", error);
+  //   }
+  // }, [data]);
 
   useEffect(() => {
     window.scrollTo(0, 0);

@@ -8,6 +8,7 @@ import { twMerge } from "tailwind-merge";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { loginSchema } from "../../schema/AuthSchema";
 import { useLoginMutation } from "../../api/mutation/authMutation";
+import { Role } from "@/types/AuthType";
 
 export type LoginDataType = {
   email: string | null;
@@ -32,9 +33,10 @@ const Login = () => {
     mutate(
       { data: values },
       {
-        onSuccess: (res) => {
-          console.log("res", res);
-          // navigate(routes.admin.dashboard);
+        onSuccess: (data) => {
+          data?.role === Role.admin
+            ? navigate(routes.admin.dashboard)
+            : navigate(routes.user.home);
         },
       },
     );

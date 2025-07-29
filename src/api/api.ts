@@ -4,6 +4,7 @@ import Cookies from "js-cookie";
 import { endpoints } from "./endpoints";
 import { routes } from "@/routes";
 import { goTo } from "@/services/navigateService";
+import { authApi } from "./AuthApi";
 
 export const api: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL,
@@ -32,10 +33,10 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     console.log("error", error.response.status);
-    if (error?.response?.status !== 401 && !originalRequest._retry) {
+    if (error?.response?.status === 401 && !originalRequest._retry) {
       try {
         originalRequest._retry = true;
-        const res = await api.get(endpoints.auth.refresh);
+        const res = await authApi.get(endpoints.auth.refresh);
         if (res?.data) {
           console.log("res data", res?.data);
           const newAccessToken = res.data.accessToken;
@@ -52,13 +53,13 @@ api.interceptors.response.use(
       } catch (error) {
         Cookies.remove("accessToken");
         Cookies.remove("refreshToken");
-        goTo(routes.auth.login);
+        // goTo(routes.auth.login);
         return Promise.reject(error);
       }
     }
-    Cookies.remove("accessToken");
-    Cookies.remove("refreshToken");
-    goTo(routes.auth.login);
+    // Cookies.remove("accessToken");
+    // Cookies.remove("refreshToken");
+    // goTo(routes.auth.login);
     return Promise.reject(error);
   },
 );

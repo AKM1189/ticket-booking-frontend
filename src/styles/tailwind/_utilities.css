@@ -3,7 +3,7 @@
 }
 
 .login-input {
-  @apply w-full h-12 bg-transparent outline-0 py-2 border-b-2 border-coolGray;
+  @apply w-full h-12 bg-transparent !text-text outline-0 py-2 border-b-2 border-coolGray disabled:!text-lightGray disabled:!bg-surface-hover;
 }
 
 .primary-button {

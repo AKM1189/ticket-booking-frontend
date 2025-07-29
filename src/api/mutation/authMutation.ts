@@ -5,6 +5,8 @@ import {
   login,
   otp,
   signup,
+  logout,
+  getCurrentUser,
 } from "../function/authApi";
 import type { SignupDataType } from "../../pages/auth/Signup";
 import { AxiosError } from "axios";
@@ -14,6 +16,7 @@ import Cookies from "js-cookie";
 import { StatusType } from "../../types/NotificationType";
 import { useNavigate } from "react-router";
 import { routes } from "../../routes";
+import { useAuthStore } from "@/store/authStore";
 
 export const useSignupMutation = (resetFields: () => void) => {
   return useMutation({
@@ -40,9 +43,11 @@ export const useSignupMutation = (resetFields: () => void) => {
 };
 
 export const useLoginMutation = () => {
+  const { setUser } = useAuthStore();
+
   return useMutation({
     mutationFn: ({ data }: { data: LoginDataType }) => login(data),
-    onSuccess: (response) => {
+    onSuccess: async (response) => {
       showNotification({
         title: "Login Success",
         message: "You have logged in successfully!",
@@ -52,6 +57,8 @@ export const useLoginMutation = () => {
       Cookies.set("accessToken", response.accessToken, {
         expires: inFifteenMinutes,
       });
+      const user = await getCurrentUser();
+      if (user) setUser(user);
     },
     onError: (error) => {
       if (error instanceof AxiosError) {
@@ -142,6 +149,25 @@ export const useResetPasswordMutation = () => {
           type: StatusType.error,
         });
       }
+    },
+  });
+};
+
+export const useLogoutMutation = () => {
+  const navigate = useNavigate();
+  const { logout: removeUser } = useAuthStore();
+
+  return useMutation({
+    mutationFn: logout,
+    onSuccess: (response) => {
+      Cookies.remove("accessToken");
+      removeUser();
+      showNotification({
+        title: "Logout",
+        message: response?.data?.message ?? "You have logout successfully",
+        type: StatusType.success,
+      });
+      navigate(routes.auth.login);
     },
   });
 };

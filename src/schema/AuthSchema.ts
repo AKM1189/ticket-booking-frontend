@@ -62,3 +62,12 @@ export const changePasswordSchema = z
       path: ["confirmPassword"],
     },
   );
+
+export const profileSchema = z.object({
+  name: z
+    .string({ message: "Name is required" })
+    .min(3, { message: "Name must be minimum 3 letters." }),
+  email: z
+    .string({ message: "Email is required" })
+    .email({ message: "Email is not valid" }),
+});

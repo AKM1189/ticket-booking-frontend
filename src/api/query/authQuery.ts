@@ -3,7 +3,7 @@ import { getCurrentUser } from "../function/authApi";
 
 export const useGetUser = () => {
   return useQuery({
-    queryFn: () => getCurrentUser,
+    queryFn: getCurrentUser,
     queryKey: ["currentUser"],
     retry: 5,
   });

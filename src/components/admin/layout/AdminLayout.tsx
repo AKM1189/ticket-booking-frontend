@@ -20,6 +20,12 @@ import {
 import { AdminTabType } from "@/types/AdminTypes";
 import { IconSun, IconMoonStars } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
+import Cookies from "js-cookie";
+import { useNavigate } from "react-router";
+import { routes } from "@/routes";
+import { useLogoutMutation } from "@/api/mutation/authMutation";
+import { useAuthStore } from "@/store/authStore";
+import { Role } from "@/types/AuthType";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -43,9 +49,13 @@ const AdminLayout = ({
 }: AdminLayoutProps) => {
   const [opened, { toggle }] = useDisclosure();
   const [mode, setMode] = useState("dark");
-  useEffect(() => {
-    console.log("theme", mode);
-  }, [mode]);
+  const { mutate: logout } = useLogoutMutation();
+
+  const { user } = useAuthStore();
+
+  const navigate = useNavigate();
+
+  const isAuthenticated = (user && user.role === Role.admin) || false;
 
   const handleThemeChange = (e) => {
     const { value } = e.target;
@@ -59,6 +69,19 @@ const AdminLayout = ({
       }
     // document.body.classList.toggle("dark");
   };
+
+  const handleLogout = () => {
+    logout();
+  };
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate(routes.auth.login);
+    }
+  }, []);
+
+  console.log("isAuthenticated", isAuthenticated);
+
   return (
     <AppShell
       header={{ height: 60 }}
@@ -123,8 +146,10 @@ const AdminLayout = ({
                   onChange={handleThemeChange}
                 />
               </div>
-              <IconLogout size={16} />
-              <Text size="sm">Logout</Text>
+              <div className="flex items-center gap-1" onClick={handleLogout}>
+                <IconLogout size={16} />
+                <Text size="sm">Logout</Text>
+              </div>
             </Group>
           </UnstyledButton>
         </Group>
