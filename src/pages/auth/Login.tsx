@@ -44,12 +44,12 @@ const Login = () => {
 
   return (
     <div className="bg-background flex justify-center items-center min-w-screen min-h-screen">
-      <div className="w-[500px] min-h-[500px] max-h-[650px] bg-surface shadow-2xl rounded-lg text-white p-10 py-10">
+      <div className="w-[500px] min-h-[500px] max-h-[650px] bg-surface shadow-2xl rounded-lg text-white p-10 py-14">
         <div className="text-4xl font-bold mb-10 text-center">Login</div>
         <div className="flex flex-col gap-8">
           <form
             className="auth-text-input"
-            onSubmit={form.onSubmit((values) => handleLogin(values))}
+            onSubmit={form.onSubmit((values) => mutate({ data: values }))}
           >
             <TextInput
               label="Email"
@@ -93,29 +93,16 @@ const Login = () => {
               onChange={(event) => setChecked(event.currentTarget.checked)}
             />
           </div>
-          <NavLink
-            to={"/" + routes.auth.forgotPassword}
-            className="text-gray-300 text-sm"
-          >
+          <NavLink to={routes.auth.forgotPassword} className="text-gray-300">
             Forgot Password?
           </NavLink>
         </div>
-        <div className="mt-5 text-center text-sm">
+        <div className="mt-5 text-center">
           Don't have an account?{" "}
-          <NavLink
-            to={"/" + routes.auth.signup}
-            className="text-blue-500 underline"
-          >
+          <NavLink to={routes.auth.signup} className="text-blue-500 underline">
             Sign up now
           </NavLink>
         </div>
-
-        <NavLink
-          to={routes.user.home}
-          className="text-sm mt-5 flex items-center gap-2 ps-10 sm:ps-40 w-full text-muted"
-        >
-          Back To Home
-        </NavLink>
       </div>
     </div>
   );

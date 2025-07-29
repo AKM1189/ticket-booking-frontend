@@ -1,5 +1,5 @@
 import PrimaryButton from "../../ui/button/PrimaryButton";
-import { TextInput, PasswordInput } from "@mantine/core";
+import { PasswordInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { twMerge } from "tailwind-merge";
 import { zodResolver } from "mantine-form-zod-resolver";

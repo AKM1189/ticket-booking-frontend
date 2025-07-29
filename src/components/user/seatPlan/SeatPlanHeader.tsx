@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import type { MovieType } from "@/types/MovieTypes";
 import { Button } from "@mantine/core";
 import dayjs from "dayjs";

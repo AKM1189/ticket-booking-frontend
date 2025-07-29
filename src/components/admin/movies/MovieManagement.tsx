@@ -25,7 +25,6 @@ import {
   IconEdit,
   IconTrash,
   IconSearch,
-  IconEye,
   IconUpload,
 } from "@tabler/icons-react";
 import { useForm } from "@mantine/form";
@@ -152,7 +151,7 @@ const MovieManagement = () => {
     form.setValues({
       name: movie.name,
       duration: movie.duration,
-      genres: movie.genres.map((g) => g.id.toString()),
+      genres: movie.genres.map((g: any) => g.id.toString()),
       releaseDate: movie.releaseDate,
       rating: movie.rating,
       status: movie.status,
@@ -282,7 +281,7 @@ const MovieManagement = () => {
                   <Table.Td>{movie.duration}</Table.Td>
                   <Table.Td>
                     <Group gap="xs">
-                      {movie.genres.slice(0, 2).map((genre) => (
+                      {movie.genres.slice(0, 2).map((genre: any) => (
                         <Badge
                           key={genre.id}
                           variant="outline"

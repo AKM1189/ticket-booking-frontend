@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo } from "react";
 import {
   Title,
   Button,
@@ -441,7 +441,7 @@ const ScheduleManagement = () => {
                   body: "!flex !items-center",
                   description: "!py-0 !m-0",
                 }}
-                styles={(theme, params) => ({
+                styles={(_theme, params) => ({
                   track: {
                     backgroundColor: params.checked
                       ? "var(--color-primary)"

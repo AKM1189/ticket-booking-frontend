@@ -57,7 +57,7 @@ const AdminLayout = ({
 
   const isAuthenticated = (user && user.role === Role.admin) || false;
 
-  const handleThemeChange = (e) => {
+  const handleThemeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     if (e.target)
       if (value === "dark") {

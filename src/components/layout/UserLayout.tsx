@@ -4,27 +4,10 @@ import { Navbar, Footer } from "@/components/layout";
 import { useEffect } from "react";
 import { useWindowScroll } from "@mantine/hooks";
 import { UpArrowIcon } from "@/assets/svgs";
-// import { useGetUser } from "@/api/query/authQuery";
-// import { useAuthStore } from "@/store/authStore";
 
 const UserLayout = () => {
   const location = useLocation();
   const [scroll, scrollTo] = useWindowScroll();
-
-  // const { data, isSuccess, isError, error, refetch } = useGetUser();
-  // const { user, setUser } = useAuthStore();
-
-  // useEffect(() => {
-  //   refetch();
-
-  //   if (user) {
-  //     console.log("user", data);
-  //     setUser(data);
-  //   }
-  //   if (isError) {
-  //     console.log("user error", error);
-  //   }
-  // }, [data]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -33,7 +16,7 @@ const UserLayout = () => {
   return (
     <div className="min-h-screen h-full min-w-screen bg-background">
       <Navbar />
-      <div className="text-text max-w-[2000px] m-auto">
+      <div className="text-text max-w-screen">
         <Outlet />
       </div>
       <Footer />

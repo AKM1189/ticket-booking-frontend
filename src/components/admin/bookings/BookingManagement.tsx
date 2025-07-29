@@ -10,14 +10,12 @@ import {
   Card,
   Text,
   Modal,
-  Button,
   Grid,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import {
   IconSearch,
   IconEye,
-  IconX,
   IconCheck,
   IconCalendar,
   IconTicket,
@@ -169,7 +167,7 @@ const mockBookings: BookingType[] = [
 ];
 
 const BookingManagement = () => {
-  const [bookings, setBookings] = useState<BookingType[]>(mockBookings);
+  const [bookings /*, setBookings*/] = useState<BookingType[]>(mockBookings);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [dateFilter, setDateFilter] = useState("");
@@ -232,19 +230,6 @@ const BookingManagement = () => {
       open();
     },
     [open],
-  );
-
-  const handleUpdateStatus = useCallback(
-    (bookingId: number, newStatus: "confirmed" | "cancelled") => {
-      setBookings((prev) =>
-        prev.map((booking) =>
-          booking.id === bookingId
-            ? { ...booking, status: newStatus }
-            : booking,
-        ),
-      );
-    },
-    [],
   );
 
   const getStatusColor = useCallback((status: string) => {

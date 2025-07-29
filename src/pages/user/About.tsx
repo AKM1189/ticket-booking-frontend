@@ -9,7 +9,6 @@ import {
 } from "@/assets/svgs";
 import EmployeeCarousel from "@/components/user/home/EmployeeCarousel";
 import { Button } from "@mantine/core";
-import React from "react";
 
 const employees = [
   {

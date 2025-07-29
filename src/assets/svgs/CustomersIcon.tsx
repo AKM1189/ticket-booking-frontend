@@ -1,5 +1,4 @@
 import type { IconProps } from "@tabler/icons-react";
-import React from "react";
 
 const CustomersIcon = (props: IconProps) => {
   return (

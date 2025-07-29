@@ -55,7 +55,7 @@ const MovieInfo = ({ movie, isTicketPlan = false }: MovieInfoType) => {
                 <div className="flex gap-3">
                   {useMemo(
                     () =>
-                      movie.genres.map((item, index) => (
+                      movie.genres.map((item) => (
                         <span
                           key={item.id}
                           className="px-4 py-2 border border-surface-hover rounded-full"

@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import {
   Title,
   Button,
@@ -19,14 +19,12 @@ import {
   IconEdit,
   IconTrash,
   IconSearch,
-  IconGrid3x3,
   IconTable,
 } from "@tabler/icons-react";
 import { useForm } from "@mantine/form";
 import type { LabelType } from "@/types/MovieTypes";
 import { GridIcon } from "@/assets/svgs";
 import { useGenreQuery } from "@/api/query/admin/genreQuery";
-import { getGenre } from "@/api/function/admin/genreApi";
 
 // Mock data with extended genre information
 interface ExtendedGenre extends LabelType {

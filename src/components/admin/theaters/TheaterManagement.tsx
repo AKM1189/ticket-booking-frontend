@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo } from "react";
 import {
   Title,
   Button,
@@ -16,13 +16,7 @@ import {
   Textarea,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import {
-  IconPlus,
-  IconEdit,
-  IconTrash,
-  IconSearch,
-  IconEye,
-} from "@tabler/icons-react";
+import { IconPlus, IconEdit, IconTrash, IconSearch } from "@tabler/icons-react";
 import SeatLayoutViewer from "./SeatLayoutViewer";
 import { useForm } from "@mantine/form";
 import type { TheaterType } from "@/types/AdminTypes";
@@ -343,7 +337,7 @@ const TheaterManagement = () => {
                   body: "!flex !items-center",
                   description: "!py-0 !m-0",
                 }}
-                styles={(theme, params) => ({
+                styles={(_theme, params) => ({
                   track: {
                     backgroundColor: params.checked
                       ? "var(--color-primary)"

@@ -1,7 +1,6 @@
-import { Button, Modal, NumberInput, Textarea, TextInput } from "@mantine/core";
+import { Button, Modal, NumberInput, Textarea } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
-import { twMerge } from "tailwind-merge";
 import { RatingIcon } from "@/assets/svgs";
 
 const RatingModal = () => {
@@ -30,7 +29,10 @@ const RatingModal = () => {
         title={<div className="text-xl font-semibold">Review and Rating</div>}
         centered
       >
-        <form action="">
+        <form
+          action=""
+          onSubmit={form.onSubmit((values) => console.log("review", values))}
+        >
           <NumberInput
             label="Rating"
             // description="Input description"

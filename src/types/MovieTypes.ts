@@ -15,7 +15,7 @@ export type MovieType = {
   id: number;
   name: string;
   duration: string;
-  genres: LabelType[];
+  genres: any;
   releaseDate: string;
   rating: string;
   status: string;

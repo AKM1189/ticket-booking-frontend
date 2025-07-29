@@ -3,10 +3,10 @@ import { Pagination } from "@mantine/core";
 import { twMerge } from "tailwind-merge";
 import { ListIcon, GridIcon } from "@/assets/svgs/DisplayIcons";
 import { MovieGrid, MovieList, FilterCard } from "@/components/user/movies";
-import { SortType, type LabelType } from "@/types/MovieTypes";
+import { SortType } from "@/types/MovieTypes";
 import { useMovieStore } from "@/store/useMovieStore";
 import { motion } from "motion/react";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo } from "react";
 
 const MovieFrame = ({ type }: { type: string | undefined }) => {
   const langList = [
