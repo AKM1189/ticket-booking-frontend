@@ -8,6 +8,8 @@ import "./App.css";
 
 import { UserRoutes, AdminRoutes } from "@/routeComponents";
 import { customMantineTheme, MantineComponentOverrides } from "@/styles";
+import AuthRoutes from "./routeComponents/AuthRoutes";
+import LoadingProvider from "./LoadingProvider";
 
 function App() {
   const queryClient = new QueryClient();
@@ -20,10 +22,13 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <MantineProvider theme={theme}>
         <Notifications />
-        <BrowserRouter>
-          <UserRoutes />
-          <AdminRoutes />
-        </BrowserRouter>
+        <LoadingProvider>
+          <BrowserRouter>
+            <UserRoutes />
+            <AdminRoutes />
+            <AuthRoutes />
+          </BrowserRouter>
+        </LoadingProvider>
       </MantineProvider>
     </QueryClientProvider>
   );

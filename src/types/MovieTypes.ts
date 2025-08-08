@@ -1,4 +1,6 @@
 import type React from "react";
+import type { GenreType } from "./GenreTypes";
+import type { CastSelectionType } from "./CastTypes";
 
 export type LabelType = {
   id: number;
@@ -13,14 +15,36 @@ export type FilterListType = {
 
 export type MovieType = {
   id: number;
-  name: string;
+  title: string;
+  description: string;
   duration: string;
-  genres: any;
-  releaseDate: string;
+  genres: string[];
+  language: string[];
+  subtitle: string[];
+  experience: string[];
+  releaseDate: string | null;
   rating: string;
   status: string;
   posterUrl: string;
+  photos: string[];
   trailerId: string;
+  casts: CastType[];
+};
+
+export type MovieInputType = {
+  title: string;
+  description: string;
+  duration: string;
+  genres: string[];
+  language: string[];
+  subtitle: string[];
+  experience: string[];
+  releaseDate: string | null;
+  status: string;
+  poster: File | null;
+  photos: File[];
+  trailerId: string;
+  casts: number[];
 };
 
 export type MovieDetailType = {

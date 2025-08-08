@@ -1,9 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { getCurrentUser } from "../function/authApi";
+import { useAuthStore } from "@/store/authStore";
 
 export const useGetUser = () => {
+  const { setUser } = useAuthStore();
   return useQuery({
-    queryFn: getCurrentUser,
+    queryFn: () =>
+      getCurrentUser().then((data) => {
+        setUser(data);
+        return data;
+      }),
     queryKey: ["currentUser"],
     retry: 5,
   });

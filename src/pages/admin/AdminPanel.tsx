@@ -6,6 +6,7 @@ import {
   TheaterManagement,
   ScheduleManagement,
   GenreManagement,
+  CastManagement,
   BookingManagement,
 } from "@/components/admin";
 import { AdminTabType } from "@/types/AdminTypes";
@@ -27,6 +28,8 @@ const AdminPanel = () => {
         return <ScheduleManagement />;
       case AdminTabType.GENRES:
         return <GenreManagement />;
+      case AdminTabType.CASTS:
+        return <CastManagement />;
       case AdminTabType.BOOKINGS:
         return <BookingManagement />;
       default:

@@ -111,10 +111,7 @@ const Signup = () => {
         </div>
         <div className="mt-5 text-center text-sm">
           Already have an account?{" "}
-          <NavLink
-            to={"/" + routes.auth.login}
-            className="text-blue-500 underline"
-          >
+          <NavLink to={routes.auth.login} className="text-blue-500 underline">
             Login now
           </NavLink>
         </div>

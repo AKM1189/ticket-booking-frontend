@@ -9,7 +9,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss(), tsConfigPaths()],
   server: {
     open: true,
-    port: 5175,
+    port: 5178,
     cors: true,
     // proxy: {
     //   "/api": {

@@ -44,14 +44,20 @@
 
 /* Select Box */
 .mantine-Select-option:hover {
-  background-color: var(--color-surface-hover) !important;
+  background-color: var(--color-primary) !important;
+}
+.mantine-Combobox-option:hover,
+.mantine-MultiSelect-option:hover,
+.mantine-Pill-root {
+  background-color: var(--color-primary) !important;
+  color: var(--color-text) !important;
 }
 
 .mantine-Popover-dropdown {
   padding: 3px 0 3px 3px !important;
   border-color: var(--color-surface-hover) !important;
   border-radius: 7px !important;
-  background-color: var(--color-coolBlue) !important;
+  background-color: var(--color-surface-hover) !important;
   color: var(--color-text) !important;
 }
 
@@ -78,8 +84,4 @@
   ); /* Change background color of active item */
   --pagination-active-color: #ffffff; /* Change text color of active item */
   --pagination-control-radius: 5px; /* Optional: Rounded corners */
-}
-
-.mantine-MultiSelect-option:hover {
-  background-color: var(--color-surface) !important;
 }

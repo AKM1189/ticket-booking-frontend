@@ -2,6 +2,7 @@ export const endpoints = {
   admin: {
     movies: "/admin/movies",
     genres: "/admin/genres",
+    casts: "/admin/casts",
     me: "/auth/admin/me",
   },
   user: {

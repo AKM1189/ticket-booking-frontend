@@ -154,7 +154,7 @@ export const Logout = ({ user }: { user: AuthType | null }) => {
     },
     validate: zodResolver(profileSchema),
   });
-
+  console.log("user", user);
   return (
     <div>
       {user?.role === Role.user ? (

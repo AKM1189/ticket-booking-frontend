@@ -7,7 +7,20 @@ export const getGenre = async () => {
   return response.data;
 };
 
-export const addGenre = async (data: GenreType) => {
+export const addGenre = async (data: Omit<GenreType, "id" | "movieCount">) => {
   const response = await api.post(endpoints.admin.genres, data);
+  return response.data;
+};
+
+export const updateGenre = async (
+  data: Omit<GenreType, "id" | "movieCount">,
+  id: number,
+) => {
+  const response = await api.put(`${endpoints.admin.genres}/${id}`, data);
+  return response.data;
+};
+
+export const deleteGenre = async (id: number) => {
+  const response = await api.delete(`${endpoints.admin.genres}/${id}`);
   return response.data;
 };

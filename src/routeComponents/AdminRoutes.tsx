@@ -3,6 +3,8 @@ import { routes } from "@/routes";
 import { AdminPanel } from "@/pages";
 import { setNavigate } from "@/services/navigateService";
 import { useEffect } from "react";
+import ProtectedRoute from "@/components/protectedRoutes/ProtectedRoute";
+import { Role } from "@/types/AuthType";
 
 const AdminRoutes = () => {
   const navigate = useNavigate();
@@ -12,8 +14,10 @@ const AdminRoutes = () => {
   }, [navigate]);
   return (
     <Routes>
-      <Route path={routes.admin.home} element={<AdminPanel />} />
-      <Route path={routes.admin.dashboard} element={<AdminPanel />} />
+      <Route element={<ProtectedRoute allowedRoles={[Role.admin]} />}>
+        <Route path={routes.admin.home} element={<AdminPanel />} />
+        <Route path={routes.admin.dashboard} element={<AdminPanel />} />
+      </Route>
     </Routes>
   );
 };

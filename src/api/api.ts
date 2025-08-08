@@ -2,8 +2,6 @@ import axios from "axios";
 import type { AxiosInstance } from "axios";
 import Cookies from "js-cookie";
 import { endpoints } from "./endpoints";
-import { routes } from "@/routes";
-import { goTo } from "@/services/navigateService";
 import { authApi } from "./AuthApi";
 
 export const api: AxiosInstance = axios.create({
@@ -17,7 +15,6 @@ export const api: AxiosInstance = axios.create({
 api.interceptors.request.use(
   (config) => {
     const accessToken = Cookies.get("accessToken");
-    console.log("accessToken", accessToken);
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
@@ -32,7 +29,6 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    console.log("error", error.response.status);
     if (error?.response?.status === 401 && !originalRequest._retry) {
       try {
         originalRequest._retry = true;
@@ -57,6 +53,7 @@ api.interceptors.response.use(
         return Promise.reject(error);
       }
     }
+
     // Cookies.remove("accessToken");
     // Cookies.remove("refreshToken");
     // goTo(routes.auth.login);

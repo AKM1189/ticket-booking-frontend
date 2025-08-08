@@ -14,18 +14,15 @@ import {
   IconBuilding,
   IconCalendar,
   IconTags,
+  IconUsers,
   IconTicket,
   IconLogout,
 } from "@tabler/icons-react";
 import { AdminTabType } from "@/types/AdminTypes";
 import { IconSun, IconMoonStars } from "@tabler/icons-react";
-import { useEffect, useState } from "react";
-import Cookies from "js-cookie";
+import { useState } from "react";
 import { useNavigate } from "react-router";
-import { routes } from "@/routes";
 import { useLogoutMutation } from "@/api/mutation/authMutation";
-import { useAuthStore } from "@/store/authStore";
-import { Role } from "@/types/AuthType";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -39,6 +36,7 @@ const navigationItems = [
   { icon: IconBuilding, label: "Theaters", value: AdminTabType.THEATERS },
   { icon: IconCalendar, label: "Schedules", value: AdminTabType.SCHEDULES },
   { icon: IconTags, label: "Genres", value: AdminTabType.GENRES },
+  { icon: IconUsers, label: "Cast", value: AdminTabType.CASTS },
   { icon: IconTicket, label: "Bookings", value: AdminTabType.BOOKINGS },
 ];
 
@@ -51,11 +49,7 @@ const AdminLayout = ({
   const [mode, setMode] = useState("dark");
   const { mutate: logout } = useLogoutMutation();
 
-  const { user } = useAuthStore();
-
   const navigate = useNavigate();
-
-  const isAuthenticated = (user && user.role === Role.admin) || false;
 
   const handleThemeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
@@ -74,13 +68,16 @@ const AdminLayout = ({
     logout();
   };
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate(routes.auth.login);
-    }
-  }, []);
+  // useEffect(() => {
+  //   // if (data) {
+  //   const isAuthenticated = data && data?.role === Role.admin;
 
-  console.log("isAuthenticated", isAuthenticated);
+  //   if (!isAuthenticated) {
+  //     navigate(routes.admin.unauthorized);
+  //   }
+  //   // }
+  //   console.log("isAuthenticated", isAuthenticated, data);
+  // }, [data]);
 
   return (
     <AppShell

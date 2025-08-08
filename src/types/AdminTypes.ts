@@ -68,5 +68,6 @@ export enum AdminTabType {
   THEATERS = "theaters",
   SCHEDULES = "schedules",
   GENRES = "genres",
+  CASTS = "casts",
   BOOKINGS = "bookings",
 }

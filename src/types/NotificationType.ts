@@ -8,3 +8,8 @@ export enum StatusType {
   success = "success",
   error = "error",
 }
+
+export type ResponseType = {
+  status: number;
+  message: string;
+};

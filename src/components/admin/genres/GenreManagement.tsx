@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Title,
   Button,
@@ -25,78 +25,80 @@ import { useForm } from "@mantine/form";
 import type { LabelType } from "@/types/MovieTypes";
 import { GridIcon } from "@/assets/svgs";
 import { useGenreQuery } from "@/api/query/admin/genreQuery";
+import type { GenreType } from "@/types/GenreTypes";
+import {
+  useAddGenreMutation,
+  useDeleteGenreMutation,
+  useUpdateGenreMutation,
+} from "@/api/mutation/admin/genreMutation";
 
 // Mock data with extended genre information
-interface ExtendedGenre extends LabelType {
-  description?: string;
-  movieCount: number;
-  color: string;
-}
 
-const mockGenres: ExtendedGenre[] = [
-  {
-    id: 1,
-    label: "Action",
-    description:
-      "High-energy films with exciting sequences, stunts, and adventure",
-    movieCount: 15,
-    color: "red",
-  },
-  {
-    id: 2,
-    label: "Adventure",
-    description:
-      "Stories involving journeys, exploration, and exciting experiences",
-    movieCount: 12,
-    color: "orange",
-  },
-  {
-    id: 3,
-    label: "Drama",
-    description:
-      "Character-driven stories focusing on realistic situations and emotions",
-    movieCount: 20,
-    color: "blue",
-  },
-  {
-    id: 4,
-    label: "Comedy",
-    description:
-      "Light-hearted films designed to entertain and amuse audiences",
-    movieCount: 18,
-    color: "green",
-  },
-  {
-    id: 5,
-    label: "Horror",
-    description: "Films intended to frighten, unsettle, and create suspense",
-    movieCount: 8,
-    color: "dark",
-  },
-  {
-    id: 6,
-    label: "Romance",
-    description:
-      "Stories centered around love relationships and romantic entanglements",
-    movieCount: 14,
-    color: "pink",
-  },
-  {
-    id: 7,
-    label: "Sci-Fi",
-    description:
-      "Science fiction films exploring futuristic concepts and technology",
-    movieCount: 10,
-    color: "cyan",
-  },
-  {
-    id: 8,
-    label: "Thriller",
-    description: "Suspenseful films designed to keep audiences on edge",
-    movieCount: 13,
-    color: "violet",
-  },
-];
+const mockGenres: GenreType[] = [];
+// [
+//   {
+//     id: 1,
+//     label: "Action",
+//     description:
+//       "High-energy films with exciting sequences, stunts, and adventure",
+//     movieCount: 15,
+//     color: "red",
+//   },
+//   {
+//     id: 2,
+//     label: "Adventure",
+//     description:
+//       "Stories involving journeys, exploration, and exciting experiences",
+//     movieCount: 12,
+//     color: "orange",
+//   },
+//   {
+//     id: 3,
+//     label: "Drama",
+//     description:
+//       "Character-driven stories focusing on realistic situations and emotions",
+//     movieCount: 20,
+//     color: "blue",
+//   },
+//   {
+//     id: 4,
+//     label: "Comedy",
+//     description:
+//       "Light-hearted films designed to entertain and amuse audiences",
+//     movieCount: 18,
+//     color: "green",
+//   },
+//   {
+//     id: 5,
+//     label: "Horror",
+//     description: "Films intended to frighten, unsettle, and create suspense",
+//     movieCount: 8,
+//     color: "dark",
+//   },
+//   {
+//     id: 6,
+//     label: "Romance",
+//     description:
+//       "Stories centered around love relationships and romantic entanglements",
+//     movieCount: 14,
+//     color: "pink",
+//   },
+//   {
+//     id: 7,
+//     label: "Sci-Fi",
+//     description:
+//       "Science fiction films exploring futuristic concepts and technology",
+//     movieCount: 10,
+//     color: "cyan",
+//   },
+//   {
+//     id: 8,
+//     label: "Thriller",
+//     description: "Suspenseful films designed to keep audiences on edge",
+//     movieCount: 13,
+//     color: "violet",
+//   },
+// ];
 
 const colorOptions = [
   { label: "red", value: "#dc3545" },
@@ -112,22 +114,20 @@ const colorOptions = [
 ];
 
 const GenreManagement = () => {
-  const { data } = useGenreQuery();
-  const [genres, setGenres] = useState<ExtendedGenre[]>(mockGenres);
+  const { data, refetch } = useGenreQuery();
+  const { mutate: addGenre } = useAddGenreMutation();
+  const { mutate: editGenre } = useUpdateGenreMutation();
+  const { mutate: deleteGenre } = useDeleteGenreMutation();
+  const [genres, setGenres] = useState<GenreType[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [opened, { open, close }] = useDisclosure(false);
-  const [editingGenre, setEditingGenre] = useState<ExtendedGenre | null>(null);
+  const [editingGenre, setEditingGenre] = useState<GenreType | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
 
-  // useEffect(() => {
-  //   const getGenres = async () => {
-  //     const data = await getGenre();
-  //     return data;
-  //   };
-  //   console.log("genres", getGenres());
-  // }, []);
+  useEffect(() => {
+    setGenres(data?.data);
+  }, [data]);
 
-  console.log("genres", data);
   const form = useForm({
     initialValues: {
       label: "",
@@ -138,9 +138,9 @@ const GenreManagement = () => {
 
   // Memoize filtered genres to prevent unnecessary recalculations
   const filteredGenres = useMemo(() => {
-    return genres.filter(
+    return genres?.filter(
       (genre) =>
-        genre.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        genre.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (genre.description &&
           genre.description.toLowerCase().includes(searchTerm.toLowerCase())),
     );
@@ -152,10 +152,10 @@ const GenreManagement = () => {
     open();
   };
 
-  const handleEditGenre = (genre: ExtendedGenre) => {
+  const handleEditGenre = (genre: GenreType) => {
     setEditingGenre(genre);
     form.setValues({
-      label: genre.label,
+      label: genre.name,
       description: genre.description || "",
       color: genre.color,
     });
@@ -163,44 +163,31 @@ const GenreManagement = () => {
   };
 
   const handleSubmit = (values: typeof form.values) => {
-    const genreData: Omit<ExtendedGenre, "id" | "movieCount"> = {
-      label: values.label,
+    const genreData: Omit<GenreType, "id" | "movieCount"> = {
+      name: values.label,
       description: values.description,
       color: values.color,
     };
 
     if (editingGenre) {
-      setGenres((prev) =>
-        prev.map((genre) =>
-          genre.id === editingGenre.id
-            ? {
-                ...genreData,
-                id: editingGenre.id,
-                movieCount: editingGenre.movieCount,
-              }
-            : genre,
-        ),
-      );
+      editGenre({ data: genreData, id: editingGenre.id });
     } else {
-      const newGenre: ExtendedGenre = {
-        ...genreData,
-        id: Date.now(),
-        movieCount: 0,
-      };
-      setGenres((prev) => [...prev, newGenre]);
+      addGenre({ data: genreData });
     }
+    // refetch();
     close();
   };
 
   const handleDeleteGenre = (id: number) => {
-    const genre = genres.find((g) => g.id === id);
-    if (genre && genre.movieCount > 0) {
-      alert(
-        `Cannot delete genre "${genre.label}" as it is used by ${genre.movieCount} movies.`,
-      );
-      return;
-    }
-    setGenres((prev) => prev.filter((genre) => genre.id !== id));
+    deleteGenre({ id });
+    // const genre = genres?.find((g) => g.id === id);
+    // if (genre && genre.movieCount > 0) {
+    //   alert(
+    //     `Cannot delete genre "${genre.name}" as it is used by ${genre.movieCount} movies.`,
+    //   );
+    //   return;
+    // }
+    // setGenres((prev) => prev.filter((genre) => genre.id !== id));
   };
 
   const inputStyle = {
@@ -267,7 +254,7 @@ const GenreManagement = () => {
 
         {viewMode === "grid" ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredGenres.map((genre) => (
+            {filteredGenres?.map((genre) => (
               <Card
                 key={genre.id}
                 shadow="xs"
@@ -277,7 +264,7 @@ const GenreManagement = () => {
               >
                 <Group justify="space-between" mb="xs">
                   <Badge color={genre.color} size="lg">
-                    {genre.label}
+                    {genre.name}
                   </Badge>
                   <Group gap="xs">
                     <ActionIcon
@@ -326,14 +313,14 @@ const GenreManagement = () => {
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
-              {filteredGenres.map((genre) => (
+              {filteredGenres?.map((genre) => (
                 <Table.Tr key={genre.id}>
                   <Table.Td>
                     <Badge
                       color={genre.color}
                       //  variant="light"
                     >
-                      {genre.label}
+                      {genre.name}
                     </Badge>
                   </Table.Td>
                   <Table.Td>

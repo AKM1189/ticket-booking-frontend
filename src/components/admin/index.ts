@@ -6,4 +6,5 @@ export { default as TheaterManagement } from "./theaters/TheaterManagement";
 export { default as ScheduleManagement } from "./schedules/ScheduleManagement";
 export { default as GenreManagement } from "./genres/GenreManagement";
 export { default as BookingManagement } from "./bookings/BookingManagement";
+export { default as CastManagement } from "./casts/CastManagement";
 export { default as SeatLayoutViewer } from "./theaters/SeatLayoutViewer";

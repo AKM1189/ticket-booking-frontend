@@ -11,7 +11,7 @@ export const showNotification = ({
   notifications.show({
     title,
     message,
-    autoClose: true,
+    autoClose: 3000,
     icon:
       type === StatusType.success ? (
         <IoCheckmarkCircleSharp className="icon text-green-500" size="2rem" />
@@ -19,9 +19,10 @@ export const showNotification = ({
         <IoIosCloseCircle className="icon text-red-500" size="2rem" />
       ),
     withCloseButton: true,
-    position: "top-center",
+    position: "top-right",
     styles: {
       root: {
+        top: "70px",
         position: "relative",
         backgroundColor: "var(--color-surface-hover)",
         display: "flex",

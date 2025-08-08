@@ -34,7 +34,7 @@ const RatingModal = () => {
           onSubmit={form.onSubmit((values) => console.log("review", values))}
         >
           <NumberInput
-            label="Rating"
+            label="Rating (1-10)"
             // description="Input description"
             // placeholder="Enter Rating"
             min={1}
