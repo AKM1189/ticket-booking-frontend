@@ -1,9 +1,10 @@
-import { LoadingOverlay } from "@mantine/core";
-import React, { useEffect } from "react";
+import { Button, LoadingOverlay, Modal, Text } from "@mantine/core";
+import { useEffect, useState } from "react";
 import { useLoadingStore } from "./store/useLoading";
 
 const LoadingProvider = ({ children }) => {
   const { isLoading } = useLoadingStore();
+  const [open, setOpen] = useState(true);
   useEffect(() => {
     if (isLoading) {
       document.body.style.overflow = "hidden";
@@ -16,6 +17,7 @@ const LoadingProvider = ({ children }) => {
       document.body.style.overflow = "";
     };
   }, [isLoading]);
+
   return (
     <>
       <LoadingOverlay
@@ -33,6 +35,7 @@ const LoadingProvider = ({ children }) => {
           size: "lg",
         }}
       />
+
       {children}
     </>
   );

@@ -17,6 +17,8 @@ import {
   IconUsers,
   IconTicket,
   IconLogout,
+  IconUser,
+  IconDeviceTv,
 } from "@tabler/icons-react";
 import { AdminTabType } from "@/types/AdminTypes";
 import { IconSun, IconMoonStars } from "@tabler/icons-react";
@@ -32,12 +34,14 @@ interface AdminLayoutProps {
 
 const navigationItems = [
   { icon: IconDashboard, label: "Dashboard", value: AdminTabType.DASHBOARD },
-  { icon: IconMovie, label: "Movies", value: AdminTabType.MOVIES },
-  { icon: IconBuilding, label: "Theaters", value: AdminTabType.THEATERS },
-  { icon: IconCalendar, label: "Schedules", value: AdminTabType.SCHEDULES },
-  { icon: IconTags, label: "Genres", value: AdminTabType.GENRES },
-  { icon: IconUsers, label: "Cast", value: AdminTabType.CASTS },
   { icon: IconTicket, label: "Bookings", value: AdminTabType.BOOKINGS },
+  { icon: IconMovie, label: "Movies", value: AdminTabType.MOVIES },
+  { icon: IconTags, label: "Genres", value: AdminTabType.GENRES },
+  { icon: IconUsers, label: "Casts", value: AdminTabType.CASTS },
+  { icon: IconCalendar, label: "Schedules", value: AdminTabType.SCHEDULES },
+  { icon: IconDeviceTv, label: "Screens", value: AdminTabType.SCREENS },
+  { icon: IconBuilding, label: "Theaters", value: AdminTabType.THEATERS },
+  { icon: IconUser, label: "Users", value: AdminTabType.USERS },
 ];
 
 const AdminLayout = ({

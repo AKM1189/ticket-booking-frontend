@@ -20,6 +20,7 @@ import {
   IconTrash,
   IconSearch,
   IconTable,
+  IconDatabaseOff,
 } from "@tabler/icons-react";
 import { useForm } from "@mantine/form";
 import type { LabelType } from "@/types/MovieTypes";
@@ -368,6 +369,15 @@ const GenreManagement = () => {
               ))}
             </Table.Tbody>
           </Table>
+        )}
+
+        {filteredGenres?.length === 0 && (
+          <Text ta="center" c="dimmed" py="xl">
+            <div className="flex justify-center mb-2">
+              <IconDatabaseOff size={30} />
+            </div>
+            No genre found
+          </Text>
         )}
       </Card>
 

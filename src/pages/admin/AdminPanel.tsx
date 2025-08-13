@@ -3,11 +3,13 @@ import {
   AdminLayout,
   AdminDashboard,
   MovieManagement,
-  TheaterManagement,
+  TheatreManagement,
   ScheduleManagement,
   GenreManagement,
   CastManagement,
   BookingManagement,
+  ScreenManagement,
+  UserManagement,
 } from "@/components/admin";
 import { AdminTabType } from "@/types/AdminTypes";
 
@@ -23,7 +25,7 @@ const AdminPanel = () => {
       case AdminTabType.MOVIES:
         return <MovieManagement />;
       case AdminTabType.THEATERS:
-        return <TheaterManagement />;
+        return <TheatreManagement />;
       case AdminTabType.SCHEDULES:
         return <ScheduleManagement />;
       case AdminTabType.GENRES:
@@ -32,6 +34,10 @@ const AdminPanel = () => {
         return <CastManagement />;
       case AdminTabType.BOOKINGS:
         return <BookingManagement />;
+      case AdminTabType.SCREENS:
+        return <ScreenManagement />;
+      case AdminTabType.USERS:
+        return <UserManagement />;
       default:
         return <AdminDashboard />;
     }

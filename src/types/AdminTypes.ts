@@ -70,4 +70,6 @@ export enum AdminTabType {
   GENRES = "genres",
   CASTS = "casts",
   BOOKINGS = "bookings",
+  SCREENS = " screens",
+  USERS = "users",
 }

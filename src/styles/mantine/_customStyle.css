@@ -85,3 +85,46 @@
   --pagination-active-color: #ffffff; /* Change text color of active item */
   --pagination-control-radius: 5px; /* Optional: Rounded corners */
 }
+
+.mantine-MultiSelect-inputField.mantine-PillsInputField-field:placeholder {
+  color: red !important;
+}
+/* .mantine-MultiSelect-inputField.mantine-PillsInputField-field {
+  background-color: red !important;
+  color: white !important;
+} */
+
+.mantine-Tabs-tab:hover {
+  background-color: var(--color-surface-hover) !important;
+}
+
+.PhoneInputInput {
+  height: 48px;
+  font-size: 14px;
+  color: var(--color-text);
+  border-bottom: 1px solid #7b82a0;
+}
+
+.PhoneInputInput:focus {
+  outline: none;
+}
+
+.PhoneInputInput::placeholder {
+  color: #969fae;
+}
+
+.admin-phone-input .PhoneInputInput {
+  border-bottom: 1px solid var(--color-surface-hover) !important;
+}
+
+.mantine-Tabs-list:before {
+  border-color: var(--color-surface-hover);
+}
+
+.mantine-Tabs-tab:where([data-active]) {
+  border-color: var(--color-primary);
+}
+
+.mantine-Tabs-tab:hover:where(:not([data-active])) {
+  border-color: var(--color-surface-hover);
+}

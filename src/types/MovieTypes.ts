@@ -25,8 +25,8 @@ export type MovieType = {
   releaseDate: string | null;
   rating: string;
   status: string;
-  posterUrl: string;
-  photos: string[];
+  poster: ImageType;
+  photos: ImageType[];
   trailerId: string;
   casts: CastType[];
 };
@@ -34,7 +34,7 @@ export type MovieType = {
 export type MovieInputType = {
   title: string;
   description: string;
-  duration: string;
+  duration: number | null;
   genres: string[];
   language: string[];
   subtitle: string[];
@@ -56,12 +56,17 @@ export type MovieDetailType = {
   releaseDate: string;
   rating: string;
   status: string;
-  posterUrl: string;
+  poster: ImageType;
   trailerId: string;
   subtitle: string[];
   casts: CastType[];
   images: string[];
   reviews: ReviewType[];
+};
+
+export type ImageType = {
+  id: number;
+  url: string;
 };
 
 export type CastType = {

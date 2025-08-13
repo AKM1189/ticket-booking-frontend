@@ -66,7 +66,7 @@ const CastSelector = ({
           id: cast.id,
           name: cast.name,
           role: cast.role,
-          imageUrl: cast.imageUrl,
+          imageUrl: cast.image.url,
         },
       ]);
     }
@@ -98,7 +98,7 @@ const CastSelector = ({
       </Button>
 
       {selectedCasts.length > 0 && (
-        <SimpleGrid cols={{ base: 2, sm: 3, md: 4 }} spacing="xs">
+        <div className="flex gap-2 flex-wrap">
           {selectedCasts.map((cast) => (
             <Card
               key={cast.id}
@@ -128,7 +128,7 @@ const CastSelector = ({
               </Group>
             </Card>
           ))}
-        </SimpleGrid>
+        </div>
       )}
 
       <Modal
@@ -176,7 +176,7 @@ const CastSelector = ({
                   onClick={() => handleCastSelect(cast)}
                 >
                   <Group gap="sm">
-                    <Avatar src={cast.imageUrl} size={40} radius="sm" />
+                    <Avatar src={cast.image.url} size={40} radius="sm" />
                     <Stack gap={0} style={{ flex: 1 }}>
                       <Text size="sm" fw={500} className="!mb-1">
                         {cast.name}

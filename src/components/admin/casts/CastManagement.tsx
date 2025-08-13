@@ -14,7 +14,13 @@ import {
   Title,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { IconEdit, IconPlus, IconSearch, IconTrash } from "@tabler/icons-react";
+import {
+  IconDatabaseOff,
+  IconEdit,
+  IconPlus,
+  IconSearch,
+  IconTrash,
+} from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import type { CastType } from "@/types/CastTypes";
 import CastModal from "./CastModal";
@@ -25,6 +31,7 @@ import {
   useUpdateCastMutation,
 } from "@/api/mutation/admin/castMutation";
 import { useLoadingStore } from "@/store/useLoading";
+import { useConfirmModalStore } from "@/store/useConfirmModalStore";
 
 const CastManagement = () => {
   const [opened, { open, close }] = useDisclosure(false);
@@ -32,13 +39,13 @@ const CastManagement = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [casts, setCasts] = useState<CastType[]>([]);
   const { showLoading } = useLoadingStore();
+  const { open: openConfirm } = useConfirmModalStore();
 
   const { data, isLoading } = useCastQuery();
 
   const { mutate: deleteCastMutation } = useDeleteCastMutation();
 
   useEffect(() => {
-    console.log("casts", data);
     setCasts(data?.data);
   }, [data]);
 
@@ -64,6 +71,7 @@ const CastManagement = () => {
       { id },
       {
         onSuccess: () => showLoading(false),
+        onError: () => showLoading(false),
       },
     );
   };
@@ -169,7 +177,7 @@ const CastManagement = () => {
                   <Table.Td>
                     <Group gap={"sm"} align="center">
                       <Avatar
-                        src={cast.imageUrl}
+                        src={cast.image?.url}
                         alt={cast.name}
                         size={60}
                         radius="md"
@@ -201,8 +209,14 @@ const CastManagement = () => {
                       <ActionIcon
                         // variant="light"
                         color="red"
-                        onClick={() => handleDeleteCast(cast.id)}
-                        // disabled={cast.movieCount > 0}
+                        onClick={() =>
+                          openConfirm({
+                            title: "Delete Movie",
+                            message:
+                              "Are you sure you want to delete this cast?",
+                            onConfirm: () => handleDeleteCast(cast.id),
+                          })
+                        }
                         style={{
                           "--mantine-color-disabled": "var(--color-darkGray)", // your desired border color (e.g. blue)
                         }}
@@ -219,6 +233,9 @@ const CastManagement = () => {
 
           {casts?.length === 0 && !isLoading && (
             <Text ta="center" c="dimmed" py="xl">
+              <div className="flex justify-center mb-2">
+                <IconDatabaseOff size={30} />
+              </div>
               No cast found
             </Text>
           )}

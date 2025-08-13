@@ -3,6 +3,7 @@ export const endpoints = {
     movies: "/admin/movies",
     genres: "/admin/genres",
     casts: "/admin/casts",
+    users: "/admin/users",
     me: "/auth/admin/me",
   },
   user: {

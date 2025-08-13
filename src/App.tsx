@@ -10,6 +10,7 @@ import { UserRoutes, AdminRoutes } from "@/routeComponents";
 import { customMantineTheme, MantineComponentOverrides } from "@/styles";
 import AuthRoutes from "./routeComponents/AuthRoutes";
 import LoadingProvider from "./LoadingProvider";
+import ConfirmModal from "./components/admin/ConfirmModal";
 
 function App() {
   const queryClient = new QueryClient();
@@ -23,6 +24,7 @@ function App() {
       <MantineProvider theme={theme}>
         <Notifications />
         <LoadingProvider>
+          <ConfirmModal />
           <BrowserRouter>
             <UserRoutes />
             <AdminRoutes />

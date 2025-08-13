@@ -1,8 +1,10 @@
+import type { ImageType } from "./MovieTypes";
+
 export type CastType = {
   id: number;
   name: string;
   role: string;
-  imageUrl: string | null;
+  image: ImageType;
 };
 
 export type CastInputType = {

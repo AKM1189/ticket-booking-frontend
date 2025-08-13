@@ -64,7 +64,7 @@ const mockTheaters: TheaterType[] = [
   },
 ];
 
-const TheaterManagement = () => {
+const ScreenManagement = () => {
   const [theaters, setTheaters] = useState<TheaterType[]>(mockTheaters);
   const [searchTerm, setSearchTerm] = useState("");
   const [opened, { open, close }] = useDisclosure(false);
@@ -400,4 +400,4 @@ const TheaterManagement = () => {
   );
 };
 
-export default TheaterManagement;
+export default ScreenManagement;

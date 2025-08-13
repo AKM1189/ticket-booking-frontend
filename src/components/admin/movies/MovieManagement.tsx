@@ -21,13 +21,14 @@ import {
   NumberInput,
   LoadingOverlay,
 } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
+import { useDebouncedValue } from "@mantine/hooks";
 import {
   IconPlus,
   IconEdit,
   IconTrash,
   IconSearch,
   IconUpload,
+  IconDatabaseOff,
 } from "@tabler/icons-react";
 import { useForm } from "@mantine/form";
 import type { MovieType, MovieInputType } from "@/types/MovieTypes";
@@ -44,6 +45,11 @@ import ImagePreview from "./ImagePreview";
 import { CastSelector } from "../casts";
 import { urlToFile } from "@/utils/imageUploads";
 import { useLoadingStore } from "@/store/useLoading";
+import { zodResolver } from "mantine-form-zod-resolver";
+import { movieSchema } from "@/schema/MovieSchema";
+import { twMerge } from "tailwind-merge";
+import dayjs from "dayjs";
+import { useConfirmModalStore } from "@/store/useConfirmModalStore";
 
 const languages = ["English", "Tamil", "Hindi", "Telugu", "Chinese"];
 const subtitles = ["English", "Tamil", "Hindi", "Telugu", "Chinese"];
@@ -67,12 +73,9 @@ const MovieManagement = () => {
   const { data: genres } = useGenreQuery();
   const genreList = genres?.data;
 
-  const [languageError, setLanguageError] = useState(false);
-  const [subtitleError, setSubtitlError] = useState(false);
-
   const [isImageUploading, setImageUploading] = useState(false);
 
-  const { data } = useMovieQuery();
+  const { data, refetch } = useMovieQuery(searchTerm, statusFilter);
   const [movies, setMovies] = useState<MovieType[]>([]);
   const { showLoading } = useLoadingStore();
 
@@ -80,23 +83,61 @@ const MovieManagement = () => {
   const { mutate: updateMovieMutation } = useUpdateMovie();
   const { mutate: deleteMovieMutation } = useDeleteMovie();
 
+  const [debouncedSearchTerm] = useDebouncedValue(searchTerm, 300);
+
+  const { open: openConfirm } = useConfirmModalStore();
+
   useEffect(() => {
     setMovies(data?.data);
   }, [data]);
 
+  useEffect(() => {
+    refetch();
+  }, [debouncedSearchTerm, statusFilter]);
+
   const form = useForm({
+    // mode: "uncontrolled",
     initialValues: {
       title: "",
       description: "",
-      duration: "",
+      duration: null as number | null,
       genres: [] as string[],
       experience: [] as string[],
       releaseDate: "",
       status: "",
-      poster: null,
+      language: [] as string[],
+      subtitle: [] as string[],
+      poster: null as File | null,
+      photos: [] as File[],
       trailerId: "",
     },
+    validate: zodResolver(movieSchema),
   });
+
+  useEffect(() => {
+    form.setFieldValue("subtitle", selectedSubtitles);
+  }, [selectedSubtitles]);
+
+  useEffect(() => {
+    form.setFieldValue("language", selectedLanguages);
+  }, [selectedLanguages]);
+
+  useEffect(() => {
+    if (form.values.poster) {
+      const newUrl = URL.createObjectURL(form.values.poster);
+      setPosterPreviewUrl([newUrl]);
+    }
+  }, [form.values.poster]);
+
+  useEffect(() => {
+    if (!form.values.photos || form.values.photos?.length > 0) {
+      console.log("photos added");
+      const newUrls = form.values.photos?.map((file) =>
+        URL.createObjectURL(file),
+      );
+      setImagePreviewUrls((prev) => [...prev, ...newUrls]);
+    }
+  }, [form.values.photos]);
 
   const handleImageUpload = useCallback((files: File[]) => {
     if (!files || files.length === 0) return;
@@ -106,25 +147,20 @@ const MovieManagement = () => {
     setImagePreviewUrls((prev) => [...prev, ...newUrls]);
   }, []);
 
-  const handlePosterUpload = useCallback((file: File | null) => {
-    if (!file) return;
-    setSelectedPoster(file);
-
-    const newUrl = URL.createObjectURL(file);
-    setPosterPreviewUrl([newUrl]);
-  }, []);
-
   const removePoster = useCallback(() => {
     setSelectedPoster(null);
     setPosterPreviewUrl([]);
+    form.setFieldValue("poster", null);
   }, []);
 
-  const removeImage = useCallback((index: number) => {
-    setSelectedImages((prev) => prev.filter((_, i) => i !== index));
+  const removeImage = useCallback((imageIndex: number) => {
+    setSelectedImages((prev) =>
+      prev.filter((item, index) => index !== imageIndex),
+    );
     setImagePreviewUrls((prev) => {
       // Revoke the URL to prevent memory leaks
-      URL.revokeObjectURL(prev[index]);
-      return prev.filter((_, i) => i !== index);
+      URL.revokeObjectURL(prev[imageIndex]);
+      return prev.filter((_, i) => i !== imageIndex);
     });
   }, []);
 
@@ -135,6 +171,7 @@ const MovieManagement = () => {
       return [];
     });
     setSelectedImages([]);
+    form.setFieldValue("photos", []);
 
     // Clear the file input
     if (fileInputRef.current) {
@@ -150,6 +187,7 @@ const MovieManagement = () => {
 
   const resetFormValues = () => {
     setEditingMovie(null);
+    setSelectedImages([]);
     setSelectedPoster(null);
     setSelectedLanguages([]);
     setSelectedSubtitles([]);
@@ -161,29 +199,29 @@ const MovieManagement = () => {
   const handleEditMovie = async (movie: MovieType) => {
     setEditingMovie(movie);
     const releaseDate = movie.releaseDate
-      ? new Date(movie.releaseDate).toISOString().split("T")[0]
+      ? dayjs(movie.releaseDate).format("YYYY-MM-DD")
       : "";
     form.setValues({
       title: movie.title,
       description: movie.description,
-      duration: movie.duration,
+      duration: parseInt(movie.duration),
       genres: movie.genres.map((g: any) => g.id.toString()),
       releaseDate,
       status: movie.status,
       trailerId: movie.trailerId,
-
       experience: movie.experience,
+      poster: await urlToFile(movie.poster?.url, "poster.jpg", "image/jpeg"),
     });
     setFormModalOpen(true);
 
-    setImagePreviewUrls(movie.photos);
-    setPosterPreviewUrl([movie.posterUrl]);
-    const getPhotoFiles = movie.photos.map((url, index) =>
-      urlToFile(url, "image_" + index, "image/jpeg"),
+    setImagePreviewUrls(movie.photos?.map((img) => img.url));
+    setPosterPreviewUrl([movie.poster?.url]);
+    const getPhotoFiles = movie.photos.map((img, index) =>
+      urlToFile(img.url, "image_" + index, "image/jpeg"),
     );
     const photoFiles = await Promise.all(getPhotoFiles);
     const posterFile = await urlToFile(
-      movie.posterUrl,
+      movie.poster?.url,
       "poster.jpg",
       "image/jpeg",
     );
@@ -204,35 +242,20 @@ const MovieManagement = () => {
     }
   };
 
-  useEffect(() => {
-    if (selectedLanguages.length > 0) {
-      setLanguageError(false);
-    }
-    if (selectedSubtitles.length > 0) {
-      setSubtitlError(false);
-    }
-  }, [selectedLanguages, selectedSubtitles]);
-
   const handleSubmit = async (values: typeof form.values) => {
-    showLoading(true);
-    if (selectedLanguages.length === 0) {
-      setLanguageError(true);
-      return;
-    }
-    if (selectedSubtitles.length === 0) {
-      setSubtitlError(true);
-      return;
-    }
-    setImageUploading(true);
+    const result = form.validate();
+    if (result.hasErrors) console.log("Form validation errors:", result.errors);
+    // showLoading(true);
+    // setImageUploading(true);
     const data: MovieInputType = {
       ...values,
-      poster: selectedPoster,
       language: selectedLanguages,
       subtitle: selectedSubtitles,
       photos: selectedImages,
       casts:
         selectedCasts?.length > 0 ? selectedCasts.map((cast) => cast.id) : [],
     };
+
     if (editingMovie) {
       updateMovieMutation(
         { data, id: editingMovie.id },
@@ -244,12 +267,12 @@ const MovieManagement = () => {
             setImageUploading(false);
           },
           onError: () => {
+            showLoading(false);
             setImageUploading(false);
           },
         },
       );
     } else {
-      console.log("add movie mutation", data);
       addMovieMutation(
         { data },
         {
@@ -261,6 +284,7 @@ const MovieManagement = () => {
             setImageUploading(false);
           },
           onError: () => {
+            showLoading(false);
             setImageUploading(false);
           },
         },
@@ -277,6 +301,9 @@ const MovieManagement = () => {
         onSuccess: () => {
           showLoading(false);
           setEditingMovie(null);
+        },
+        onError: () => {
+          showLoading(false);
         },
       },
     );
@@ -296,7 +323,7 @@ const MovieManagement = () => {
     }
   };
   const inputStyle = {
-    input: "dashboard-input",
+    input: "dashboard-input placeholder:!text-muted",
     label: "!mb-2 !text-text",
   };
 
@@ -305,6 +332,7 @@ const MovieManagement = () => {
     content: "!bg-surface text-text",
     close: "!text-text hover:!bg-surface-hover",
   };
+
   return (
     <div className="space-y-6">
       <LoadingOverlay
@@ -375,15 +403,24 @@ const MovieManagement = () => {
               {movies?.map((movie) => (
                 <Table.Tr key={movie.id}>
                   <Table.Td>
-                    <Group gap="sm">
-                      <Image
-                        src={movie.posterUrl}
-                        alt={movie.title}
-                        w={40}
-                        h={60}
-                        radius="sm"
-                        fallbackSrc="/movie-bg.jpg"
-                      />
+                    <Group gap="sm" className="relative">
+                      {movie.poster?.url ? (
+                        <Image
+                          src={movie.poster?.url}
+                          alt={movie.title}
+                          w={40}
+                          h={60}
+                          radius="sm"
+                          fallbackSrc="/no_poster.jpeg"
+                          className=""
+                        />
+                      ) : (
+                        <div className=" w-[40px] h-[60px] rounded-md bg-surface-hover text-[10px] text-center text-muted flex items-center">
+                          {" "}
+                          No Poster
+                        </div>
+                      )}
+
                       <div>
                         <Text size="sm" fw={500}>
                           {movie.title}
@@ -443,9 +480,9 @@ const MovieManagement = () => {
                       )}
                     </Group>
                   </Table.Td>
-                  <Table.Td>
+                  <Table.Td className="!text-sm">
                     {movie?.releaseDate &&
-                      new Date(movie?.releaseDate).toLocaleDateString()}
+                      dayjs(movie.releaseDate).format("YYYY-MM-DD")}
                   </Table.Td>
                   <Table.Td>⭐ {movie.rating}</Table.Td>
                   <Table.Td>
@@ -467,7 +504,12 @@ const MovieManagement = () => {
                         color="red"
                         onClick={() => {
                           setEditingMovie(movie);
-                          setDeleteModalOpen(true);
+                          // setDeleteModalOpen(true);
+                          openConfirm({
+                            title: "Delete Movie",
+                            message:
+                              "Are you sure you want to delete this movie?",
+                          });
                         }}
                       >
                         <IconTrash size={16} />
@@ -479,6 +521,14 @@ const MovieManagement = () => {
             </Table.Tbody>
           </Table>
         </div>
+        {movies?.length === 0 && (
+          <Text ta="center" c="dimmed" py="xl">
+            <div className="flex justify-center mb-2">
+              <IconDatabaseOff size={30} />
+            </div>
+            No movie found
+          </Text>
+        )}
       </Card>
 
       {/* <FileInput onChange={(file) => setTestImage(file)} label="Test Image" />
@@ -491,14 +541,14 @@ const MovieManagement = () => {
         size="lg"
         classNames={modalStyle}
       >
-        <form onSubmit={form.onSubmit(handleSubmit)}>
+        <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
           <Grid>
             <Grid.Col span={12}>
               <TextInput
-                classNames={inputStyle}
                 label="Movie Name"
                 placeholder="Enter movie name"
-                required
+                classNames={inputStyle}
+                className="mb-2"
                 {...form.getInputProps("title")}
               />
 
@@ -506,7 +556,7 @@ const MovieManagement = () => {
                 classNames={inputStyle}
                 label="Description"
                 placeholder="Enter description"
-                required
+                // required
                 rows={5}
                 // resize="vertical"
                 {...form.getInputProps("description")}
@@ -517,7 +567,8 @@ const MovieManagement = () => {
                 classNames={inputStyle}
                 label="Duration (min)"
                 placeholder="e.g., 120"
-                required
+                min={60}
+                // // required
                 {...form.getInputProps("duration")}
                 hideControls
               />
@@ -527,7 +578,7 @@ const MovieManagement = () => {
                 classNames={inputStyle}
                 label="Release Date"
                 type="date"
-                required
+                // required
                 {...form.getInputProps("releaseDate")}
               />
             </Grid.Col>
@@ -535,9 +586,9 @@ const MovieManagement = () => {
               <MultiSelect
                 label="Genres"
                 placeholder="Select genres"
+                withErrorStyles={false}
                 classNames={{
                   ...inputStyle,
-                  options: "!text-red",
                   pill: "!bg-primary !text-text",
                 }}
                 data={
@@ -548,7 +599,7 @@ const MovieManagement = () => {
                       }))
                     : []
                 }
-                required
+                // required
                 {...form.getInputProps("genres")}
               />
             </Grid.Col>
@@ -561,9 +612,9 @@ const MovieManagement = () => {
                 setValue={setSelectedLanguages}
                 dataList={languages}
               />
-              {languageError && (
-                <p className="text-[12px] mt-1 text-red-500">
-                  Please select language
+              {form.errors.language && (
+                <p className="text-[12px] mt-1 text-red-400">
+                  {form.errors.language}
                 </p>
               )}
             </Grid.Col>
@@ -576,9 +627,9 @@ const MovieManagement = () => {
                 setValue={setSelectedSubtitles}
                 dataList={subtitles}
               />
-              {subtitleError && (
-                <p className="text-[12px] mt-1 text-red-500">
-                  Please select subtitle
+              {form.errors.subtitle && (
+                <p className="text-[12px] mt-1 text-red-400">
+                  {form.errors.subtitle}
                 </p>
               )}
             </Grid.Col>
@@ -587,13 +638,14 @@ const MovieManagement = () => {
               <MultiSelect
                 label="Experience"
                 placeholder="Select experiences"
+                withErrorStyles={false}
                 classNames={{
                   ...inputStyle,
                   options: "!text-red",
                   pill: "!bg-primary !text-text",
                 }}
                 data={["2D", "3D", "IMAX"]}
-                required
+                // required
                 {...form.getInputProps("experience")}
               />
             </Grid.Col>
@@ -603,7 +655,7 @@ const MovieManagement = () => {
                 label="Status"
                 placeholder="Select status"
                 data={["Now Showing", "Coming Soon", "Ended"]}
-                required
+                // required
                 classNames={inputStyle}
                 {...form.getInputProps("status")}
               />
@@ -613,12 +665,14 @@ const MovieManagement = () => {
                 label="Poster"
                 classNames={{
                   input: "dashboard-input",
+                  placeholder: "!text-text",
                 }}
-                required
+                // required
                 accept="image/*"
-                value={selectedPoster}
+                // value={selectedPoster}
                 placeholder="Select Movie Poster"
-                onChange={handlePosterUpload}
+                {...form.getInputProps("poster")}
+                // onChange={handlePosterUpload}
               />
             </Grid.Col>
             <ImagePreview
@@ -687,14 +741,14 @@ const MovieManagement = () => {
               {isImageUploading ? (
                 <Loader color="var(--color-blueGray)" size={20} />
               ) : (
-                (editingMovie ? "Update" : "Add") + "Movie"
+                (editingMovie ? "Update" : "Add") + " Movie"
               )}
             </Button>
           </Group>
         </form>
       </Modal>
 
-      <Modal
+      {/* <Modal
         opened={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
         title="Delete Movie"
@@ -725,7 +779,7 @@ const MovieManagement = () => {
             Confirm
           </Button>
         </div>
-      </Modal>
+      </Modal> */}
     </div>
   );
 };

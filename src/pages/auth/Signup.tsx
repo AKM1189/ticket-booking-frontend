@@ -9,9 +9,14 @@ import { useSignupMutation } from "../../api/mutation/authMutation";
 import { Notifications } from "@mantine/notifications";
 import PrimaryButton from "../../ui/button/PrimaryButton";
 
+import "react-phone-number-input/style.css";
+import PhoneInput from "react-phone-number-input";
+import { useState } from "react";
+
 export type SignupDataType = {
   name: string | null;
   email: string | null;
+  phoneNo: string | null;
   password: string | null;
   role: string;
   confirmPassword: string | null;
@@ -22,6 +27,7 @@ const Signup = () => {
     initialValues: {
       name: "",
       email: "",
+      phoneNo: "",
       password: "",
       confirmPassword: "",
     },
@@ -29,7 +35,6 @@ const Signup = () => {
   });
 
   const { mutate } = useSignupMutation(form.reset);
-
   const handleSignup = (data: SignupDataType) => {
     mutate({ data });
   };
@@ -76,6 +81,37 @@ const Signup = () => {
               }}
               {...form.getInputProps("email")}
             />
+
+            {/* <TextInput
+            //   label="Phone Number"
+            //   placeholder="Enter Your Phone Number"
+            //   key={form.key("phoneNo")}
+            //   classNames={{
+            //     root: "mt-5",
+            //     label: "text-[16px]",
+            //     input: twMerge(
+            //       "login-input",
+            //       form.errors.phoneNo && "border-red-500",
+            //     ),
+            //     error: "text-red-500",
+            //   }}
+            //   {...form.getInputProps("phoneNo")}
+            // /> */}
+
+            <div className="mt-5">
+              <label className="text-sm text-text font-medium">
+                Phone Number
+              </label>
+              <PhoneInput
+                placeholder="Enter phone number"
+                defaultCountry="MM"
+                value={form.values.phoneNo}
+                onChange={(val: any) => {
+                  form.setFieldValue("phoneNo", val);
+                }}
+              />
+              <p className="text-xs text-red-400 mt-1">{form.errors.phoneNo}</p>
+            </div>
             <TextInput
               label="Password"
               placeholder="Enter Your Password"

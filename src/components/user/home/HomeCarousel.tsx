@@ -1,7 +1,7 @@
 import { Carousel } from "@mantine/carousel";
-import { Image } from "@mantine/core";
+import { Image, Skeleton } from "@mantine/core";
 import Autoplay from "embla-carousel-autoplay";
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, useState } from "react";
 import { IconChevronRight } from "@tabler/icons-react";
 import { IconChevronLeft } from "@tabler/icons-react";
 
@@ -15,6 +15,7 @@ const images = [
 
 function HomeCarousel() {
   const autoplay = useRef(Autoplay({ delay: 5000 }));
+  const [isLoaded, setIsLoaded] = useState(false);
 
   // Memoize slides to prevent recreation on every render
   const slides = useMemo(
@@ -31,16 +32,15 @@ function HomeCarousel() {
     <Carousel
       withIndicators={false}
       flex={1}
-      // height={600}
+      onLoad={() => setIsLoaded(true)}
       controlSize={40}
+      withControls={true}
       nextControlIcon={<IconChevronRight />}
       previousControlIcon={<IconChevronLeft />}
       emblaOptions={{
         loop: true,
       }}
       plugins={[autoplay.current]}
-      // onMouseEnter={autoplay.current.stop}
-      // onMouseLeave={() => autoplay.current.play()}
       classNames={{
         container: "!max-h-[600px]",
         control: "!bg-surface !text-white !border-surface",
@@ -52,7 +52,6 @@ function HomeCarousel() {
         control: {
           background: "var(--color-lightGray)",
           color: "var(--color-muted)",
-          // fontSize: "30px",
         },
       }}
     >

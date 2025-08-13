@@ -20,6 +20,8 @@ import {
 } from "@/api/mutation/admin/castMutation";
 import { urlToFile } from "@/utils/imageUploads";
 import { useLoadingStore } from "@/store/useLoading";
+import { showNotification } from "@/utils/showNotification";
+import { StatusType } from "@/types/NotificationType";
 
 interface CastModalProps {
   opened: boolean;
@@ -33,6 +35,7 @@ const CastModal = ({ opened, onClose, cast }: CastModalProps) => {
   const { mutate: addCastMutation } = useAddCastMutation();
   const { mutate: updateCastMutation } = useUpdateCastMutation();
   const { showLoading } = useLoadingStore();
+  const [selectedImg, setSelectedImg] = useState<File | null>(null);
 
   const form = useForm<CastInputType>({
     initialValues: {
@@ -53,7 +56,7 @@ const CastModal = ({ opened, onClose, cast }: CastModalProps) => {
         role: cast.role,
         image: null,
       });
-      setImagePreview(cast.imageUrl);
+      setImagePreview(cast.image?.url);
     } else {
       form.reset();
       setImagePreview(null);
@@ -62,6 +65,7 @@ const CastModal = ({ opened, onClose, cast }: CastModalProps) => {
 
   const handleImageChange = (file: File | null) => {
     form.setFieldValue("image", file);
+    setSelectedImg(file);
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -69,23 +73,32 @@ const CastModal = ({ opened, onClose, cast }: CastModalProps) => {
       };
       reader.readAsDataURL(file);
     } else {
-      setImagePreview(cast?.imageUrl || null);
+      setImagePreview(cast?.image?.url || null);
     }
   };
 
   const handleSubmit = async (values: CastInputType) => {
     // setIsSubmitting(true);
-    showLoading(true);
 
     try {
       if (cast) {
-        const posterFile =
-          values.image ||
-          (await urlToFile(cast?.imageUrl ?? "", "poster.jpg", "image/jpeg"));
+        if (
+          cast.name === values.name &&
+          cast.role === values.role &&
+          !selectedImg
+        ) {
+          showNotification({
+            title: "Cast Didn't Update",
+            message: "No changes have been made",
+            type: StatusType.error,
+          });
+          return;
+        }
+        showLoading(true);
 
         updateCastMutation(
           {
-            data: { ...values, image: posterFile },
+            data: { ...values, image: selectedImg },
             id: cast.id,
           },
           {
@@ -94,6 +107,10 @@ const CastModal = ({ opened, onClose, cast }: CastModalProps) => {
               showLoading(false);
               form.reset();
               setImagePreview(null);
+              setSelectedImg(null);
+            },
+            onError: () => {
+              showLoading(false);
             },
           },
         );
@@ -106,6 +123,10 @@ const CastModal = ({ opened, onClose, cast }: CastModalProps) => {
               showLoading(false);
               form.reset();
               setImagePreview(null);
+              setSelectedImg(null);
+            },
+            onError: () => {
+              showLoading(false);
             },
           },
         );
@@ -127,7 +148,10 @@ const CastModal = ({ opened, onClose, cast }: CastModalProps) => {
   return (
     <Modal
       opened={opened}
-      onClose={onClose}
+      onClose={() => {
+        setSelectedImg(null);
+        onClose();
+      }}
       title={cast ? "Edit Cast Member" : "Add Cast Member"}
       size="md"
       classNames={{
