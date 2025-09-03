@@ -6,6 +6,7 @@ import {
   PillsInput,
   useCombobox,
 } from "@mantine/core";
+import { IconSelector } from "@tabler/icons-react";
 import { useState } from "react";
 
 function CreatableMultiSelect({
@@ -74,6 +75,7 @@ function CreatableMultiSelect({
             input: "dashboard-input",
           }}
           required
+          rightSection={<IconSelector size={15} />}
         >
           <Pill.Group>
             {values}

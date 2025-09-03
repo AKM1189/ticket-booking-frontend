@@ -17,7 +17,10 @@ export const getSuccessNoti = (
 
 export const getErrorNoti = (title: string, error: any, defaultMsg: string) => {
   if (error instanceof AxiosError) {
-    const errorMessage = error.response?.data?.message || defaultMsg;
+    const errorMessage =
+      error.response?.data?.message ||
+      error.response?.data?.error[0].message ||
+      defaultMsg;
     showNotification({
       title,
       message: errorMessage,

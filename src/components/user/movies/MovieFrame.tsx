@@ -1,12 +1,12 @@
 import { sortList } from "@/constants/movieConstants";
 import { Pagination } from "@mantine/core";
 import { twMerge } from "tailwind-merge";
-import { ListIcon, GridIcon } from "@/assets/svgs/DisplayIcons";
 import { MovieGrid, MovieList, FilterCard } from "@/components/user/movies";
 import { SortType } from "@/types/MovieTypes";
 import { useMovieStore } from "@/store/useMovieStore";
 import { motion } from "motion/react";
 import { useState, useMemo } from "react";
+import { IconGridDots, IconMenu2 } from "@tabler/icons-react";
 
 const MovieFrame = ({ type }: { type: string | undefined }) => {
   const langList = [
@@ -93,7 +93,7 @@ const MovieFrame = ({ type }: { type: string | undefined }) => {
       {
         id: 1,
         icon: (
-          <ListIcon
+          <IconMenu2
             color={
               activeDisplay === 1 ? "var(--color-accent)" : "var(--color-muted)"
             }
@@ -103,7 +103,7 @@ const MovieFrame = ({ type }: { type: string | undefined }) => {
       {
         id: 2,
         icon: (
-          <GridIcon
+          <IconGridDots
             color={
               activeDisplay === 2 ? "var(--color-accent)" : "var(--color-muted)"
             }

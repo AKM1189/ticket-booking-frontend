@@ -36,7 +36,7 @@ const ImageCarousel = ({ images }: ImageCarouselType) => {
       styles={{
         indicator: {
           width: "50px",
-          background: "oklch(92.9% 0.013 255.508)",
+          background: "#f1f5f9",
         },
         control: {
           background: "var(--color-lightGray)",

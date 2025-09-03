@@ -20,11 +20,10 @@ import {
   IconTrash,
   IconSearch,
   IconTable,
-  IconDatabaseOff,
+  IconTags,
+  IconGrid3x3,
 } from "@tabler/icons-react";
 import { useForm } from "@mantine/form";
-import type { LabelType } from "@/types/MovieTypes";
-import { GridIcon } from "@/assets/svgs";
 import { useGenreQuery } from "@/api/query/admin/genreQuery";
 import type { GenreType } from "@/types/GenreTypes";
 import {
@@ -32,74 +31,7 @@ import {
   useDeleteGenreMutation,
   useUpdateGenreMutation,
 } from "@/api/mutation/admin/genreMutation";
-
-// Mock data with extended genre information
-
-const mockGenres: GenreType[] = [];
-// [
-//   {
-//     id: 1,
-//     label: "Action",
-//     description:
-//       "High-energy films with exciting sequences, stunts, and adventure",
-//     movieCount: 15,
-//     color: "red",
-//   },
-//   {
-//     id: 2,
-//     label: "Adventure",
-//     description:
-//       "Stories involving journeys, exploration, and exciting experiences",
-//     movieCount: 12,
-//     color: "orange",
-//   },
-//   {
-//     id: 3,
-//     label: "Drama",
-//     description:
-//       "Character-driven stories focusing on realistic situations and emotions",
-//     movieCount: 20,
-//     color: "blue",
-//   },
-//   {
-//     id: 4,
-//     label: "Comedy",
-//     description:
-//       "Light-hearted films designed to entertain and amuse audiences",
-//     movieCount: 18,
-//     color: "green",
-//   },
-//   {
-//     id: 5,
-//     label: "Horror",
-//     description: "Films intended to frighten, unsettle, and create suspense",
-//     movieCount: 8,
-//     color: "dark",
-//   },
-//   {
-//     id: 6,
-//     label: "Romance",
-//     description:
-//       "Stories centered around love relationships and romantic entanglements",
-//     movieCount: 14,
-//     color: "pink",
-//   },
-//   {
-//     id: 7,
-//     label: "Sci-Fi",
-//     description:
-//       "Science fiction films exploring futuristic concepts and technology",
-//     movieCount: 10,
-//     color: "cyan",
-//   },
-//   {
-//     id: 8,
-//     label: "Thriller",
-//     description: "Suspenseful films designed to keep audiences on edge",
-//     movieCount: 13,
-//     color: "violet",
-//   },
-// ];
+import { useConfirmModalStore } from "@/store/useConfirmModalStore";
 
 const colorOptions = [
   { label: "red", value: "#dc3545" },
@@ -115,7 +47,7 @@ const colorOptions = [
 ];
 
 const GenreManagement = () => {
-  const { data, refetch } = useGenreQuery();
+  const { data } = useGenreQuery();
   const { mutate: addGenre } = useAddGenreMutation();
   const { mutate: editGenre } = useUpdateGenreMutation();
   const { mutate: deleteGenre } = useDeleteGenreMutation();
@@ -124,6 +56,7 @@ const GenreManagement = () => {
   const [opened, { open, close }] = useDisclosure(false);
   const [editingGenre, setEditingGenre] = useState<GenreType | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
+  const { open: deleteConfirm } = useConfirmModalStore();
 
   useEffect(() => {
     setGenres(data?.data);
@@ -200,7 +133,11 @@ const GenreManagement = () => {
     <div className="space-y-6">
       <Group justify="space-between">
         <Title order={2}>Genre Management</Title>
-        <Button leftSection={<IconPlus size={16} />} onClick={handleAddGenre}>
+        <Button
+          leftSection={<IconPlus size={16} />}
+          className="dashboard-btn"
+          onClick={handleAddGenre}
+        >
           Add Genre
         </Button>
       </Group>
@@ -235,7 +172,13 @@ const GenreManagement = () => {
                 label: (
                   <Group gap="xs">
                     {/* <IconGrid3x3 size={16} /> */}
-                    <GridIcon />
+                    <IconGrid3x3
+                      color={
+                        viewMode === "grid"
+                          ? "var(--color-selected-text)"
+                          : "var(--color-muted)"
+                      }
+                    />
                     {/* <span>Grid</span> */}
                   </Group>
                 ),
@@ -244,7 +187,14 @@ const GenreManagement = () => {
                 value: "table",
                 label: (
                   <Group gap="xs">
-                    <IconTable size={24} />
+                    <IconTable
+                      size={24}
+                      color={
+                        viewMode === "table"
+                          ? "var(--color-selected-text)"
+                          : "var(--color-muted)"
+                      }
+                    />
                     {/* <span>Table</span> */}
                   </Group>
                 ),
@@ -269,7 +219,7 @@ const GenreManagement = () => {
                   </Badge>
                   <Group gap="xs">
                     <ActionIcon
-                      // variant="light"
+                      variant="light"
                       color="orange"
                       size="sm"
                       onClick={() => handleEditGenre(genre)}
@@ -277,10 +227,17 @@ const GenreManagement = () => {
                       <IconEdit size={14} />
                     </ActionIcon>
                     <ActionIcon
-                      // variant="light"
+                      variant="light"
                       color="red"
                       size="sm"
-                      onClick={() => handleDeleteGenre(genre.id)}
+                      onClick={() => {
+                        deleteConfirm({
+                          title: "Delete Genre",
+                          message:
+                            "Are you sure you want to delete this genre?",
+                          onConfirm: () => handleDeleteGenre(genre.id),
+                        });
+                      }}
                       style={{
                         "--mantine-color-disabled": "var(--color-darkGray)", // your desired border color (e.g. blue)
                       }}
@@ -297,7 +254,7 @@ const GenreManagement = () => {
                   </Text>
                 )}
 
-                <Text size="xs" c="dimmed" className="!text-blueGray">
+                <Text size="xs" c="dimmed" className="!text-muted">
                   Used in {genre.movieCount} movies
                 </Text>
               </Card>
@@ -346,16 +303,23 @@ const GenreManagement = () => {
                   <Table.Td>
                     <Group gap="xs">
                       <ActionIcon
-                        // variant="light"
+                        variant="light"
                         color="orange"
                         onClick={() => handleEditGenre(genre)}
                       >
                         <IconEdit size={16} />
                       </ActionIcon>
                       <ActionIcon
-                        // variant="light"
+                        variant="light"
                         color="red"
-                        onClick={() => handleDeleteGenre(genre.id)}
+                        onClick={() => {
+                          deleteConfirm({
+                            title: "Delete Genre",
+                            message:
+                              "Are you sure you want to delete this genre?",
+                            onConfirm: () => handleDeleteGenre(genre.id),
+                          });
+                        }}
                         disabled={genre.movieCount > 0}
                         style={{
                           "--mantine-color-disabled": "var(--color-darkGray)", // your desired border color (e.g. blue)
@@ -374,7 +338,7 @@ const GenreManagement = () => {
         {filteredGenres?.length === 0 && (
           <Text ta="center" c="dimmed" py="xl">
             <div className="flex justify-center mb-2">
-              <IconDatabaseOff size={30} />
+              <IconTags size={30} />
             </div>
             No genre found
           </Text>

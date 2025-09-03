@@ -8,3 +8,8 @@ export const inputStyle = {
   input: "dashboard-input placeholder:!text-muted",
   label: "!mb-2 !text-text",
 };
+
+export const numInputStyle = {
+  ...inputStyle,
+  control: "input-control",
+};

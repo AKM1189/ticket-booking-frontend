@@ -3,7 +3,7 @@ import { Outlet, useLocation } from "react-router";
 import { Navbar, Footer } from "@/components/layout";
 import { useEffect } from "react";
 import { useWindowScroll } from "@mantine/hooks";
-import { UpArrowIcon } from "@/assets/svgs";
+import { IconChevronUp } from "@tabler/icons-react";
 
 const UserLayout = () => {
   const location = useLocation();
@@ -26,7 +26,7 @@ const UserLayout = () => {
           onClick={() => scrollTo({ y: 0 })}
         >
           <div className="absolute top-2 left-2 w-8 h-8 bg-white rounded-full z-[-10]"></div>
-          <UpArrowIcon color="var(--color-primary)" />
+          <IconChevronUp color="var(--color-primary)" />
         </div>
       )}
     </div>

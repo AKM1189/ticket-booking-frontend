@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import YouTube, { type YouTubeProps } from "react-youtube";
 
-import { CloseIcon } from "@/assets/svgs";
 import { Skeleton } from "@mantine/core";
 
 import "@/styles/css/skeletonStyle.css";
+import { IconX } from "@tabler/icons-react";
 
 interface PlayTrailerType {
   videoId: string;
@@ -51,7 +51,7 @@ const PlayTrailer = ({ videoId, onClose }: PlayTrailerType) => {
           className="absolute top-0 right-0 cursor-pointer"
           onClick={onClose}
         >
-          <CloseIcon size={40} />
+          <IconX size={40} />
         </div>
         <Skeleton visible={loading}>
           <YouTube

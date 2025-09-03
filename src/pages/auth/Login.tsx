@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from "react-router";
 import { routes } from "../../routes";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   TextInput,
   Checkbox,
@@ -17,6 +17,8 @@ import { useLoginMutation } from "../../api/mutation/authMutation";
 import { Role } from "@/types/AuthType";
 import { getCurrentUser } from "@/api/function/authApi";
 import { useAuthStore } from "@/store/authStore";
+import { useGetUser } from "@/api/query/authQuery";
+// import { useAuth, useLoginAuth } from "@/hooks/useAuth";
 
 export type LoginDataType = {
   email: string | null;
@@ -45,12 +47,10 @@ const Login = () => {
       { data: values },
       {
         onSuccess: async (data) => {
+          console.log("login", data);
           const user = await getCurrentUser();
           if (user) setUser(user);
 
-          data?.role === Role.admin
-            ? navigate(routes.admin.dashboard)
-            : navigate(routes.user.home);
           setIsLoading(false);
         },
         onError: () => {
@@ -62,7 +62,9 @@ const Login = () => {
   return (
     <div className="bg-background flex justify-center items-center min-w-screen min-h-screen">
       <div className="w-[500px] min-h-[500px] max-h-[650px] bg-surface shadow-2xl rounded-lg text-white p-10 py-14">
-        <div className="text-4xl font-bold mb-10 text-center">Login</div>
+        <div className="text-4xl font-bold mb-10 text-center text-text">
+          Login
+        </div>
         <div className="flex flex-col gap-8">
           <form
             className="auth-text-input"
@@ -100,7 +102,7 @@ const Login = () => {
             />
             <Button type="submit" className="dashboard-btn mt-5 !w-full">
               {isLoading && <Loader color="white" size="sm" me={10} />}
-              Submit
+              Login
             </Button>
           </form>
         </div>
@@ -108,22 +110,30 @@ const Login = () => {
           <div>
             <Checkbox
               checked={checked}
-              label="Remember Me"
+              label={<div className="text-muted ">Remember Me</div>}
               color="var(--color-primary)"
               onChange={(event) => setChecked(event.currentTarget.checked)}
             />
           </div>
-          <NavLink to={routes.auth.forgotPassword} className="text-gray-300">
+          <NavLink
+            to={routes.auth.forgotPassword}
+            className="text-muted text-sm"
+          >
             Forgot Password?
           </NavLink>
         </div>
-        <div className="mt-5 text-center">
+        <div className="mt-5 text-center text-sm text-muted">
           Don't have an account?{" "}
           <NavLink to={routes.auth.signup} className="text-blue-500 underline">
-            Sign up now
+            Sign up
           </NavLink>
-          <NavLink to={routes.admin.dashboard}>Dashboard</NavLink>
         </div>
+        <NavLink
+          to={routes.user.home}
+          className="text-sm mt-5 flex items-center gap-2 ps-10 sm:ps-40 w-full text-muted"
+        >
+          Back To Home
+        </NavLink>
       </div>
     </div>
   );

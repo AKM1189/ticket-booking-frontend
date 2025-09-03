@@ -1,8 +1,23 @@
 export const endpoints = {
   admin: {
+    //booking
+    showingMovies: "/admin/movies/showing/list",
+
     movies: "/admin/movies",
     genres: "/admin/genres",
     casts: "/admin/casts",
+    theatres: "/admin/theatres",
+    screens: "/admin/screens",
+    seatTypes: "/admin/seat-types",
+    schedules: "/admin/schedules",
+    theatresByShow: "/admin/movie/schedules/theatres",
+    screensByShow: "/admin/screens/showing",
+    showDates: "/admin/schedules/showDate",
+    showTimes: "/admin/schedules/showTime",
+    schedulesByShow: "/admin/schedules/show-details",
+
+    booking: "/admin/bookings",
+
     users: "/admin/users",
     me: "/auth/admin/me",
   },

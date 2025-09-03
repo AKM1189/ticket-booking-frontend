@@ -10,7 +10,6 @@ export const movieSchema = z.object({
   genres: z.array(z.string()).min(1, { message: "Genre is required" }),
   experience: z.array(z.string()).min(1, { message: "Experience is required" }),
   releaseDate: z.string().min(5, { message: "Release Date is required" }),
-  status: z.string().min(1, { message: "Status is required" }),
   language: z.array(z.string()).nonempty("Please select at least one language"),
   subtitle: z.array(z.string()).nonempty("Please select at least one subtitle"),
   poster: z

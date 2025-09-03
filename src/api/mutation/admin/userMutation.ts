@@ -1,14 +1,19 @@
-import { addUser, deleteUser } from "@/api/function/admin/userApi";
-import type { UserType } from "@/types/UserType";
+import {
+  addUser,
+  deactivateUser,
+  updateUser,
+} from "@/api/function/admin/userApi";
+import { Role } from "@/types/AuthType";
+import type { UserInputType } from "@/types/UserType";
 import { getErrorNoti, getSuccessNoti } from "@/utils/showResponseNoti";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const useAddUserMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ data }: { data: UserType }) => addUser(data),
+    mutationFn: ({ data }: { data: UserInputType }) => addUser(data),
     onSuccess: (data) => {
-      getSuccessNoti("Add User", data, "User successfully added");
+      getSuccessNoti("Add Admin", data, "Admin successfully added");
       queryClient.invalidateQueries({ queryKey: ["users"] });
     },
     onError: (error) => {
@@ -17,33 +22,43 @@ export const useAddUserMutation = () => {
   });
 };
 
-// export const useUpdateCastMutation = () => {
-//   const queryClient = useQueryClient();
-
-//   return useMutation({
-//     mutationFn: ({ data, id }: { data: CastInputType; id: number }) =>
-//       updateCast(data, id),
-//     onSuccess: (data) => {
-//       getSuccessNoti("Update Cast", data, "Cast successfully updated");
-//       queryClient.invalidateQueries({ queryKey: ["casts"] });
-//     },
-//     onError: (error) => {
-//       getErrorNoti("Update Cast", error, "Cast updating failed");
-//     },
-//   });
-// };
-
-export const useDeleteUserMutation = () => {
+export const useUpdateUserMutation = (role: Role | undefined) => {
   const queryClient = useQueryClient();
+  const userType = role === Role.admin ? "Admin" : "User";
 
   return useMutation({
-    mutationFn: ({ id }: { id: number }) => deleteUser(id),
+    mutationFn: ({ data, id }: { data: UserInputType; id: number }) =>
+      updateUser(data, id),
     onSuccess: (data) => {
-      getSuccessNoti("Delete User", data, "User successfully deleted");
+      getSuccessNoti(
+        "Update " + userType,
+        data,
+        userType + " successfully updated",
+      );
       queryClient.invalidateQueries({ queryKey: ["users"] });
     },
     onError: (error) => {
-      getErrorNoti("Delete User", error, "User deleting failed");
+      getErrorNoti("Update " + userType, error, userType + " updating failed");
+    },
+  });
+};
+
+export const useDeactivateUserMutation = (role: Role | undefined) => {
+  const queryClient = useQueryClient();
+  const userType = role === Role.admin ? "Admin" : "User";
+
+  return useMutation({
+    mutationFn: ({ id }: { id: number }) => deactivateUser(id),
+    onSuccess: (data) => {
+      getSuccessNoti(
+        "Delete " + userType,
+        data,
+        userType + " successfully deleted",
+      );
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+    },
+    onError: (error) => {
+      getErrorNoti("Delete " + userType, error, userType + " deleting failed");
     },
   });
 };

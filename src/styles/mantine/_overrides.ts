@@ -1,4 +1,4 @@
-import { Button, Modal, type MantineThemeOverride } from "@mantine/core";
+import { Button, type MantineThemeOverride } from "@mantine/core";
 
 export const MantineComponentOverrides: MantineThemeOverride = {
   components: {

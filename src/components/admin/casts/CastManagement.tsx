@@ -6,7 +6,6 @@ import {
   Card,
   Container,
   Group,
-  SimpleGrid,
   Stack,
   Table,
   Text,
@@ -15,21 +14,17 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import {
-  IconDatabaseOff,
   IconEdit,
   IconPlus,
   IconSearch,
   IconTrash,
+  IconUserStar,
 } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import type { CastType } from "@/types/CastTypes";
 import CastModal from "./CastModal";
 import { useCastQuery } from "@/api/query/admin/castQuery";
-import {
-  useAddCastMutation,
-  useDeleteCastMutation,
-  useUpdateCastMutation,
-} from "@/api/mutation/admin/castMutation";
+import { useDeleteCastMutation } from "@/api/mutation/admin/castMutation";
 import { useLoadingStore } from "@/store/useLoading";
 import { useConfirmModalStore } from "@/store/useConfirmModalStore";
 
@@ -82,7 +77,7 @@ const CastManagement = () => {
   return (
     <Container size="xl" py="md">
       <Stack gap="lg">
-        <Group justify="space-between">
+        <Group justify="space-between" w={"70%"}>
           <Title order={2}>Cast Management</Title>
           <Button
             leftSection={<IconPlus size={16} />}
@@ -99,6 +94,7 @@ const CastManagement = () => {
           radius="md"
           withBorder
           className="dashboard-bg"
+          w={"70%"}
         >
           <TextInput
             placeholder="Search cast members..."
@@ -107,61 +103,6 @@ const CastManagement = () => {
             onChange={(e) => setSearchQuery(e.currentTarget.value)}
             classNames={inputStyle}
           />
-
-          {/* <SimpleGrid cols={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing="md"> */}
-          {/* {casts?.map((cast: CastType) => (
-            <Card
-              key={cast.id}
-              shadow="sm"
-              padding="lg"
-              radius="md"
-              withBorder
-              className="!bg-surface !text-text !border-0"
-            >
-              <Card.Section>
-                <Avatar
-                  src={cast.imageUrl}
-                  alt={cast.name}
-                  size={120}
-                  mx="auto"
-                  mt="md"
-                  radius="md"
-                />
-              </Card.Section>
-
-              <Stack gap="xs" mt="md">
-                <Text fw={500} size="lg" ta="center" lineClamp={1}>
-                  {cast.name}
-                </Text>
-
-                <Badge
-                  color="blue"
-                  variant="light"
-                  size="sm"
-                  style={{ alignSelf: "center" }}
-                >
-                  {cast.role}
-                </Badge>
-
-                <Group justify="center" mt="md">
-                  <ActionIcon
-                    variant="light"
-                    color="blue"
-                    onClick={() => handleEditCast(cast)}
-                  >
-                    <IconEdit size={16} />
-                  </ActionIcon>
-                  <ActionIcon
-                    variant="light"
-                    color="red"
-                    onClick={() => handleDeleteCast(cast.id)}
-                  >
-                    <IconTrash size={16} />
-                  </ActionIcon>
-                </Group>
-              </Stack>
-            </Card>
-          ))} */}
 
           <Table striped highlightOnHover mt={"md"}>
             <Table.Thead>
@@ -179,10 +120,10 @@ const CastManagement = () => {
                       <Avatar
                         src={cast.image?.url}
                         alt={cast.name}
-                        size={60}
+                        size={50}
                         radius="md"
                       />
-                      <Text fw={500} size="lg" lineClamp={1}>
+                      <Text fw={500} lineClamp={1} size="sm">
                         {cast.name}
                       </Text>
                     </Group>
@@ -190,7 +131,7 @@ const CastManagement = () => {
                   <Table.Td>
                     <Badge
                       color="var(--color-primary)"
-                      // variant="light"
+                      variant="outline"
                       size="md"
                       style={{ alignSelf: "center" }}
                     >
@@ -200,14 +141,14 @@ const CastManagement = () => {
                   <Table.Td>
                     <Group gap="xs">
                       <ActionIcon
-                        // variant="light"
+                        variant="light"
                         color="orange"
                         onClick={() => handleEditCast(cast)}
                       >
                         <IconEdit size={16} />
                       </ActionIcon>
                       <ActionIcon
-                        // variant="light"
+                        variant="light"
                         color="red"
                         onClick={() =>
                           openConfirm({
@@ -234,7 +175,7 @@ const CastManagement = () => {
           {casts?.length === 0 && !isLoading && (
             <Text ta="center" c="dimmed" py="xl">
               <div className="flex justify-center mb-2">
-                <IconDatabaseOff size={30} />
+                <IconUserStar size={30} />
               </div>
               No cast found
             </Text>

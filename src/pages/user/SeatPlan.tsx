@@ -16,19 +16,22 @@ const SeatPlan = () => {
 
   const movie = {
     id: 1,
-    name: "ALONE",
+    title: "ALONE",
+    description: "adfasdf",
     duration: "2 hrs 50 mins",
     genres: [
       { id: 2, label: "Adventure" },
       { id: 4, label: "Action" },
     ],
-    languages: ["English", "Tamil", "Hindi"],
+    language: ["English"],
+    experience: "2d",
     subtitle: ["Myanmar"],
     releaseDate: "8 Nov, 2025",
     rating: "8.0",
     status: "Now Showing",
-    posterUrl: "/movie03.jpg",
+    poster: { id: 1, url: "/movie03.jpg" },
     trailerId: "o2T2V1jrLY0",
+    photos: [],
     casts: [
       {
         id: 1,

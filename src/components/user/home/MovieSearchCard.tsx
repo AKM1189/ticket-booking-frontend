@@ -1,7 +1,5 @@
-import DateIcon from "@/assets/svgs/DateIcon";
-import { LocationIcon } from "@/assets/svgs";
-import MovieIcon from "@/assets/svgs/MovieIcon";
 import { Autocomplete, Button, Select } from "@mantine/core";
+import { IconCalendar, IconMapPin, IconMovie } from "@tabler/icons-react";
 
 interface MovieSearchBoxProps {
   selectedMovie?: string | undefined;
@@ -53,7 +51,7 @@ const MovieSearchCard = ({
           <Select
             label={
               <div className="flex gap-2 max-md:text-sm">
-                <LocationIcon color="var(--color-accent)" />
+                <IconMapPin color="var(--color-accent)" />
                 Location
               </div>
             }
@@ -72,7 +70,7 @@ const MovieSearchCard = ({
           <Select
             label={
               <div className="flex gap-2 max-md:text-sm">
-                <DateIcon color="var(--color-accent)" />
+                <IconCalendar color="var(--color-accent)" />
                 Date
               </div>
             }
@@ -90,7 +88,7 @@ const MovieSearchCard = ({
           <Autocomplete
             label={
               <div className="flex gap-1 max-md:text-sm">
-                <MovieIcon color="var(--color-accent)" />
+                <IconMovie color="var(--color-accent)" />
                 Movies
               </div>
             }

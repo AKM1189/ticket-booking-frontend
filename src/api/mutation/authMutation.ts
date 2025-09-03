@@ -6,20 +6,18 @@ import {
   otp,
   signup,
   logout,
-  getCurrentUser,
 } from "../function/authApi";
 import type { SignupDataType } from "../../pages/auth/Signup";
-import { AxiosError } from "axios";
-import { showNotification } from "../../utils/showNotification";
 import type { LoginDataType } from "../../pages/auth/Login";
 import Cookies from "js-cookie";
-import { StatusType } from "../../types/NotificationType";
 import { useNavigate } from "react-router";
 import { routes } from "../../routes";
 import { useAuthStore } from "@/store/authStore";
 import { getErrorNoti, getSuccessNoti } from "@/utils/showResponseNoti";
+import { Role } from "@/types/AuthType";
 
 export const useSignupMutation = (resetFields: () => void) => {
+  const navigate = useNavigate();
   return useMutation({
     mutationFn: ({ data }: { data: SignupDataType }) => signup(data),
     onSuccess: (data) => {
@@ -29,6 +27,7 @@ export const useSignupMutation = (resetFields: () => void) => {
         "You have signed up successfully!",
       );
       resetFields();
+      navigate(routes.auth.login);
     },
     onError: (error) => {
       getErrorNoti("Sign up Failed", error, "Signing up Failed");
@@ -37,14 +36,17 @@ export const useSignupMutation = (resetFields: () => void) => {
 };
 
 export const useLoginMutation = () => {
+  const navigate = useNavigate();
   return useMutation({
     mutationFn: ({ data }: { data: LoginDataType }) => login(data),
     onSuccess: async (data) => {
-      getSuccessNoti("Login Success", data, "You have logged in successfully!");
-      const inFifteenMinutes = new Date(new Date().getTime() + 1 * 60 * 1000);
+      // getSuccessNoti("Login Success", data, "You have logged in successfully!");
       Cookies.set("accessToken", data?.accessToken, {
-        expires: inFifteenMinutes,
+        expires: 3,
       });
+      data?.role === Role.admin
+        ? navigate(routes.admin.dashboard)
+        : navigate(routes.user.home);
     },
     onError: (error) => {
       getErrorNoti("Login Failed", error, "Login Failed");
@@ -110,19 +112,20 @@ export const useResetPasswordMutation = () => {
 
 export const useLogoutMutation = () => {
   const navigate = useNavigate();
-  const { user, setUser, logout: removeUser } = useAuthStore();
+  const { logout: removeUser } = useAuthStore();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: logout,
     onSuccess: (data) => {
       removeUser();
-      console.log("user", user);
       Cookies.remove("accessToken");
       getSuccessNoti("Logout", data, "You have logout successfully");
+      queryClient.removeQueries({ queryKey: ["user"] });
+      queryClient.clear();
       navigate(routes.auth.login);
       // window.location.href = routes.auth.login;
-      queryClient.invalidateQueries({ queryKey: ["currentUser"] });
+      // queryClient.invalidateQueries({ queryKey: ["currentUser"] });
     },
     onError: (error) => {
       getErrorNoti("Logout Failed", error, "Logout failed");

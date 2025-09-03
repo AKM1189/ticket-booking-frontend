@@ -17,14 +17,13 @@ interface ImagePreview {
   clearAllImages?: () => void;
   isClearAll: boolean;
   removeImage: () => void;
-  selectedImages: File[];
+  // selectedImages: File[];
 }
 const ImagePreview = ({
   imagePreviewUrls,
   clearAllImages,
   isClearAll = false,
   removeImage,
-  selectedImages,
 }) => {
   const [isLoading, setIsLoading] = useState(true);
   return (

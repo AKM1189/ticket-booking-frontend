@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { RatingIcon } from "@/assets/svgs";
 import type { MovieDetailType } from "@/types/MovieTypes";
 import { Button } from "@mantine/core";
 
@@ -31,7 +30,7 @@ const Review = ({ movie }: ReviewType) => {
         </div>
         <div className="w-[800px]">
           <span className="flex gap-2 mb-3">
-            <RatingIcon color="var(--color-accent)" />
+            <IconStarFilled color="var(--color-accent)" />
             {item.rating}
           </span>
           <p className="text-blueGray">{item.review}</p>

@@ -17,7 +17,6 @@ import {
   FileInput,
   Textarea,
   Loader,
-  Popover,
   NumberInput,
   LoadingOverlay,
 } from "@mantine/core";
@@ -28,7 +27,7 @@ import {
   IconTrash,
   IconSearch,
   IconUpload,
-  IconDatabaseOff,
+  IconMovie,
 } from "@tabler/icons-react";
 import { useForm } from "@mantine/form";
 import type { MovieType, MovieInputType } from "@/types/MovieTypes";
@@ -47,7 +46,6 @@ import { urlToFile } from "@/utils/imageUploads";
 import { useLoadingStore } from "@/store/useLoading";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { movieSchema } from "@/schema/MovieSchema";
-import { twMerge } from "tailwind-merge";
 import dayjs from "dayjs";
 import { useConfirmModalStore } from "@/store/useConfirmModalStore";
 
@@ -65,10 +63,8 @@ const MovieManagement = () => {
   const [selectedCasts, setSelectedCasts] = useState<CastSelectionType[]>([]);
   const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([]);
   const [posterPreviewUrl, setPosterPreviewUrl] = useState<string[]>([]);
-  const [selectedPoster, setSelectedPoster] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLButtonElement>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [isLoading, _setIsLoading] = useState(false);
 
   const { data: genres } = useGenreQuery();
   const genreList = genres?.data;
@@ -104,7 +100,6 @@ const MovieManagement = () => {
       genres: [] as string[],
       experience: [] as string[],
       releaseDate: "",
-      status: "",
       language: [] as string[],
       subtitle: [] as string[],
       poster: null as File | null,
@@ -148,14 +143,13 @@ const MovieManagement = () => {
   }, []);
 
   const removePoster = useCallback(() => {
-    setSelectedPoster(null);
     setPosterPreviewUrl([]);
     form.setFieldValue("poster", null);
   }, []);
 
   const removeImage = useCallback((imageIndex: number) => {
     setSelectedImages((prev) =>
-      prev.filter((item, index) => index !== imageIndex),
+      prev.filter((_item, index) => index !== imageIndex),
     );
     setImagePreviewUrls((prev) => {
       // Revoke the URL to prevent memory leaks
@@ -188,7 +182,6 @@ const MovieManagement = () => {
   const resetFormValues = () => {
     setEditingMovie(null);
     setSelectedImages([]);
-    setSelectedPoster(null);
     setSelectedLanguages([]);
     setSelectedSubtitles([]);
     setSelectedCasts([]);
@@ -207,7 +200,6 @@ const MovieManagement = () => {
       duration: parseInt(movie.duration),
       genres: movie.genres.map((g: any) => g.id.toString()),
       releaseDate,
-      status: movie.status,
       trailerId: movie.trailerId,
       experience: movie.experience,
       poster: await urlToFile(movie.poster?.url, "poster.jpg", "image/jpeg"),
@@ -220,23 +212,22 @@ const MovieManagement = () => {
       urlToFile(img.url, "image_" + index, "image/jpeg"),
     );
     const photoFiles = await Promise.all(getPhotoFiles);
-    const posterFile = await urlToFile(
-      movie.poster?.url,
-      "poster.jpg",
-      "image/jpeg",
-    );
+    // const posterFile = await urlToFile(
+    //   movie.poster?.url,
+    //   "poster.jpg",
+    //   "image/jpeg",
+    // );
     setSelectedImages(photoFiles);
-    setSelectedPoster(posterFile);
     setSelectedLanguages(movie.language);
     setSelectedSubtitles(movie.subtitle);
     // Set selected casts if movie has cast data
     if (movie?.casts) {
       setSelectedCasts(
         movie?.casts?.map((cast) => ({
-          id: cast.id,
-          name: cast.name,
-          role: cast.role,
-          imageUrl: cast.imageUrl,
+          id: cast?.id,
+          name: cast?.name,
+          role: cast?.role,
+          imageUrl: cast?.imageUrl,
         })),
       );
     }
@@ -292,11 +283,11 @@ const MovieManagement = () => {
     }
   };
 
-  const handleDeleteMovie = () => {
+  const handleDeleteMovie = (id: number) => {
     showLoading(true);
 
     deleteMovieMutation(
-      { id: editingMovie?.id },
+      { id },
       {
         onSuccess: () => {
           showLoading(false);
@@ -307,7 +298,6 @@ const MovieManagement = () => {
         },
       },
     );
-    setDeleteModalOpen(false);
   };
 
   const getStatusColor = (status: string) => {
@@ -316,6 +306,8 @@ const MovieManagement = () => {
         return "#28a745";
       case "Coming Soon":
         return "#007bff";
+      case "Ticket Available":
+        return "#c29617";
       case "Ended":
         return "#6c757d";
       default:
@@ -408,7 +400,7 @@ const MovieManagement = () => {
                         <Image
                           src={movie.poster?.url}
                           alt={movie.title}
-                          w={40}
+                          w={50}
                           h={60}
                           radius="sm"
                           fallbackSrc="/no_poster.jpeg"
@@ -431,20 +423,27 @@ const MovieManagement = () => {
                   <Table.Td>{movie.duration}</Table.Td>
                   <Table.Td>
                     <Group gap="xs">
-                      {movie?.genres.map(
-                        (genre: any, index: number) =>
-                          index < 2 && (
-                            <Badge
-                              key={genre.id}
-                              variant="outline"
-                              color={genre.color}
-                              size="sm"
-                            >
-                              {genre.name}
-                            </Badge>
-                          ),
-                      )}
-                      {movie?.genres.length > 2 && (
+                      {movie?.genres.map((genre: any) => (
+                        // index < 2 && (
+                        //   <Badge
+                        //     key={genre.id}
+                        //     variant="outline"
+                        //     color={genre.color}
+                        //     size="sm"
+                        //   >
+                        //     {genre.name}
+                        //   </Badge>
+                        // ),
+                        <Badge
+                          key={genre.id}
+                          variant="light"
+                          color={genre.color}
+                          size="sm"
+                        >
+                          {genre.name}
+                        </Badge>
+                      ))}
+                      {/* {movie?.genres.length > 2 && (
                         <Popover
                           width={200}
                           position="bottom"
@@ -454,7 +453,7 @@ const MovieManagement = () => {
                           <Popover.Target>
                             <Badge
                               size="sm"
-                              variant="outline"
+                              variant="light"
                               color="var(--color-secondary)"
                               className="!cursor-pointer"
                             >
@@ -467,7 +466,7 @@ const MovieManagement = () => {
                                 index >= 2 && (
                                   <Badge
                                     key={genre.id}
-                                    // variant="outline"
+                                    variant="light"
                                     color={genre.color}
                                     size="sm"
                                   >
@@ -477,16 +476,25 @@ const MovieManagement = () => {
                             )}
                           </Popover.Dropdown>
                         </Popover>
-                      )}
+                      )} */}
                     </Group>
                   </Table.Td>
                   <Table.Td className="!text-sm">
                     {movie?.releaseDate &&
                       dayjs(movie.releaseDate).format("YYYY-MM-DD")}
                   </Table.Td>
-                  <Table.Td>⭐ {movie.rating}</Table.Td>
                   <Table.Td>
-                    <Badge color={getStatusColor(movie.status)}>
+                    {" "}
+                    {movie.rating ? (
+                      "⭐" + movie.rating
+                    ) : (
+                      <Text size="xs" c={"dimmed"}>
+                        -
+                      </Text>
+                    )}
+                  </Table.Td>
+                  <Table.Td>
+                    <Badge color={getStatusColor(movie.status)} variant="light">
                       {movie.status}
                     </Badge>
                   </Table.Td>
@@ -509,6 +517,7 @@ const MovieManagement = () => {
                             title: "Delete Movie",
                             message:
                               "Are you sure you want to delete this movie?",
+                            onConfirm: () => handleDeleteMovie(movie?.id),
                           });
                         }}
                       >
@@ -522,9 +531,9 @@ const MovieManagement = () => {
           </Table>
         </div>
         {movies?.length === 0 && (
-          <Text ta="center" c="dimmed" py="xl">
+          <Text ta="center" c="dimmed" py="xl" size="sm">
             <div className="flex justify-center mb-2">
-              <IconDatabaseOff size={30} />
+              <IconMovie size={30} />
             </div>
             No movie found
           </Text>
@@ -582,14 +591,14 @@ const MovieManagement = () => {
                 {...form.getInputProps("releaseDate")}
               />
             </Grid.Col>
-            <Grid.Col span={12}>
+            <Grid.Col span={6}>
               <MultiSelect
                 label="Genres"
                 placeholder="Select genres"
                 withErrorStyles={false}
                 classNames={{
                   ...inputStyle,
-                  pill: "!bg-primary !text-text",
+                  pill: "!bg-primary !text-selected-text",
                 }}
                 data={
                   genreList?.length > 0
@@ -605,7 +614,7 @@ const MovieManagement = () => {
             </Grid.Col>
             <Grid.Col span={6}>
               <Text size="sm" fw={500} mb="xs">
-                Languages <span className="text-red-400">*</span>
+                Languages
               </Text>
               <CreatableMultiSelect
                 value={selectedLanguages}
@@ -620,7 +629,7 @@ const MovieManagement = () => {
             </Grid.Col>
             <Grid.Col span={6}>
               <Text size="sm" fw={500} mb="xs">
-                Subtitles <span className="text-red-400">*</span>
+                Subtitles
               </Text>
               <CreatableMultiSelect
                 value={selectedSubtitles}
@@ -642,7 +651,7 @@ const MovieManagement = () => {
                 classNames={{
                   ...inputStyle,
                   options: "!text-red",
-                  pill: "!bg-primary !text-text",
+                  pill: "!bg-primary !text-selected-text",
                 }}
                 data={["2D", "3D", "IMAX"]}
                 // required
@@ -650,7 +659,7 @@ const MovieManagement = () => {
               />
             </Grid.Col>
 
-            <Grid.Col span={6}>
+            {/* <Grid.Col span={6}>
               <Select
                 label="Status"
                 placeholder="Select status"
@@ -659,13 +668,13 @@ const MovieManagement = () => {
                 classNames={inputStyle}
                 {...form.getInputProps("status")}
               />
-            </Grid.Col>
+            </Grid.Col> */}
             <Grid.Col span={12}>
               <FileInput
                 label="Poster"
                 classNames={{
                   input: "dashboard-input",
-                  placeholder: "!text-text",
+                  placeholder: "!text-muted",
                 }}
                 // required
                 accept="image/*"
@@ -679,7 +688,7 @@ const MovieManagement = () => {
               imagePreviewUrls={posterPreviewUrl}
               removeImage={removePoster}
               clearAllImages={clearAllImages}
-              selectedImages={selectedImages}
+              // selectedImages={selectedImages}
             />
 
             {/* Multiple Image Upload Section */}
@@ -697,7 +706,10 @@ const MovieManagement = () => {
                 value={selectedImages}
                 accept="image/*"
                 onChange={handleImageUpload}
-                classNames={{ ...inputStyle, description: "!text-blueGray" }}
+                classNames={{
+                  input: "dashboard-input",
+                  placeholder: "!text-muted",
+                }}
                 description="Upload multiple images for the movie (posters, stills, behind-the-scenes)"
               />
             </Grid.Col>
@@ -708,7 +720,7 @@ const MovieManagement = () => {
               isClearAll={true}
               removeImage={removeImage}
               clearAllImages={clearAllImages}
-              selectedImages={selectedImages}
+              // selectedImages={selectedImages}
             />
 
             <Grid.Col span={12}>
@@ -747,39 +759,6 @@ const MovieManagement = () => {
           </Group>
         </form>
       </Modal>
-
-      {/* <Modal
-        opened={deleteModalOpen}
-        onClose={() => setDeleteModalOpen(false)}
-        title="Delete Movie"
-        centered
-        classNames={modalStyle}
-      >
-        <Text size="sm">
-          Are you sure you want to delete{" "}
-          <span className="text-base font-semibold text-accent uppercase">
-            {editingMovie?.title}
-          </span>{" "}
-          movie?
-        </Text>
-        <div className="flex justify-end mt-5 gap-5">
-          <Button
-            className="dashboard-btn !text-text !text-sm"
-            variant="outline"
-            onClick={() => setDeleteModalOpen(false)}
-          >
-            Cancel
-          </Button>
-
-          <Button
-            className="dashboard-btn !text-sm"
-            color="red"
-            onClick={handleDeleteMovie}
-          >
-            Confirm
-          </Button>
-        </div>
-      </Modal> */}
     </div>
   );
 };

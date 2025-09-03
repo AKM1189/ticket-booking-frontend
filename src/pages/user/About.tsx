@@ -1,14 +1,14 @@
-import {
-  CustomersIcon,
-  LocationIcon,
-  MagnifyIcon,
-  PeopleIcon,
-  ScreenIcon,
-  ShakeIcon,
-  TheatreIcon,
-} from "@/assets/svgs";
 import EmployeeCarousel from "@/components/user/home/EmployeeCarousel";
 import { Button } from "@mantine/core";
+import {
+  IconBuilding,
+  IconDeviceTv,
+  IconHeartHandshake,
+  IconMapPin,
+  IconSearch,
+  IconUser,
+  IconUsers,
+} from "@tabler/icons-react";
 
 const employees = [
   {
@@ -109,21 +109,21 @@ const About = () => {
           <ul className="flex flex-col gap-10 mt-14 text-2xl">
             <li className="font-semibold flex items-center gap-5">
               <div className="p-2 border border-secondary rounded-full">
-                <ShakeIcon size={30} color="var(--color-secondary)" />
+                <IconHeartHandshake size={30} color="var(--color-secondary)" />
               </div>
 
               <span>Honesty & Fairness</span>
             </li>
             <li className="font-semibold flex items-center gap-5">
               <div className="p-2 border border-secondary rounded-full">
-                <MagnifyIcon size={30} color="var(--color-secondary)" />
+                <IconSearch size={30} color="var(--color-secondary)" />
               </div>
 
               <span>Clarity & Transparency</span>
             </li>
             <li className="font-semibold flex items-center gap-5">
               <div className="p-2 border border-secondary rounded-full">
-                <PeopleIcon size={30} color="var(--color-secondary)" />
+                <IconUsers size={30} color="var(--color-secondary)" />
               </div>
 
               <span>Focus on Customers</span>
@@ -137,28 +137,28 @@ const About = () => {
           <ul className="flex justify-center gap-40">
             <li className="flex flex-col items-center">
               <div className="p-3 border-2 border-secondary rounded-full">
-                <CustomersIcon size={40} color="var(--color-secondary)" />
+                <IconUser size={40} color="var(--color-secondary)" />
               </div>
               <div className="text-3xl font-semibold mt-5">120+</div>
               <span className="text-sm text-accent">Customers</span>
             </li>
             <li className="flex flex-col items-center">
               <div className="p-3 border-2 border-secondary rounded-full">
-                <LocationIcon size={40} color="var(--color-secondary)" />
+                <IconMapPin size={40} color="var(--color-secondary)" />
               </div>
               <div className="text-3xl font-semibold mt-5">10</div>
               <span className="text-sm text-accent">Cities</span>
             </li>
             <li className="flex flex-col items-center">
               <div className="p-3 border-2 border-secondary rounded-full">
-                <TheatreIcon size={40} color="var(--color-secondary)" />
+                <IconBuilding size={40} color="var(--color-secondary)" />
               </div>
               <div className="text-3xl font-semibold mt-5">12+</div>
               <span className="text-sm text-accent">Theatres</span>
             </li>
             <li className="flex flex-col items-center">
               <div className="p-3 border-2 border-secondary rounded-full">
-                <ScreenIcon size={40} color="var(--color-secondary)" />
+                <IconDeviceTv size={40} color="var(--color-secondary)" />
               </div>
               <div className="text-3xl font-semibold mt-5">24+</div>
               <span className="text-sm text-accent">Screens</span>

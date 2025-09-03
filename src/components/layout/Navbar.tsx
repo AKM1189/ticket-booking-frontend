@@ -11,26 +11,20 @@ import {
   Text,
   TextInput,
 } from "@mantine/core";
-import { CloseIcon, ListIcon } from "@/assets/svgs";
 import { AnimatePresence, motion } from "motion/react";
 import { useAuthStore } from "@/store/authStore";
-import {
-  IconLogout,
-  IconLogin2,
-  IconUser,
-  IconUserCircle,
-} from "@tabler/icons-react";
+import { IconLogin2, IconMenu2, IconX } from "@tabler/icons-react";
 import { useLogoutMutation } from "@/api/mutation/authMutation";
 import { Role, type AuthType } from "@/types/AuthType";
 import { useDisclosure } from "@mantine/hooks";
 import { useForm } from "@mantine/form";
 import { profileSchema } from "@/schema/AuthSchema";
 import { zodResolver } from "mantine-form-zod-resolver";
+import { useConfirmModalStore } from "@/store/useConfirmModalStore";
 
 const Navbar = () => {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [isNavOpen, setIsNavOpen] = useState(false);
-
   const { user } = useAuthStore();
 
   const location = useLocation();
@@ -93,7 +87,7 @@ const Navbar = () => {
         className="md:hidden absolute top-6 right-10 cursor-pointer"
         onClick={() => setIsNavOpen(true)}
       >
-        <ListIcon size={30} />
+        <IconMenu2 size={30} />
       </div>
 
       <AnimatePresence>
@@ -127,7 +121,7 @@ const Navbar = () => {
               className="absolute top-14 right-14 cursor-pointer"
               onClick={() => setIsNavOpen(false)}
             >
-              <CloseIcon size={30} />
+              <IconX size={30} />
             </div>
           </motion.div>
         )}
@@ -143,6 +137,7 @@ export const Logout = ({ user }: { user: AuthType | null }) => {
   const [opened, { open, close }] = useDisclosure(false);
   const [popoverOpened, setPopoverOpened] = useState(false);
   const [enableUpdate, setEnableUpdate] = useState(false);
+  const { open: confirmLogout } = useConfirmModalStore();
   const handleLogout = () => {
     logout();
   };
@@ -154,10 +149,9 @@ export const Logout = ({ user }: { user: AuthType | null }) => {
     },
     validate: zodResolver(profileSchema),
   });
-  console.log("user", user);
   return (
     <div>
-      {user?.role === Role.user ? (
+      {user && user?.role === Role.user ? (
         // <div className="flex items-center gap-1" onClick={handleLogout}>
         <div>
           <Popover
@@ -192,7 +186,14 @@ export const Logout = ({ user }: { user: AuthType | null }) => {
                 size="sm"
                 p="xs"
                 className="cursor-pointer"
-                onClick={handleLogout}
+                onClick={() => {
+                  setPopoverOpened(false);
+                  confirmLogout({
+                    title: "Logout",
+                    message: "Are you sure you want to logout?",
+                    onConfirm: handleLogout,
+                  });
+                }}
               >
                 Logout
               </Text>

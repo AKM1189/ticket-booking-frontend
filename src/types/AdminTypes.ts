@@ -32,7 +32,7 @@ export type ScheduleType = {
   theaterId: number;
   showDate: string;
   showTime: string;
-  price: number;
+  priceList: number;
   availableSeats: number;
   totalSeats: number;
   isActive: boolean;
@@ -70,6 +70,7 @@ export enum AdminTabType {
   GENRES = "genres",
   CASTS = "casts",
   BOOKINGS = "bookings",
+  SEATTYPE = "seatType",
   SCREENS = " screens",
   USERS = "users",
 }

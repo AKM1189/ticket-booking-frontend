@@ -28,7 +28,7 @@ const ConfirmModal = () => {
         </Button>
 
         <Button
-          className="dashboard-btn !text-sm"
+          className="dashboard-btn !text-sm !h-[35px] !w-[90px] !p-0 !bg-red-500/90 hover:!bg-red-500/80 transition-color duration-100"
           color="red"
           onClick={() => {
             onConfirm?.();

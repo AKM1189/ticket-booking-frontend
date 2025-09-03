@@ -23,7 +23,7 @@ const SeatPlanHeader = ({
         <div className="flex justify-center items-center gap-10 relative bottom-20">
           <div className="ms-10">
             <div className="text-6xl font-bold mb-5">
-              {movie.name} {id}
+              {movie.title} {id}
             </div>
             <div className="text-blueGray text-center text-xl">
               Theatre 1 | English - 2D

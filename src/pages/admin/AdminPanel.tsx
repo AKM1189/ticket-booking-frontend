@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   AdminLayout,
   AdminDashboard,
@@ -12,6 +12,8 @@ import {
   UserManagement,
 } from "@/components/admin";
 import { AdminTabType } from "@/types/AdminTypes";
+import SeatTypeManagement from "@/components/admin/seatTypes/SeatTypeManagement";
+import BookingPage from "@/components/admin/bookings/BookingPage";
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState<AdminTabType>(
@@ -33,7 +35,9 @@ const AdminPanel = () => {
       case AdminTabType.CASTS:
         return <CastManagement />;
       case AdminTabType.BOOKINGS:
-        return <BookingManagement />;
+        return <BookingPage />;
+      // case AdminTabType.SEATTYPE:
+      //   return <SeatTypeManagement />;
       case AdminTabType.SCREENS:
         return <ScreenManagement />;
       case AdminTabType.USERS:

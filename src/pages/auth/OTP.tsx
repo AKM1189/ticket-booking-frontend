@@ -58,7 +58,7 @@ const OTP = () => {
           </form>
 
           <div className="text-center text-blue-500 underline">
-            <NavLink to={"/" + routes.auth.login}>Back To Login</NavLink>
+            <NavLink to={routes.auth.login}>Back To Login</NavLink>
           </div>
         </div>
       </div>

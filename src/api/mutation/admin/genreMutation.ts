@@ -4,11 +4,8 @@ import {
   updateGenre,
 } from "@/api/function/admin/genreApi";
 import type { GenreType } from "@/types/GenreTypes";
-import { StatusType } from "@/types/NotificationType";
-import { showNotification } from "@/utils/showNotification";
 import { getErrorNoti, getSuccessNoti } from "@/utils/showResponseNoti";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { AxiosError } from "axios";
 
 export const useAddGenreMutation = () => {
   const queryClient = useQueryClient();

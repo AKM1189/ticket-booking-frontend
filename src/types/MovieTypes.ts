@@ -1,6 +1,5 @@
 import type React from "react";
 import type { GenreType } from "./GenreTypes";
-import type { CastSelectionType } from "./CastTypes";
 
 export type LabelType = {
   id: number;
@@ -18,7 +17,7 @@ export type MovieType = {
   title: string;
   description: string;
   duration: string;
-  genres: string[];
+  genres: GenreType[];
   language: string[];
   subtitle: string[];
   experience: string[];
@@ -40,7 +39,6 @@ export type MovieInputType = {
   subtitle: string[];
   experience: string[];
   releaseDate: string | null;
-  status: string;
   poster: File | null;
   photos: File[];
   trailerId: string;

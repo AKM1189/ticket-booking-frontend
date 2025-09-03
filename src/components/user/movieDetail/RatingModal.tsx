@@ -1,7 +1,7 @@
 import { Button, Modal, NumberInput, Textarea } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
-import { RatingIcon } from "@/assets/svgs";
+import { IconStarFilled } from "@tabler/icons-react";
 
 const RatingModal = () => {
   const [opened, { open, close }] = useDisclosure(false);
@@ -46,7 +46,7 @@ const RatingModal = () => {
               label: "!mb-2 !text-text",
               control: "!text-text hover:!bg-surface-hover !border-0",
             }}
-            leftSection={<RatingIcon color="var(--color-accent)" />}
+            leftSection={<IconStarFilled color="var(--color-accent)" />}
           />
 
           <Textarea

@@ -11,7 +11,6 @@ import PrimaryButton from "../../ui/button/PrimaryButton";
 
 import "react-phone-number-input/style.css";
 import PhoneInput from "react-phone-number-input";
-import { useState } from "react";
 
 export type SignupDataType = {
   name: string | null;
@@ -151,13 +150,6 @@ const Signup = () => {
             Login now
           </NavLink>
         </div>
-
-        <NavLink
-          to={routes.user.home}
-          className="text-sm mt-5 flex items-center gap-2 ps-10 sm:ps-40 w-full text-muted"
-        >
-          Back To Home
-        </NavLink>
       </div>
     </div>
   );

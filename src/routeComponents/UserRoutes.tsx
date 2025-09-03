@@ -5,8 +5,6 @@ import { Home, About, Movies } from "@/pages";
 import MovieDetail from "@/pages/user/MovieDetail";
 import TicketPlan from "@/pages/user/TicketPlan";
 import SeatPlan from "@/pages/user/SeatPlan";
-import { Login, Signup, ForgotPassword, OTP, ResetPassword } from "@/pages";
-import AuthLayout from "@/pages/auth/AuthLayout";
 import Contact from "@/pages/user/Contact";
 import Checkout from "@/pages/user/Checkout";
 import AdminAccessDemo from "@/components/AdminAccessDemo";

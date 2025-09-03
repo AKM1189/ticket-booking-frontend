@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import {
   Title,
   Table,
@@ -11,6 +11,13 @@ import {
   Text,
   Modal,
   Grid,
+  Button,
+  Stack,
+  Paper,
+  Divider,
+  Avatar,
+  Tooltip,
+  Loader,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import {
@@ -21,153 +28,30 @@ import {
   IconTicket,
   IconClock,
   IconBan,
+  IconPlus,
+  IconX,
+  IconEdit,
+  IconTrash,
+  IconUser,
+  IconMail,
+  IconMapPin,
+  IconCurrencyDollar,
 } from "@tabler/icons-react";
-import type { BookingType } from "@/types/AdminTypes";
+import { useBookingQuery } from "@/api/query/admin/bookingQuery";
+import type { BookingType } from "@/types/BookingType";
+import { useConfirmModalStore } from "@/store/useConfirmModalStore";
+import { useCancelBookingMutation } from "@/api/mutation/admin/bookingMutation";
+import { useNavigate } from "react-router";
+import { BookingCompType } from "./BookingPage";
+import { useBookingStore } from "@/store/bookingStore";
+import Ticket from "./Ticket";
 
-// Mock data
-const mockBookings: BookingType[] = [
-  {
-    id: 1,
-    userId: 1,
-    scheduleId: 1,
-    seats: ["A1", "A2"],
-    totalAmount: 25.5,
-    bookingDate: "2025-01-24T10:30:00Z",
-    status: "confirmed",
-    customerName: "John Doe",
-    customerEmail: "john@example.com",
-    schedule: {
-      id: 1,
-      movieId: 1,
-      theaterId: 1,
-      showDate: "2025-01-25",
-      showTime: "14:30",
-      price: 12.5,
-      availableSeats: 120,
-      totalSeats: 150,
-      isActive: true,
-      movie: {
-        id: 1,
-        name: "Avatar: The Way of Water",
-        duration: "192 min",
-        genres: [],
-        releaseDate: "2022-12-16",
-        rating: "7.6",
-        status: "Now Showing",
-        posterUrl: "/movie-bg.jpg",
-        trailerId: "abc123",
-      },
-      theater: {
-        id: 1,
-        name: "Theater 1",
-        location: "Downtown Mall",
-        capacity: 150,
-        seatLayout: {
-          rows: 10,
-          seatsPerRow: 15,
-          aisles: [],
-          disabledSeats: [],
-        },
-        isActive: true,
-      },
-    },
-  },
-  {
-    id: 2,
-    userId: 2,
-    scheduleId: 2,
-    seats: ["B5"],
-    totalAmount: 15.0,
-    bookingDate: "2025-01-24T09:15:00Z",
-    status: "pending",
-    customerName: "Jane Smith",
-    customerEmail: "jane@example.com",
-    schedule: {
-      id: 2,
-      movieId: 2,
-      theaterId: 2,
-      showDate: "2025-01-25",
-      showTime: "19:00",
-      price: 15.0,
-      availableSeats: 180,
-      totalSeats: 200,
-      isActive: true,
-      movie: {
-        id: 2,
-        name: "Top Gun: Maverick",
-        duration: "130 min",
-        genres: [],
-        releaseDate: "2022-05-27",
-        rating: "8.3",
-        status: "Now Showing",
-        posterUrl: "/movie-bg-2.jpg",
-        trailerId: "def456",
-      },
-      theater: {
-        id: 2,
-        name: "Theater 2",
-        location: "City Center",
-        capacity: 200,
-        seatLayout: {
-          rows: 12,
-          seatsPerRow: 18,
-          aisles: [],
-          disabledSeats: [],
-        },
-        isActive: true,
-      },
-    },
-  },
-  {
-    id: 3,
-    userId: 3,
-    scheduleId: 1,
-    seats: ["C10", "C11", "C12"],
-    totalAmount: 37.5,
-    bookingDate: "2025-01-23T16:45:00Z",
-    status: "cancelled",
-    customerName: "Mike Johnson",
-    customerEmail: "mike@example.com",
-    schedule: {
-      id: 1,
-      movieId: 1,
-      theaterId: 1,
-      showDate: "2025-01-25",
-      showTime: "14:30",
-      price: 12.5,
-      availableSeats: 120,
-      totalSeats: 150,
-      isActive: true,
-      movie: {
-        id: 1,
-        name: "Avatar: The Way of Water",
-        duration: "192 min",
-        genres: [],
-        releaseDate: "2022-12-16",
-        rating: "7.6",
-        status: "Now Showing",
-        posterUrl: "/movie-bg.jpg",
-        trailerId: "abc123",
-      },
-      theater: {
-        id: 1,
-        name: "Theater 1",
-        location: "Downtown Mall",
-        capacity: 150,
-        seatLayout: {
-          rows: 10,
-          seatsPerRow: 15,
-          aisles: [],
-          disabledSeats: [],
-        },
-        isActive: true,
-      },
-    },
-  },
-];
-
-const BookingManagement = () => {
-  const [bookings /*, setBookings*/] = useState<BookingType[]>(mockBookings);
+const BookingManagement = ({
+  setCurrentComp,
+}: {
+  setCurrentComp: (value: BookingCompType) => void;
+}) => {
+  const [bookings, setBookings] = useState<BookingType[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [dateFilter, setDateFilter] = useState("");
@@ -176,38 +60,39 @@ const BookingManagement = () => {
     null,
   );
 
-  // Memoize filtered bookings to prevent unnecessary recalculations
-  const filteredBookings = useMemo(() => {
-    return bookings.filter((booking) => {
-      const matchesSearch =
-        booking.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        booking.customerEmail
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
-        booking.schedule?.movie?.name
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase());
-      const matchesStatus = !statusFilter || booking.status === statusFilter;
-      const matchesDate =
-        !dateFilter || booking.bookingDate.startsWith(dateFilter);
-      return matchesSearch && matchesStatus && matchesDate;
-    });
-  }, [bookings, searchTerm, statusFilter, dateFilter]);
+  const [ticketOpen, setTicketOpen] = useState(false);
+
+  const { open: openConfirm } = useConfirmModalStore();
+
+  const { data: bookingData } = useBookingQuery();
+
+  const { mutate: cancelBookingMutation } = useCancelBookingMutation();
+
+  const navigate = useNavigate();
+
+  const { setCurrentBooking } = useBookingStore();
+
+  useEffect(() => {
+    if (bookingData) {
+      console.log("bookingData", bookingData);
+      setBookings(bookingData?.data);
+    }
+  }, [bookingData]);
 
   // Memoize expensive calculations
   const { totalRevenue, stats } = useMemo(() => {
-    const total = filteredBookings.length;
+    const total = bookings.length;
     let confirmed = 0;
     let pending = 0;
     let cancelled = 0;
     let revenue = 0;
 
     // Single loop to calculate all stats
-    filteredBookings.forEach((booking) => {
+    bookings.forEach((booking) => {
       switch (booking.status) {
         case "confirmed":
           confirmed++;
-          revenue += booking.totalAmount;
+          revenue += parseFloat(booking?.totalAmount);
           break;
         case "pending":
           pending++;
@@ -222,16 +107,16 @@ const BookingManagement = () => {
       totalRevenue: revenue,
       stats: { total, confirmed, pending, cancelled },
     };
-  }, [filteredBookings]);
+  }, [bookings]);
 
   const handleViewBooking = useCallback(
     (booking: BookingType) => {
+      setCurrentBooking(booking.id);
       setSelectedBooking(booking);
       open();
     },
     [open],
   );
-
   const getStatusColor = useCallback((status: string) => {
     switch (status) {
       case "confirmed":
@@ -255,15 +140,25 @@ const BookingManagement = () => {
   return (
     <div className="space-y-6">
       <Group justify="space-between">
-        <Title order={2}>Booking Management</Title>
-        <Group>
-          <Text size="sm" c="dimmed">
+        <div>
+          <Title order={2}>Booking Management</Title>
+          {/* <Group> */}
+          <Text size="sm" c="dimmed" mt={10}>
             Total Revenue:{" "}
             <Text span fw={700} c="green">
               ${totalRevenue.toFixed(2)}
             </Text>
           </Text>
-        </Group>
+        </div>
+
+        <Button
+          leftSection={<IconPlus size={16} />}
+          className="dashboard-btn"
+          onClick={() => setCurrentComp(BookingCompType.bookingForm)}
+        >
+          Add Booking
+        </Button>
+        {/* </Group> */}
       </Group>
 
       {/* Stats Cards */}
@@ -412,122 +307,160 @@ const BookingManagement = () => {
           />
         </Group>
 
-        <Table striped highlightOnHover>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>Booking ID</Table.Th>
-              <Table.Th>Customer</Table.Th>
-              <Table.Th>Movie & Theater</Table.Th>
-              <Table.Th>Show Details</Table.Th>
-              <Table.Th>Seats</Table.Th>
-              <Table.Th>Amount</Table.Th>
-              <Table.Th>Status</Table.Th>
-              <Table.Th>Actions</Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            {filteredBookings.map((booking) => (
-              <Table.Tr key={booking.id}>
-                <Table.Td>
-                  <Text size="sm" fw={500}>
-                    #{booking.id}
-                  </Text>
-                </Table.Td>
-                <Table.Td>
-                  <div>
-                    <Text size="sm" fw={500}>
-                      {booking.customerName}
-                    </Text>
-                    <Text size="xs" c="dimmed">
-                      {booking.customerEmail}
-                    </Text>
-                  </div>
-                </Table.Td>
-                <Table.Td>
-                  <div>
-                    <Text size="sm" fw={500}>
-                      {booking.schedule?.movie?.name}
-                    </Text>
-                    <Text size="xs" c="dimmed">
-                      {booking.schedule?.theater?.name}
-                    </Text>
-                  </div>
-                </Table.Td>
-                <Table.Td>
-                  <div>
-                    <Text size="sm">
-                      {new Date(
-                        booking.schedule?.showDate || "",
-                      ).toLocaleDateString()}
-                    </Text>
-                    <Text size="xs" c="dimmed">
-                      {booking.schedule?.showTime}
-                    </Text>
-                  </div>
-                </Table.Td>
-                <Table.Td>
-                  <Group gap="xs">
-                    {booking.seats.map((seat) => (
-                      <Badge key={seat} variant="outline" size="sm">
-                        {seat}
-                      </Badge>
-                    ))}
-                  </Group>
-                </Table.Td>
-                <Table.Td>
-                  <Text size="sm" fw={500}>
-                    ${booking.totalAmount}
-                  </Text>
-                </Table.Td>
-                <Table.Td>
-                  <Badge color={getStatusColor(booking.status)}>
-                    {booking.status}
-                  </Badge>
-                </Table.Td>
-                <Table.Td>
-                  <Group gap="xs">
-                    <ActionIcon
-                      variant="light"
-                      color="blue"
-                      onClick={() => handleViewBooking(booking)}
-                    >
-                      <IconEye size={16} />
-                    </ActionIcon>
-                    {/* {booking.status === "pending" && (
-                      <>
-                        <ActionIcon
-                          variant="light"
-                          color="green"
-                          onClick={() =>
-                            handleUpdateStatus(booking.id, "confirmed")
-                          }
-                        >
-                          <IconCheck size={16} />
-                        </ActionIcon>
-                        <ActionIcon
-                          variant="light"
-                          color="red"
-                          onClick={() =>
-                            handleUpdateStatus(booking.id, "cancelled")
-                          }
-                        >
-                          <IconX size={16} />
-                        </ActionIcon>
-                      </>
-                    )} */}
-                  </Group>
-                </Table.Td>
+        <div className="overflow-x-auto">
+          <Table striped highlightOnHover>
+            <Table.Thead>
+              <Table.Tr>
+                <Table.Th>Booking ID</Table.Th>
+
+                <Table.Th>Movie</Table.Th>
+                <Table.Th>Theatre</Table.Th>
+                <Table.Th>Show Details</Table.Th>
+                <Table.Th>Seats</Table.Th>
+                <Table.Th>Amount</Table.Th>
+                <Table.Th>Status</Table.Th>
+                <Table.Th>Booking Date</Table.Th>
+                <Table.Th>Customer</Table.Th>
+                <Table.Th>Actions</Table.Th>
               </Table.Tr>
-            ))}
-          </Table.Tbody>
-        </Table>
+            </Table.Thead>
+            <Table.Tbody>
+              {bookings.map((booking) => (
+                <Table.Tr key={booking.id}>
+                  <Table.Td w={100}>
+                    <Text size="sm" fw={500}>
+                      #{booking.id}
+                    </Text>
+                  </Table.Td>
+
+                  <Table.Td>
+                    <div>
+                      <Text size="md" fw={700}>
+                        {booking.schedule?.movie?.title}
+                      </Text>
+                    </div>
+                  </Table.Td>
+                  <Table.Td>
+                    <div>
+                      <Text size="sm" fw={500}>
+                        {booking.schedule?.theatre?.name}
+                      </Text>
+                      <Text size="xs" c="dimmed">
+                        {booking.schedule?.screen?.name}
+                      </Text>
+                    </div>
+                  </Table.Td>
+                  <Table.Td>
+                    <div>
+                      <Text size="sm">
+                        {new Date(
+                          booking.schedule?.showDate || "",
+                        ).toLocaleDateString()}
+                      </Text>
+                      <Text size="xs" c="dimmed">
+                        {booking.schedule?.showTime.slice(0, 5)}
+                      </Text>
+                    </div>
+                  </Table.Td>
+                  <Table.Td>
+                    <Group gap="2">
+                      {booking.seatList.map((seat) => (
+                        // <Badge key={seat} variant="outline" size="sm">
+                        <div>
+                          {seat}
+                          {seat ===
+                          booking.seatList[booking.seatList.length - 1]
+                            ? ""
+                            : ","}
+                        </div>
+                        // </Badge>
+                      ))}
+                    </Group>
+                  </Table.Td>
+                  <Table.Td>
+                    <Text size="sm" fw={500}>
+                      $ {booking.totalAmount}
+                    </Text>
+                  </Table.Td>
+                  <Table.Td>
+                    <Badge
+                      color={getStatusColor(booking.status)}
+                      variant="light"
+                    >
+                      {booking.status}
+                    </Badge>
+                  </Table.Td>
+                  <Table.Td>
+                    {" "}
+                    <Text size="sm">
+                      {new Date(booking.bookingDate || "").toLocaleDateString()}
+                    </Text>
+                    <Text c="dimmed" size="xs">
+                      {new Date(booking.bookingDate || "").toLocaleTimeString()}
+                    </Text>
+                  </Table.Td>
+                  <Table.Td>
+                    <div>
+                      <Text size="sm" fw={500}>
+                        {booking.customerName}
+                      </Text>
+                      <Text size="xs" c="dimmed">
+                        {booking.customerEmail}
+                      </Text>
+                    </div>
+                  </Table.Td>
+                  <Table.Td>
+                    <Group gap="xs">
+                      <ActionIcon
+                        variant="light"
+                        color="blue"
+                        onClick={() => handleViewBooking(booking)}
+                      >
+                        <IconEye size={16} />
+                      </ActionIcon>
+                      {booking.status === "confirmed" && (
+                        <>
+                          <ActionIcon
+                            variant="light"
+                            color="red"
+                            onClick={
+                              () =>
+                                openConfirm({
+                                  title: "Cancel Booking",
+                                  message:
+                                    "Are you sure you want to cancel this booking? This action cannot be reverted.",
+                                  onConfirm: () =>
+                                    cancelBookingMutation({ id: booking.id }),
+                                })
+                              // handleUpdateStatus(booking.id, "cancelled")
+                            }
+                          >
+                            <IconX size={16} />
+                          </ActionIcon>
+                        </>
+                      )}
+                    </Group>
+                  </Table.Td>
+                </Table.Tr>
+              ))}
+            </Table.Tbody>
+          </Table>
+        </div>
+
+        {bookings?.length === 0 && (
+          <Text ta="center" c="dimmed" size="sm" py="xl">
+            <div className="flex justify-center mb-2">
+              <IconTicket size={30} />
+            </div>
+            No booking found
+          </Text>
+        )}
       </Card>
 
       <Modal
         opened={opened}
         onClose={close}
         title="Booking Details"
-        size="lg"
         classNames={{
           header: "dashboard-bg",
           content: "dashboard-bg",
@@ -535,7 +468,7 @@ const BookingManagement = () => {
         }}
       >
         {selectedBooking && (
-          <div className="space-y-4">
+          <div className="space-y-4 px-5 py-3">
             <Grid>
               <Grid.Col span={6}>
                 <Text size="sm" c="dimmed" className={labelStyle}>
@@ -549,7 +482,7 @@ const BookingManagement = () => {
                 </Text>
                 <Badge
                   color={getStatusColor(selectedBooking.status)}
-                  // variant="light"
+                  variant="light"
                 >
                   {selectedBooking.status}
                 </Badge>
@@ -564,19 +497,19 @@ const BookingManagement = () => {
                 <Text size="sm" c="dimmed" className={labelStyle}>
                   Email
                 </Text>
-                <Text>{selectedBooking.customerEmail}</Text>
+                <Text>{selectedBooking.customerEmail || "-"}</Text>
               </Grid.Col>
               <Grid.Col span={6}>
                 <Text size="sm" c="dimmed" className={labelStyle}>
                   Movie
                 </Text>
-                <Text fw={500}>{selectedBooking.schedule?.movie?.name}</Text>
+                <Text fw={500}>{selectedBooking.schedule?.movie?.title}</Text>
               </Grid.Col>
               <Grid.Col span={6}>
                 <Text size="sm" c="dimmed" className={labelStyle}>
                   Theater
                 </Text>
-                <Text>{selectedBooking.schedule?.theater?.name}</Text>
+                <Text>{selectedBooking.schedule?.theatre?.name}</Text>
               </Grid.Col>
               <Grid.Col span={6}>
                 <Text size="sm" c="dimmed" className={labelStyle}>
@@ -592,14 +525,14 @@ const BookingManagement = () => {
                 <Text size="sm" c="dimmed" className={labelStyle}>
                   Show Time
                 </Text>
-                <Text>{selectedBooking.schedule?.showTime}</Text>
+                <Text>{selectedBooking.schedule?.showTime.slice(0, 5)}</Text>
               </Grid.Col>
               <Grid.Col span={6}>
                 <Text size="sm" c="dimmed" className={labelStyle}>
                   Seats
                 </Text>
                 <Group gap="xs">
-                  {selectedBooking.seats.map((seat) => (
+                  {selectedBooking.seatList.map((seat) => (
                     <Badge key={seat} variant="outline">
                       {seat}
                     </Badge>
@@ -624,31 +557,35 @@ const BookingManagement = () => {
               </Grid.Col>
             </Grid>
 
-            {/* {selectedBooking.status === "pending" && (
-              <Group justify="center" mt="md">
-                <Button
-                  color="green"
-                  onClick={() => {
-                    handleUpdateStatus(selectedBooking.id, "confirmed");
-                    close();
-                  }}
-                >
-                  Confirm Booking
-                </Button>
-                <Button
-                  color="red"
-                  variant="outline"
-                  onClick={() => {
-                    handleUpdateStatus(selectedBooking.id, "cancelled");
-                    close();
-                  }}
-                >
-                  Cancel Booking
-                </Button>
-              </Group>
-            )} */}
+            <div className="flex justify-end">
+              <Button
+                className="dashboard-btn"
+                onClick={() => {
+                  setTicketOpen(true);
+                  setCurrentBooking(selectedBooking.id);
+                }}
+              >
+                Generate Ticket
+              </Button>
+            </div>
           </div>
         )}
+      </Modal>
+
+      <Modal
+        opened={ticketOpen}
+        onClose={() => setTicketOpen(false)}
+        title={`Ticket for ID: #${selectedBooking?.id}`}
+        size="full"
+        // overlayProps={{ backgroundOpacity: 1, color: "var(--color-surface)" }}
+        shadow="0"
+        classNames={{
+          header: "dashboard-bg",
+          content: "dashboard-bg h-full",
+          close: "!text-text hover:!bg-surface-hover",
+        }}
+      >
+        <Ticket />
       </Modal>
     </div>
   );

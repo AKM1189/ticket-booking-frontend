@@ -66,9 +66,9 @@ const ResetPassword = () => {
             <PrimaryButton className="mt-5" type="submit" value="Submit" />
           </form>
           <div className="flex justify-between">
-            <NavLink to={"/" + routes.auth.forgotPassword}>Resend OTP</NavLink>
+            <NavLink to={routes.auth.forgotPassword}>Resend OTP</NavLink>
             <NavLink
-              to={"/" + routes.auth.login}
+              to={routes.auth.login}
               className={"text-blue-500 underline"}
             >
               Go To Login

@@ -2,13 +2,21 @@ import { api } from "@/api/api";
 import { endpoints } from "@/api/endpoints";
 import type { MovieInputType } from "@/types/MovieTypes";
 
-export const getMovies = async (searchTerm: string, status: string | null) => {
+export const getMovies = async (
+  searchTerm?: string,
+  status?: string | null,
+) => {
   let parameters = "";
   if (searchTerm) parameters += "search=" + searchTerm;
   if (status) parameters += "status=" + status;
   const response = await api.get(
     `${endpoints.admin.movies}${parameters ? "?" + parameters : ""}`,
   );
+  return response.data;
+};
+
+export const getShowingMovies = async () => {
+  const response = await api.get(endpoints.admin.showingMovies);
   return response.data;
 };
 

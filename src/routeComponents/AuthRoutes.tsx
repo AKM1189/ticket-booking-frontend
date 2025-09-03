@@ -1,17 +1,15 @@
-import { getCurrentUser } from "@/api/function/authApi";
+import { useGetUser } from "@/api/query/authQuery";
 import { ForgotPassword, Login, OTP, ResetPassword, Signup } from "@/pages";
 import Unauthorized from "@/pages/admin/Unauthorized";
 import AuthLayout from "@/pages/auth/AuthLayout";
 import { routes } from "@/routes";
-import { useAuthStore } from "@/store/authStore";
-import { Role } from "@/types/AuthType";
-import { useCallback, useEffect } from "react";
+import { LoadingOverlay } from "@mantine/core";
 import { Navigate, Outlet, Route, Routes } from "react-router";
 
 const AuthRoutes = () => {
   return (
     <Routes>
-      <Route element={<ProtectedAuthRoutes />}>
+      <Route element={<PublicRoute />}>
         <Route path="/" element={<AuthLayout />}>
           <Route path={routes.auth.login} element={<Login />} />
           <Route path={routes.auth.signup} element={<Signup />} />
@@ -30,26 +28,34 @@ const AuthRoutes = () => {
 
 export default AuthRoutes;
 
-const ProtectedAuthRoutes = () => {
-  //   const { user, setUser } = useAuthStore();
-  //   const getUser = useCallback(async () => {
-  //     const data = await getCurrentUser();
-  //     setUser(data);
-  //     console.log("user...", data);
-  //   }, [user]);
+const PublicRoute = () => {
+  const { data: user, isLoading } = useGetUser();
 
-  //   useEffect(() => {
-  //     getUser();
-  //   }, []);
+  if (isLoading)
+    return (
+      <div>
+        <Login />
+        <LoadingOverlay
+          visible={true}
+          zIndex={1000}
+          overlayProps={{
+            radius: "sm",
+            blur: 1,
+            backgroundOpacity: 0.3,
+            color: "var(--color-primary)",
+          }}
+          loaderProps={{
+            color: "var(--color-blueGray)",
+            type: "dots",
+            size: "lg",
+          }}
+        />
+      </div>
+    );
 
-  //   if (!user) {
-  //     return <Outlet />;
-  //   } else {
-  //     return user?.role === Role.admin ? (
-  //       <Navigate to={routes.admin.dashboard} replace />
-  //     ) : (
-  //       <Navigate to={routes.user.home} replace />
-  //     );
-  //   }
+  // If already logged in → redirect to correct dashboard
+  if (user?.role === "admin")
+    return <Navigate to={routes.admin.dashboard} replace />;
+  if (user?.role === "user") return <Navigate to={routes.user.home} replace />;
   return <Outlet />;
 };

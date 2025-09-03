@@ -1,4 +1,4 @@
-import { ReverseSeatIcon } from "@/assets/svgs";
+import { ReverseSeatIcon } from "@/assets/svgs/SeatIcon";
 import type { Seat } from "@/pages/user/SeatPlan";
 import { Tooltip } from "@mantine/core";
 import { twMerge } from "tailwind-merge";

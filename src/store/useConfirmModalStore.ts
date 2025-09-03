@@ -1,4 +1,3 @@
-import type { FilterListType, TabType } from "@/types/MovieTypes";
 import { create } from "zustand";
 
 type State = {

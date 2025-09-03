@@ -5,7 +5,6 @@ import {
   Switch,
   Text,
   UnstyledButton,
-  rem,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import {
@@ -17,19 +16,21 @@ import {
   IconUsers,
   IconTicket,
   IconLogout,
-  IconUser,
   IconDeviceTv,
+  IconUserStar,
 } from "@tabler/icons-react";
 import { AdminTabType } from "@/types/AdminTypes";
 import { IconSun, IconMoonStars } from "@tabler/icons-react";
-import { useState } from "react";
-import { useNavigate } from "react-router";
+import { useEffect, useState } from "react";
 import { useLogoutMutation } from "@/api/mutation/authMutation";
+import { useConfirmModalStore } from "@/store/useConfirmModalStore";
+// import { useAuth } from "@/hooks/useAuth";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
   activeTab: AdminTabType;
   onTabChange: (tab: AdminTabType) => void;
+  setOpenBooking: (value: boolean) => void;
 }
 
 const navigationItems = [
@@ -37,11 +38,12 @@ const navigationItems = [
   { icon: IconTicket, label: "Bookings", value: AdminTabType.BOOKINGS },
   { icon: IconMovie, label: "Movies", value: AdminTabType.MOVIES },
   { icon: IconTags, label: "Genres", value: AdminTabType.GENRES },
-  { icon: IconUsers, label: "Casts", value: AdminTabType.CASTS },
+  { icon: IconUserStar, label: "Casts", value: AdminTabType.CASTS },
   { icon: IconCalendar, label: "Schedules", value: AdminTabType.SCHEDULES },
+  // { icon: IconArmchair2, label: "Seat Type", value: AdminTabType.SEATTYPE },
   { icon: IconDeviceTv, label: "Screens", value: AdminTabType.SCREENS },
   { icon: IconBuilding, label: "Theaters", value: AdminTabType.THEATERS },
-  { icon: IconUser, label: "Users", value: AdminTabType.USERS },
+  { icon: IconUsers, label: "Users", value: AdminTabType.USERS },
 ];
 
 const AdminLayout = ({
@@ -49,39 +51,38 @@ const AdminLayout = ({
   activeTab,
   onTabChange,
 }: AdminLayoutProps) => {
-  const [opened, { toggle }] = useDisclosure();
-  const [mode, setMode] = useState("dark");
+  const [opened, { toggle, close }] = useDisclosure();
+  const [mode, setMode] = useState(() => {
+    return localStorage.getItem("theme") || "dark";
+  });
   const { mutate: logout } = useLogoutMutation();
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", mode);
+    localStorage.setItem("theme", mode); // Persist choice
+  }, [mode]);
 
   const handleThemeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
-    if (e.target)
-      if (value === "dark") {
-        document.body.classList.remove("dark"); // disable
-        setMode("light");
-      } else if (value === "light") {
-        document.body.classList.add("dark"); // enable
-        setMode("dark");
-      }
-    // document.body.classList.toggle("dark");
+    if (value) setMode(value == "dark" ? "light" : "dark");
   };
 
   const handleLogout = () => {
     logout();
   };
 
-  // useEffect(() => {
-  //   // if (data) {
-  //   const isAuthenticated = data && data?.role === Role.admin;
+  useEffect(() => {
+    if (opened) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
 
-  //   if (!isAuthenticated) {
-  //     navigate(routes.admin.unauthorized);
-  //   }
-  //   // }
-  //   console.log("isAuthenticated", isAuthenticated, data);
-  // }, [data]);
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [opened]);
 
   return (
     <AppShell
@@ -100,7 +101,7 @@ const AdminLayout = ({
         "--app-shell-border-color": "var(--color-coolBlue)", // your desired border color (e.g. blue)
       }}
     >
-      <AppShell.Header className="!bg-background !text-text">
+      <AppShell.Header className="!bg-background !text-text !min-w-[300px]">
         <Group h="100%" px="md" justify="space-between">
           <Group>
             <Burger
@@ -114,57 +115,52 @@ const AdminLayout = ({
               Movie Palace
             </Text>
           </Group>
-          <UnstyledButton
-            p="sm"
-            style={{
-              borderRadius: rem(8),
-              "&:hover": {
-                backgroundColor: "var(--mantine-color-gray-1)",
-              },
-            }}
-          >
-            <Group gap="xs">
-              <div>
-                <Switch
-                  size="md"
-                  color="var(--color-surface-hover)"
-                  onLabel={
-                    <IconSun
-                      size={16}
-                      stroke={2.5}
-                      color="var(--mantine-color-yellow-4)"
-                    />
-                  }
-                  value={mode}
-                  defaultChecked
-                  offLabel={
-                    <IconMoonStars
-                      size={16}
-                      stroke={2.5}
-                      color="var(--mantine-color-blue-6)"
-                    />
-                  }
-                  onChange={handleThemeChange}
+
+          <Group gap="xs" justify="space-between">
+            <Switch
+              size="sm"
+              color="var(--color-surface-hover)"
+              onLabel={
+                <IconSun
+                  size={16}
+                  stroke={2.5}
+                  color="var(--mantine-color-yellow-4)"
                 />
-              </div>
-              <div className="flex items-center gap-1" onClick={handleLogout}>
-                <IconLogout size={16} />
-                <Text size="sm">Logout</Text>
-              </div>
-            </Group>
-          </UnstyledButton>
+              }
+              value={mode}
+              defaultChecked={mode === "dark"}
+              className="!cursor-pointer"
+              offLabel={
+                <IconMoonStars
+                  size={16}
+                  stroke={2.5}
+                  color="var(--mantine-color-blue-6)"
+                />
+              }
+              onChange={handleThemeChange}
+            />
+            <div className="max-sm:hidden">
+              <LogoutBtn close={close} handleLogout={handleLogout} />
+            </div>
+          </Group>
         </Group>
       </AppShell.Header>
 
-      <AppShell.Navbar p="md" className="!bg-background !border-red">
+      <AppShell.Navbar
+        p="md"
+        className="!bg-background !border-red !min-w-[250px]"
+      >
         <div className="space-y-2">
           {navigationItems.map((item) => (
             <UnstyledButton
               key={item.value}
-              onClick={() => onTabChange(item.value)}
+              onClick={() => {
+                close();
+                onTabChange(item.value);
+              }}
               className={`w-full rounded-lg transition-colors !p-3 ${
                 activeTab === item.value
-                  ? "!bg-primary text-white"
+                  ? "!bg-primary !text-white"
                   : "hover:!bg-surface"
               }`}
             >
@@ -176,6 +172,9 @@ const AdminLayout = ({
               </Group>
             </UnstyledButton>
           ))}
+          <div className="sm:hidden">
+            <LogoutBtn close={close} handleLogout={handleLogout} />
+          </div>
         </div>
       </AppShell.Navbar>
 
@@ -185,3 +184,29 @@ const AdminLayout = ({
 };
 
 export default AdminLayout;
+
+const LogoutBtn = ({ close, handleLogout }) => {
+  const { open: logoutConfirm } = useConfirmModalStore();
+
+  return (
+    <UnstyledButton
+      onClick={() => {
+        close();
+        logoutConfirm({
+          title: "Logout",
+          message: "Are you sure you want to log out?",
+          onConfirm: handleLogout,
+        });
+      }}
+      className={` w-full rounded-lg transition-colors !p-3 hover:!bg-surface`}
+    >
+      <Group gap="sm">
+        <IconLogout size={20} color="#f04f50" />
+
+        <Text size="sm" fw={500} color="red">
+          Logout
+        </Text>
+      </Group>
+    </UnstyledButton>
+  );
+};

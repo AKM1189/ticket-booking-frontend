@@ -1,10 +1,9 @@
-import { Button, LoadingOverlay, Modal, Text } from "@mantine/core";
-import { useEffect, useState } from "react";
+import { LoadingOverlay } from "@mantine/core";
+import { useEffect } from "react";
 import { useLoadingStore } from "./store/useLoading";
 
 const LoadingProvider = ({ children }) => {
   const { isLoading } = useLoadingStore();
-  const [open, setOpen] = useState(true);
   useEffect(() => {
     if (isLoading) {
       document.body.style.overflow = "hidden";
@@ -23,6 +22,7 @@ const LoadingProvider = ({ children }) => {
       <LoadingOverlay
         visible={isLoading}
         zIndex={1000}
+        pos={"fixed"}
         overlayProps={{
           radius: "sm",
           blur: 1,
@@ -32,7 +32,7 @@ const LoadingProvider = ({ children }) => {
         loaderProps={{
           color: "var(--color-blueGray)",
           type: "dots",
-          size: "lg",
+          size: "xl",
         }}
       />
 

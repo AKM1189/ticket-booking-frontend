@@ -11,6 +11,7 @@ export const useGetUser = () => {
         return data;
       }),
     queryKey: ["currentUser"],
-    retry: 5,
+    retry: false,
+    staleTime: 0,
   });
 };

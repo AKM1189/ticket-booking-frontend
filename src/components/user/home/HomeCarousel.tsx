@@ -47,7 +47,7 @@ function HomeCarousel() {
       }}
       styles={{
         indicator: {
-          background: "oklch(92.9% 0.013 255.508)",
+          background: "#57a9d2",
         },
         control: {
           background: "var(--color-lightGray)",

@@ -19,7 +19,7 @@ export const showNotification = ({
         <IoIosCloseCircle className="icon text-red-500" size="2rem" />
       ),
     withCloseButton: true,
-    position: "top-right",
+    position: "top-center",
     styles: {
       root: {
         top: "70px",
@@ -28,7 +28,7 @@ export const showNotification = ({
         display: "flex",
       },
       title: {
-        color: "white",
+        color: "var(--color-text)",
       },
       description: {
         color: "var(--color-text)",

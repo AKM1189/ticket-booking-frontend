@@ -4,43 +4,74 @@ import { Role } from "@/types/AuthType";
 import type { UserType } from "@/types/UserType";
 import {
   ActionIcon,
+  Badge,
   Button,
   Card,
-  FileInput,
   Group,
   Modal,
   Pagination,
-  SegmentedControl,
   Table,
   Tabs,
+  Text,
   TextInput,
   Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { useDisclosure } from "@mantine/hooks";
-import { IconEdit, IconPlus, IconSearch, IconTrash } from "@tabler/icons-react";
-import React, { useEffect, useState } from "react";
+import { useDebouncedValue, useDisclosure } from "@mantine/hooks";
+import {
+  IconEdit,
+  IconPlus,
+  IconSearch,
+  IconUser,
+  IconUserCancel,
+  IconUserCheck,
+  IconUserCog,
+} from "@tabler/icons-react";
+import { useEffect, useState } from "react";
 import "react-phone-number-input/style.css";
 import PhoneInput from "react-phone-number-input";
+import { zodResolver } from "mantine-form-zod-resolver";
+import { userSchema } from "@/schema/UserSchema";
+import { useLoadingStore } from "@/store/useLoading";
+import {
+  useAddUserMutation,
+  useDeactivateUserMutation,
+  useUpdateUserMutation,
+} from "@/api/mutation/admin/userMutation";
+import { useConfirmModalStore } from "@/store/useConfirmModalStore";
+import { useAuthStore } from "@/store/authStore";
+import type { PaginationType } from "@/types/PagintationType";
 
 const UserManagement = () => {
   const [opened, { open, close }] = useDisclosure(false);
   const [editingUser, setEditingUser] = useState<UserType | null>(null);
   const [activeTab, setActiveTab] = useState<Role>(Role.user);
+  const [searchTerm, setSearchTerm] = useState("");
+  const { user: currentUser } = useAuthStore();
 
   const [users, setUsers] = useState<UserType[]>([]);
-  const [pagination, setPagination] = useState<{
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  }>({
+  const [pagination, setPagination] = useState<PaginationType>({
     page: 1,
     limit: 10,
     total: 0,
     totalPages: 1,
   });
-  const { data, refetch } = useUserQuery(activeTab, pagination.page);
+  const { data, refetch } = useUserQuery(
+    searchTerm,
+    activeTab,
+    pagination.page,
+  );
+  const { mutate: addUserMutation } = useAddUserMutation();
+  const { mutate: updateUserMutation } = useUpdateUserMutation(
+    editingUser?.role,
+  );
+  const { mutate: deleteUserMutation } = useDeactivateUserMutation(
+    editingUser?.role,
+  );
+
+  const { showLoading } = useLoadingStore();
+  const { open: deactivateConfirm } = useConfirmModalStore();
+  const [debouncedSearchTerm] = useDebouncedValue(searchTerm, 300);
 
   const form = useForm({
     initialValues: {
@@ -48,25 +79,69 @@ const UserManagement = () => {
       email: "",
       phoneNo: "",
     },
+    validate: zodResolver(userSchema),
   });
 
   useEffect(() => {
     if (data) {
-      setUsers(data?.data);
-      setPagination(data?.pagination);
+      setUsers(data.data);
+      setPagination(data.pagination);
     }
-    console.log("data", data);
   }, [data]);
 
   useEffect(() => {
     refetch();
-  }, [activeTab, pagination]);
+  }, [activeTab, pagination, debouncedSearchTerm]);
 
   const handleSubmit = (values: any) => {
+    showLoading(true);
     const data = {
       ...values,
     };
-    console.log("data", data);
+    if (editingUser) {
+      updateUserMutation(
+        { data: { ...data, role: editingUser.role }, id: editingUser.id },
+        {
+          onSuccess: () => {
+            showLoading(false);
+            close();
+          },
+          onError: () => {
+            showLoading(false);
+          },
+        },
+      );
+    } else {
+      addUserMutation(
+        { data: { ...data, role: "admin" } },
+        {
+          onSuccess: () => {
+            showLoading(false);
+            close();
+          },
+          onError: () => {
+            showLoading(false);
+          },
+        },
+      );
+    }
+  };
+
+  const handleDeactivate = (id: number) => {
+    if (editingUser) {
+      deleteUserMutation(
+        { id },
+        {
+          onSuccess: () => {
+            showLoading(false);
+            close();
+          },
+          onError: () => {
+            showLoading(false);
+          },
+        },
+      );
+    }
   };
 
   const handleEditUser = (user: UserType) => {
@@ -82,7 +157,11 @@ const UserManagement = () => {
     <div className="space-y-6">
       <Group justify="space-between">
         <Title order={2}>Genre Management</Title>
-        <Button leftSection={<IconPlus size={16} />} onClick={open}>
+        <Button
+          className="dashboard-btn"
+          leftSection={<IconPlus size={16} />}
+          onClick={open}
+        >
           Add Admin
         </Button>
       </Group>
@@ -96,19 +175,33 @@ const UserManagement = () => {
       >
         <Group mb="md" justify="space-between">
           <TextInput
-            placeholder="Search users..."
+            placeholder="Search users by name, email, and phone"
             leftSection={<IconSearch size={16} />}
-            //   value={}
-            //   onChange={(e) => setSearchTerm(e.target.value)}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             style={{ flex: 1, maxWidth: 400 }}
             classNames={inputStyle}
           />
         </Group>
 
-        <Tabs defaultValue="user" onChange={(val: any) => setActiveTab(val)}>
+        <Tabs
+          defaultValue="user"
+          mt={15}
+          onChange={(val: any) => setActiveTab(val)}
+        >
           <Tabs.List>
-            <Tabs.Tab value="user">User</Tabs.Tab>
-            <Tabs.Tab value="admin">Admin</Tabs.Tab>
+            <Tabs.Tab value="user">
+              <Group gap={5} align="center">
+                <IconUser size={18} />
+                User
+              </Group>
+            </Tabs.Tab>
+            <Tabs.Tab value="admin">
+              <Group gap={5} align="center">
+                <IconUserCog size={18} />
+                Admin
+              </Group>
+            </Tabs.Tab>
           </Tabs.List>
           <Tabs.Panel value={activeTab} py={"lg"}>
             <div className="overflow-scroll">
@@ -116,9 +209,10 @@ const UserManagement = () => {
                 <Table.Thead>
                   <Table.Tr>
                     <Table.Th>No</Table.Th>
-                    <Table.Th>Name</Table.Th>
+                    <Table.Th className="min-w-[150px]">Name</Table.Th>
                     <Table.Th>Email</Table.Th>
                     <Table.Th>Phone No</Table.Th>
+                    <Table.Th>Status</Table.Th>
                     <Table.Th>Actions</Table.Th>
                   </Table.Tr>
                 </Table.Thead>
@@ -134,9 +228,23 @@ const UserManagement = () => {
                                 data?.pagination?.limit
                             : index + 1}
                         </Table.Td>
-                        <Table.Td>{user.name}</Table.Td>
+                        <Table.Td>
+                          {user.name +
+                            (user.email === currentUser?.email ? " (You)" : "")}
+                        </Table.Td>
                         <Table.Td>{user.email}</Table.Td>
                         <Table.Td>{user.phoneNo}</Table.Td>
+                        <Table.Td>
+                          {user.active ? (
+                            <Badge color="green" variant="light">
+                              Active
+                            </Badge>
+                          ) : (
+                            <Badge color="red" variant="light">
+                              Deactivated
+                            </Badge>
+                          )}
+                        </Table.Td>
                         <Table.Td>
                           <Group gap="xs">
                             <ActionIcon
@@ -146,21 +254,43 @@ const UserManagement = () => {
                             >
                               <IconEdit size={16} />
                             </ActionIcon>
-                            <ActionIcon
-                              variant="light"
-                              color="red"
-                              onClick={() => {
-                                //   setEditingMovie(movie);
-                                // setDeleteModalOpen(true);
-                                //   openConfirm({
-                                //     title: "Delete Movie",
-                                //     message:
-                                //       "Are you sure you want to delete this movie?",
-                                //   });
-                              }}
-                            >
-                              <IconTrash size={16} />
-                            </ActionIcon>
+
+                            {user.active ? (
+                              user.email !== currentUser?.email && (
+                                <ActionIcon
+                                  variant="light"
+                                  color="red"
+                                  onClick={() => {
+                                    setEditingUser(user);
+                                    deactivateConfirm({
+                                      title: "Deactivate User",
+                                      message:
+                                        "Are you sure you want to deactivate this user?",
+                                      onConfirm: () =>
+                                        handleDeactivate(user.id),
+                                    });
+                                  }}
+                                >
+                                  <IconUserCancel size={16} />
+                                </ActionIcon>
+                              )
+                            ) : (
+                              <ActionIcon
+                                variant="light"
+                                color="green"
+                                onClick={() => {
+                                  setEditingUser(user);
+                                  deactivateConfirm({
+                                    title: "Activate User",
+                                    message:
+                                      "Are you sure you want to activate this user?",
+                                    onConfirm: () => handleDeactivate(user.id),
+                                  });
+                                }}
+                              >
+                                <IconUserCheck size={16} />
+                              </ActionIcon>
+                            )}
                           </Group>
                         </Table.Td>
                       </Table.Tr>
@@ -168,16 +298,31 @@ const UserManagement = () => {
                 </Table.Tbody>
               </Table>
             </div>
-            <Group justify="center" mt={"xl"}>
-              <Pagination
-                total={pagination?.totalPages}
-                size={"sm"}
-                value={pagination?.page}
-                onChange={(value) =>
-                  setPagination((prev) => ({ ...prev, page: value }))
-                }
-              />
-            </Group>
+            {users?.length > 0 && (
+              <Group justify="center" mt={"xl"}>
+                <Pagination
+                  total={pagination?.totalPages}
+                  size={"sm"}
+                  value={pagination?.page}
+                  onChange={(value) =>
+                    setPagination((prev) => ({ ...prev, page: value }))
+                  }
+                />
+              </Group>
+            )}
+
+            {users?.length === 0 && (
+              <Text ta="center" c="dimmed" py="xl">
+                <div className="flex justify-center mb-2">
+                  {activeTab == "user" ? (
+                    <IconUser size={30} />
+                  ) : (
+                    <IconUserCog size={30} />
+                  )}
+                </div>
+                No {activeTab} found
+              </Text>
+            )}
           </Tabs.Panel>
         </Tabs>
       </Card>
@@ -201,24 +346,15 @@ const UserManagement = () => {
             <TextInput
               label="Name"
               placeholder="Enter admin name"
-              required
               {...form.getInputProps("name")}
               classNames={inputStyle}
             />
             <TextInput
               label="Email"
               placeholder="Enter admin email"
-              required
               {...form.getInputProps("email")}
               classNames={inputStyle}
             />
-            {/* <TextInput
-              label="Phone No"
-              placeholder="Enter admin phone no"
-              required
-              {...form.getInputProps("phoneNo")}
-              classNames={inputStyle}
-            /> */}
             <div className="mt-5">
               <label className="text-sm text-text font-medium">
                 Phone Number
@@ -230,6 +366,7 @@ const UserManagement = () => {
                 onChange={(val: any) => {
                   form.setFieldValue("phoneNo", val);
                 }}
+                className="admin-phone-input"
               />
               <p className="text-xs text-red-400 mt-1">{form.errors.phoneNo}</p>
             </div>
@@ -247,7 +384,8 @@ const UserManagement = () => {
               //   loading={isSubmitting}
               className="dashboard-btn"
             >
-              {editingUser ? "Update" : "Add"} Admin
+              {editingUser ? "Update" : "Add"}{" "}
+              {editingUser?.role === Role.admin ? "Admin" : "User"}
             </Button>
           </Group>
         </form>

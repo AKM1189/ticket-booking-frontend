@@ -1,8 +1,8 @@
 import { useMemo, useCallback } from "react";
-import { LocationFillIcon } from "@/assets/svgs";
 import { useDisclosure } from "@mantine/hooks";
 import TicketPlanModal from "./TicketPlanModal";
 import type { MovieDetailType } from "@/types/MovieTypes";
+import { IconMapPinFilled } from "@tabler/icons-react";
 
 type ScheduleListType = {
   location: string;
@@ -37,7 +37,7 @@ const ScheduleList = ({ location, schedules, movie }: ScheduleListType) => {
         <div className="w-[400px] h-full border-r border-surface-hover flex items-center justify-between px-10">
           <div>{location}</div>
           <div className="bg-surface-hover transition-300 group-hover:bg-primary rounded-full p-2">
-            <LocationFillIcon color="var(--color-blueGray)" />
+            <IconMapPinFilled color="var(--color-blueGray)" />
           </div>
         </div>
         <div className="flex-1 flex gap-10 px-10">{scheduleElements}</div>

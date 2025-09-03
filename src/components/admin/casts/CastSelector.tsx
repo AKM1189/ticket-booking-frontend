@@ -6,7 +6,6 @@ import {
   Card,
   Group,
   Modal,
-  MultiSelect,
   SimpleGrid,
   Stack,
   Text,
@@ -63,10 +62,10 @@ const CastSelector = ({
       onCastChange([
         ...selectedCasts,
         {
-          id: cast.id,
-          name: cast.name,
-          role: cast.role,
-          imageUrl: cast.image.url,
+          id: cast?.id,
+          name: cast?.name,
+          role: cast?.role,
+          imageUrl: cast?.image?.url,
         },
       ]);
     }
@@ -90,7 +89,10 @@ const CastSelector = ({
         color="var(--color-surface-hover)"
         leftSection={<IconPlus size={16} />}
         onClick={open}
-        className="justify-start dashboard-btn !text-blueGray"
+        className="justify-start dashboard-btn !text-blueGray cast-selector"
+        classNames={{
+          inner: "text-muted",
+        }}
       >
         {selectedCasts.length > 0
           ? `${selectedCasts?.length} cast member(s) selected`
@@ -176,7 +178,7 @@ const CastSelector = ({
                   onClick={() => handleCastSelect(cast)}
                 >
                   <Group gap="sm">
-                    <Avatar src={cast.image.url} size={40} radius="sm" />
+                    <Avatar src={cast?.image?.url} size={40} radius="sm" />
                     <Stack gap={0} style={{ flex: 1 }}>
                       <Text size="sm" fw={500} className="!mb-1">
                         {cast.name}

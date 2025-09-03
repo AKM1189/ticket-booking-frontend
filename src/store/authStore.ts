@@ -14,8 +14,9 @@ export const useAuthStore = create<AuthStore>((set) => ({
 
 const userFromJson = (data: any) => {
   if (!data) return;
-  const { name, email, role } = data;
+  const { id, name, email, role } = data;
   return {
+    id,
     name,
     email,
     role,

@@ -3,6 +3,7 @@ import type { AxiosInstance } from "axios";
 import Cookies from "js-cookie";
 import { endpoints } from "./endpoints";
 import { authApi } from "./AuthApi";
+import { routes } from "@/routes";
 
 export const api: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL,
@@ -11,7 +12,7 @@ export const api: AxiosInstance = axios.create({
   },
   withCredentials: true,
 });
-/////////////////
+
 api.interceptors.request.use(
   (config) => {
     const accessToken = Cookies.get("accessToken");
@@ -29,18 +30,14 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    if (error?.response?.status === 401 && !originalRequest._retry) {
+    if (error?.response?.status === 408 && !originalRequest._retry) {
       try {
         originalRequest._retry = true;
         const res = await authApi.get(endpoints.auth.refresh);
         if (res?.data) {
-          console.log("res data", res?.data);
           const newAccessToken = res.data.accessToken;
-          const inFifteenMinutes = new Date(
-            new Date().getTime() + 15 * 60 * 1000,
-          );
           Cookies.set("accessToken", newAccessToken, {
-            expires: inFifteenMinutes,
+            expires: 3,
           });
           originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 
@@ -49,14 +46,10 @@ api.interceptors.response.use(
       } catch (error) {
         Cookies.remove("accessToken");
         Cookies.remove("refreshToken");
-        // goTo(routes.auth.login);
+        window.location.href = routes.auth.login;
         return Promise.reject(error);
       }
     }
-
-    // Cookies.remove("accessToken");
-    // Cookies.remove("refreshToken");
-    // goTo(routes.auth.login);
     return Promise.reject(error);
   },
 );

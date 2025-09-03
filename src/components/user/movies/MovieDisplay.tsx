@@ -1,11 +1,3 @@
-import {
-  PlayIcon,
-  RatingIcon,
-  TicketIcon,
-  DateIcon,
-  ClockIcon,
-} from "@/assets/svgs";
-
 import { movieType } from "@/constants/movieConstants";
 import type { MovieType } from "@/types/MovieTypes";
 import { twMerge } from "tailwind-merge";
@@ -15,6 +7,13 @@ import { useState, useMemo } from "react";
 import { NavLink } from "react-router";
 import { routes } from "@/routes";
 import PlayTrailer from "./PlayTrailer";
+import {
+  IconBrandYoutube,
+  IconCalendar,
+  IconClock,
+  IconStarFilled,
+  IconTicket,
+} from "@tabler/icons-react";
 
 interface MoviesProps {
   movieList: MovieType[];
@@ -66,17 +65,17 @@ export const MovieList = ({ movieList }: MoviesProps) => {
                 </div>
 
                 <div className=" flex items-center gap-2 text-muted">
-                  <ClockIcon color="var(--color-muted)" />
+                  <IconClock color="var(--color-muted)" />
                   {movie.duration}
                 </div>
 
                 <div className="flex items-center gap-2 text-muted">
-                  <DateIcon color="var(--color-muted)" />
+                  <IconCalendar color="var(--color-muted)" />
                   {movie.releaseDate}
                 </div>
                 {movie.status === movieType.showing && (
                   <div className="flex gap-2 items-center">
-                    <RatingIcon color={"var(--color-accent)"} />
+                    <IconStarFilled color={"var(--color-accent)"} />
                     {movie.rating}
                   </div>
                 )}
@@ -84,7 +83,7 @@ export const MovieList = ({ movieList }: MoviesProps) => {
               <div className="flex justify-between text-sm py-5 border-y-[1px] border-coolGray">
                 <NavLink to={"/" + routes.user.ticketPlan + "/" + movie.id}>
                   <span className="flex gap-2 items-center cursor-pointer">
-                    <TicketIcon color="var(--color-accent)" />
+                    <IconTicket color="var(--color-accent)" />
                     Book Ticket
                   </span>
                 </NavLink>
@@ -94,7 +93,7 @@ export const MovieList = ({ movieList }: MoviesProps) => {
                     setSelectedMovie(movie);
                   }}
                 >
-                  <PlayIcon color="var(--color-accent)" />
+                  <IconBrandYoutube color="var(--color-accent)" />
                   Watch Trailer
                 </span>
               </div>

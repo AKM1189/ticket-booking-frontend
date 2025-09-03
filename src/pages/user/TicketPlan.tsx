@@ -1,14 +1,14 @@
-import {
-  ClockIcon,
-  DateIcon,
-  SeatIcon,
-  SearchIcon,
-  SubtitleIcon,
-} from "@/assets/svgs";
+import { SeatIcon } from "@/assets/svgs/SeatIcon";
 import ScheduleList from "@/components/user/ticketPlan/ScheduleList";
 import { routes } from "@/routes";
 import { Button, Modal, TextInput } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import {
+  IconBadgeCc,
+  IconCalendar,
+  IconClock,
+  IconSearch,
+} from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { NavLink, useParams } from "react-router";
 import { twMerge } from "tailwind-merge";
@@ -30,7 +30,7 @@ const TicketPlan = () => {
     releaseDate: "8 Nov, 2025",
     rating: "8.0",
     status: "Now Showing",
-    posterUrl: "/movie03.jpg",
+    poster: { id: 1, url: "/movie03.jpg" },
     trailerId: "o2T2V1jrLY0",
     casts: [
       {
@@ -144,15 +144,15 @@ const TicketPlan = () => {
                 </div>
                 <div className="flex gap-5 items-center max-md:flex-col">
                   <span className="flex items-center gap-2">
-                    <DateIcon color={"var(--color-blueGray)"} />
+                    <IconCalendar color={"var(--color-blueGray)"} />
                     <span className="mt-1">{movie.releaseDate}</span>
                   </span>
                   <span className="flex items-center gap-2">
-                    <ClockIcon color={"var(--color-blueGray)"} />
+                    <IconClock color={"var(--color-blueGray)"} />
                     <span className="mt-1">{movie.duration}</span>
                   </span>
                   <span className="flex items-center gap-2">
-                    <SubtitleIcon color={"var(--color-blueGray)"} />
+                    <IconBadgeCc color={"var(--color-blueGray)"} />
                     <span className="mt-1">{movie.subtitle}</span>
                   </span>
                 </div>
@@ -206,7 +206,7 @@ const TicketPlan = () => {
               ),
               error: "text-red-500",
             }}
-            leftSection={<SearchIcon color={"var(--color-accent)"} />}
+            leftSection={<IconSearch color={"var(--color-accent)"} />}
           />
         </div>
         <div className="bg-surface mt-10 rounded-md overflow-hidden">
@@ -242,11 +242,11 @@ const TicketPlan = () => {
                 <div className="flex flex-col gap-5">
                   <div className="flex gap-5 mt-5 text-sm">
                     <div className="flex gap-2 items-center">
-                      <ClockIcon color={"var(--color-blueGray)"} size={20} />2
+                      <IconClock color={"var(--color-blueGray)"} size={20} />2
                       hrs 50 min
                     </div>
                     <div className="flex gap-2 items-center">
-                      <SubtitleIcon color={"var(--color-blueGray)"} size={20} />
+                      <IconBadgeCc color={"var(--color-blueGray)"} size={20} />
                       English
                     </div>
                   </div>

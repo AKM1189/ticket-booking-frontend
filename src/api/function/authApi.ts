@@ -16,6 +16,7 @@ export const login = async (data: LoginDataType) => {
 
 export const getCurrentUser = async () => {
   const response = await api.get(endpoints.user.me);
+  if (response.status === 401) return null;
   return response.data;
 };
 
