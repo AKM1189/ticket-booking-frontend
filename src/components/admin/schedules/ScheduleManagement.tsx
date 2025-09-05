@@ -15,7 +15,6 @@ import {
   NumberInput,
   Switch,
 } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
 import {
   IconPlus,
   IconEdit,
@@ -44,11 +43,10 @@ import { useConfirmModalStore } from "@/store/useConfirmModalStore";
 
 const showTimes = ["10:00", "13:00", "16:00", "19:00", "22:00"];
 
-const ScheduleManagement = () => {
+const ScheduleManagement = ({ openScheduleModal, setOpenScheduleModal }) => {
   const [schedules, setSchedules] = useState<ScheduleType[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [dateFilter, setDateFilter] = useState("");
-  const [opened, { open, close }] = useDisclosure(false);
   const { showLoading } = useLoadingStore();
 
   const [editingSchedule, setEditingSchedule] = useState<ScheduleType | null>(
@@ -166,7 +164,7 @@ const ScheduleManagement = () => {
   const handleAddSchedule = () => {
     setEditingSchedule(null);
     form.reset();
-    open();
+    setOpenScheduleModal(true);
   };
 
   const handleEditSchedule = (schedule: ScheduleType) => {
@@ -182,7 +180,7 @@ const ScheduleManagement = () => {
       multiplier: parseFloat(schedule.multiplier),
       isActive: schedule.isActive,
     });
-    open();
+    setOpenScheduleModal(true);
   };
 
   const handleSubmit = (values: typeof form.values) => {
@@ -211,7 +209,7 @@ const ScheduleManagement = () => {
         { id: editingSchedule.id, data: scheduleData },
         {
           onSuccess: () => {
-            close();
+            setOpenScheduleModal(false);
             showLoading(false);
             setEditingSchedule(null);
           },
@@ -225,7 +223,7 @@ const ScheduleManagement = () => {
         { data: scheduleData },
         {
           onSuccess: () => {
-            close();
+            setOpenScheduleModal(false);
             showLoading(false);
           },
           onError: () => {
@@ -417,8 +415,8 @@ const ScheduleManagement = () => {
       </Card>
 
       <Modal
-        opened={opened}
-        onClose={close}
+        opened={openScheduleModal}
+        onClose={() => setOpenScheduleModal(false)}
         title={editingSchedule ? "Edit Schedule" : "Add New Schedule"}
         size="md"
         classNames={{
@@ -550,7 +548,11 @@ const ScheduleManagement = () => {
             </Grid.Col>
           </Grid>
           <Group justify="flex-end" mt="md">
-            <Button variant="outline" onClick={close} className="dashboard-btn">
+            <Button
+              variant="outline"
+              onClick={() => setOpenScheduleModal(false)}
+              className="dashboard-btn"
+            >
               Cancel
             </Button>
             <Button type="submit" className="dashboard-btn">

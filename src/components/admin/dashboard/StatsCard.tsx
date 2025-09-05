@@ -40,25 +40,6 @@ const StatsCard = ({
       <Text size="xl" fw={700} mb="xs">
         {value}
       </Text>
-
-      {trend && (
-        <Group gap="xs">
-          <ThemeIcon
-            color={trend.isPositive ? "green" : "red"}
-            variant="light"
-            size="sm"
-          >
-            {trend.isPositive ? (
-              <IconTrendingUp size={12} />
-            ) : (
-              <IconTrendingDown size={12} />
-            )}
-          </ThemeIcon>
-          <Text size="xs" c={trend.isPositive ? "green" : "red"} fw={500}>
-            {trend.value}%
-          </Text>
-        </Group>
-      )}
     </Card>
   );
 };

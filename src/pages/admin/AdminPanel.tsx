@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   AdminLayout,
   AdminDashboard,
@@ -7,29 +7,45 @@ import {
   ScheduleManagement,
   GenreManagement,
   CastManagement,
-  BookingManagement,
   ScreenManagement,
   UserManagement,
 } from "@/components/admin";
 import { AdminTabType } from "@/types/AdminTypes";
-import SeatTypeManagement from "@/components/admin/seatTypes/SeatTypeManagement";
 import BookingPage from "@/components/admin/bookings/BookingPage";
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState<AdminTabType>(
     AdminTabType.DASHBOARD,
   );
+  const [openMovieModal, setOpenMovieModal] = useState(false);
+  const [openScheduleModal, setOpenScheduleModal] = useState(false);
 
   const renderContent = () => {
     switch (activeTab) {
       case AdminTabType.DASHBOARD:
-        return <AdminDashboard />;
+        return (
+          <AdminDashboard
+            setActiveTab={setActiveTab}
+            setOpenMovieModal={setOpenMovieModal}
+            setOpenScheduleModal={setOpenScheduleModal}
+          />
+        );
       case AdminTabType.MOVIES:
-        return <MovieManagement />;
+        return (
+          <MovieManagement
+            openMovieModal={openMovieModal}
+            setOpenMovieModal={setOpenMovieModal}
+          />
+        );
       case AdminTabType.THEATERS:
         return <TheatreManagement />;
       case AdminTabType.SCHEDULES:
-        return <ScheduleManagement />;
+        return (
+          <ScheduleManagement
+            openScheduleModal={openScheduleModal}
+            setOpenScheduleModal={setOpenScheduleModal}
+          />
+        );
       case AdminTabType.GENRES:
         return <GenreManagement />;
       case AdminTabType.CASTS:
@@ -43,7 +59,13 @@ const AdminPanel = () => {
       case AdminTabType.USERS:
         return <UserManagement />;
       default:
-        return <AdminDashboard />;
+        return (
+          <AdminDashboard
+            setActiveTab={setActiveTab}
+            setOpenMovieModal={setOpenMovieModal}
+            setOpenScheduleModal={setOpenScheduleModal}
+          />
+        );
     }
   };
 

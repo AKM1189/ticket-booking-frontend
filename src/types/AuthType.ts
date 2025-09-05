@@ -3,6 +3,8 @@ export type AuthType = {
   name: string;
   email: string;
   role: Role;
+  image: string;
+  phoneNo: string;
 };
 
 export enum Role {

@@ -17,17 +17,30 @@ interface SeatLayoutViewerProps {
     key: K,
     value: SelectedInfoType[K],
   ) => void;
+  setSelectedSeats: (value: SelectedSeatType[]) => void;
+  selectedSeats: SelectedSeatType[];
+  activeStep: number;
 }
 
+interface TempSeat {
+  seatId: string;
+  userId: string;
+  // expiresAt: number; // timestamp when the 2 minutes expire
+}
+const socket = io("http://localhost:3000");
 const SeatLayoutViewer = ({
   layout,
   selectedInfo,
   updateSelectedInfo,
+  selectedSeats,
+  setSelectedSeats,
+  activeStep,
 }: SeatLayoutViewerProps) => {
   const [seatTypeList, setSeatTypeList] = useState<SeatTypeTypes[]>([]);
-  const [socket, setSocket] = useState<any>(null);
+  // const [socket, setSocket] = useState<any>(null);
   const [bookedSeats, setBookedSeats] = useState<string[]>([]);
   const [tempSeats, setTempSeats] = useState<any[]>([]);
+  const [resetTimer, setResetTimer] = useState(200);
 
   // const { movieId, theatreId, screenId, showDate, showTime } = showDetail;
   const { data: seatTypeData } = useSeatTypeQuery();
@@ -45,7 +58,7 @@ const SeatLayoutViewer = ({
 
   const {
     data: selectedSchedule,
-    isFetching,
+    isLoading,
     refetch,
   } = useScheduleByShowDetailQuery(
     movie?.id.toString() || "",
@@ -55,38 +68,96 @@ const SeatLayoutViewer = ({
     showTime || "",
   );
 
+  const [isConnected, setIsConnected] = useState(socket.connected);
+
   useEffect(() => {
-    const newSocket = io("http://localhost:3000");
-    setSocket(newSocket);
+    function onConnect() {
+      console.log("socket connected");
+      setIsConnected(true);
+
+      // socket.on("booked seats", (booked: any[]) => {
+      //   setBookedSeats(booked);
+      // });
+
+      // socket.on("update temp seats", (temp: any[]) => {
+      //   const updateList = selectedSeats?.filter((s) =>
+      //     temp.some((t) => t.userId === user?.id && t?.seatId === s?.label),
+      //   );
+      //   updateSelectedInfo("seats", updateList);
+      //   setTempSeats(temp);
+      // });
+
+      if (schedule) {
+        socket.emit("join schedule", String(schedule?.id));
+      }
+    }
+
+    function onDisconnect() {
+      console.log("socket disconnected");
+
+      setIsConnected(false);
+    }
+
+    socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
+    // updateSelectedInfo("seats", tempSeats);
+
+    return () => {
+      socket.off("connect", onConnect);
+      socket.off("disconnect", onDisconnect);
+    };
   }, []);
 
   useEffect(() => {
-    const updatedList = selectedSeatList.filter((seat) =>
-      tempSeats.some((s) => s.userId === user?.id && s.seatId === seat.label),
-    );
+    const interval = setInterval(() => {
+      const newList = selectedInfo.seats?.map((seat) => {
+        // Find the corresponding temp seat for this schedule
+        const temp = tempSeats?.find((s) => s.seatId === seat.label);
 
-    updateSelectedInfo("seats", updatedList);
-  }, [tempSeats]);
+        if (temp) {
+          const remaining = Math.max(
+            0,
+            Math.ceil((temp.expiresAt - Date.now()) / 1000),
+          );
+
+          return { ...seat, countDown: remaining, expiresAt: temp.expiresAt };
+        }
+
+        // If seat is no longer in tempSeats, treat it as expired
+        return { ...seat, countDown: 0, expiresAt: Date.now() };
+      });
+
+      // Filter out seats whose countdown reached 0
+      const filteredList = newList?.filter((seat) => seat.countDown > 0);
+
+      updateSelectedInfo("seats", filteredList);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [selectedInfo.seats, tempSeats]);
 
   useEffect(() => {
-    if (socket && schedule) {
-      socket.on("booked seats", (booked: any[]) => {
-        console.log("booked seats", bookedSeats);
-        setBookedSeats(booked);
-      });
-      socket.on("update temp seats", (temp: any[]) => {
-        console.log("temp seats", temp);
+    if (!socket || !schedule) return;
 
-        setTempSeats(temp);
-      });
-      socket.emit("join schedule", schedule.id);
+    socket.on("booked seats", (booked: any[]) => {
+      setBookedSeats(booked);
+    });
 
-      return () => {
-        socket.off("booked seats");
-        socket.off("update temp seats");
-      };
-    }
-  }, [socket, schedule]);
+    socket.on("update temp seats", (temp: any[]) => {
+      const updateList = selectedSeats?.filter((s) =>
+        temp.some((t) => t.userId === user?.id && t?.seatId === s?.label),
+      );
+      console.log("use.....temp", updateList);
+      updateSelectedInfo("seats", updateList);
+      setTempSeats(temp);
+    });
+    socket.emit("join schedule", String(schedule?.id));
+
+    return () => {
+      socket.off("booked seats");
+      socket.off("update temp seats");
+    };
+  }, [socket, schedule, selectedSeats]);
 
   useEffect(() => {
     if (selectedSchedule) {
@@ -102,20 +173,6 @@ const SeatLayoutViewer = ({
     setSeatTypeList(seatTypeData?.data);
   }, [seatTypeData]);
 
-  const handleCountDown = (seat: SelectedSeatType) => {
-    const interval = setInterval(() => {
-      const updatedSeats = selectedSeatList.map((item) =>
-        item.label === seat.label
-          ? { ...item, countDown: item.countDown + 1 }
-          : item,
-      );
-      updateSelectedInfo("seats", updatedSeats);
-    }, 1000);
-
-    return () => clearInterval(interval); // cleanup function
-  };
-  console.log("temp seats", tempSeats);
-
   const addSeatsToBooking = (seatId: string, selectedType: any) => {
     const seatExists = selectedSeatList.find((item) => item.label === seatId);
     const typeDetail = schedule?.priceList?.find(
@@ -125,14 +182,16 @@ const SeatLayoutViewer = ({
       label: seatId,
       type: selectedType?.seatType?.name,
       price: typeDetail?.price || "",
-      countDown: 0,
+      countDown: 120,
     };
 
     if (seatExists) {
       const newList = selectedSeatList.filter(
         (seat) => seat.label !== seatExists.label,
       );
+      setSelectedSeats(newList);
       updateSelectedInfo("seats", newList);
+
       socket.emit("deselect seat", {
         scheduleId: schedule?.id,
         seatId,
@@ -141,8 +200,10 @@ const SeatLayoutViewer = ({
     } else {
       if (selectedSeatList?.length <= 10) {
         const newList = [...selectedSeatList, newSeat];
-        // console.log("new list", newList);
+        console.log("new list", newList);
+        setSelectedSeats(newList);
         updateSelectedInfo("seats", newList);
+
         socket.emit("select seat", {
           scheduleId: schedule?.id,
           seatId,
@@ -150,7 +211,6 @@ const SeatLayoutViewer = ({
         });
       }
     }
-    // handleCountDown(newSeat);
   };
   const generateSeatGrid = useCallback(() => {
     const rows: JSX.Element[] = [];
@@ -167,15 +227,21 @@ const SeatLayoutViewer = ({
         const seatId = `${rowLabel}${seat}`;
         const isDisabled = layout?.disabledSeats.includes(seatId);
         const hasAisleAfter = layout.aisles.includes(seat);
-        const isBooked = schedule?.bookedSeats?.includes(seatId);
+        const isBooked =
+          schedule?.bookedSeats?.includes(seatId) ||
+          bookedSeats?.includes(seatId);
 
-        const isTemp = tempSeats?.some(
-          (s: any) => s?.userId !== user?.id && s?.seatId === seatId,
-        );
+        const isTemp =
+          tempSeats?.length > 0 &&
+          tempSeats?.some(
+            (s: any) => s?.userId !== user?.id && s?.seatId === seatId,
+          );
 
-        const selectedSeat = tempSeats?.some(
-          (s: any) => s?.userId === user?.id && s?.seatId === seatId,
-        );
+        const selectedSeat =
+          tempSeats?.length > 0 &&
+          tempSeats?.some(
+            (s: any) => s?.userId === user?.id && s?.seatId === seatId,
+          );
 
         // selectedSeatList?.find(
         //   (seat) => seat?.label === seatId,
@@ -230,7 +296,7 @@ const SeatLayoutViewer = ({
     return typeName;
   };
 
-  if (isFetching) {
+  if (isLoading) {
     return (
       <div className="w-full h-[300px] flex items-center justify-center">
         <Loader type="dots" size={40} />
@@ -255,6 +321,7 @@ const SeatLayoutViewer = ({
             <Text size="xs">{getSeatLabel("VIP")}</Text>
           </Group>
         </Group>
+        <div>Reset Timer - {resetTimer}</div>
       </Group>
 
       <div className="bg-surface-hover p-4 rounded-lg">

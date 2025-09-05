@@ -42,7 +42,7 @@ export const useLoginMutation = () => {
     onSuccess: async (data) => {
       // getSuccessNoti("Login Success", data, "You have logged in successfully!");
       Cookies.set("accessToken", data?.accessToken, {
-        expires: 3,
+        expires: 3 * 24 * 60 * 60,
       });
       data?.role === Role.admin
         ? navigate(routes.admin.dashboard)

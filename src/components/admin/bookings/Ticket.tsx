@@ -11,14 +11,10 @@ import { useReactToPrint } from "react-to-print";
 import domtoimage from "dom-to-image";
 import { useBookingStore } from "@/store/bookingStore";
 import { getBookingById } from "@/api/function/admin/bookingApi";
-import io from "socket.io-client";
-import type { Socket } from "dgram";
 
 const Ticket = () => {
   const [isLoading, setLoading] = useState(true);
   const ticketRef = useRef<HTMLDivElement>(null);
-  const [socket, setSocket] = useState<any>(null);
-  const [othersSelectedSeats, setOthersSelectedSeats] = useState<string[]>([]);
 
   const { currentBooking } = useBookingStore();
   const [bookingData, setBookingData] = useState<any>(null);

@@ -1,4 +1,13 @@
-import { Grid, Title, Card, Text, Table, Badge, Group } from "@mantine/core";
+import {
+  Grid,
+  Title,
+  Card,
+  Text,
+  Table,
+  Badge,
+  Group,
+  Select,
+} from "@mantine/core";
 import {
   IconMovie,
   IconBuilding,
@@ -7,105 +16,179 @@ import {
   IconCurrencyDollar,
 } from "@tabler/icons-react";
 import StatsCard from "./StatsCard";
-import RevenueChart from "./RevenueChart";
-import MoviesChart from "./MoviesChart";
-import type {
-  AdminStatsType,
-  BookingType,
-  ScheduleType,
-} from "@/types/AdminTypes";
 
-// Mock data - replace with actual API calls
-const mockStats: AdminStatsType = {
-  totalMovies: 45,
-  totalTheaters: 8,
-  totalSchedules: 156,
-  totalBookings: 1234,
-  revenue: 45678,
-  activeMovies: 32,
+import { BarChart, LineChart } from "@mantine/charts";
+import {
+  useCardInfoQuery,
+  useUpcomingSchedulesQuery,
+} from "@/api/query/admin/dashboardQuery";
+import { useEffect, useState } from "react";
+import dayjs from "dayjs";
+import { MovieType } from "@/constants/movieConstants";
+import { AdminTabType } from "@/types/AdminTypes";
+
+type StatType = {
+  totalMovies: number;
+  activeMovies: number;
+  totalTheatres: number;
+  totalSchedules: number;
+  totalRevenue: number;
 };
 
-const mockRecentBookings: BookingType[] = [
-  {
-    id: 1,
-    userId: 1,
-    scheduleId: 1,
-    seats: ["A1", "A2"],
-    totalAmount: 25.5,
-    bookingDate: "2025-01-24T10:30:00Z",
-    status: "confirmed",
-    customerName: "John Doe",
-    customerEmail: "john@example.com",
-  },
-  {
-    id: 2,
-    userId: 2,
-    scheduleId: 2,
-    seats: ["B5"],
-    totalAmount: 12.75,
-    bookingDate: "2025-01-24T09:15:00Z",
-    status: "pending",
-    customerName: "Jane Smith",
-    customerEmail: "jane@example.com",
-  },
-];
+type SevenDayRevenue = {
+  date: string;
+  revenue: number;
+};
 
-const mockUpcomingSchedules: ScheduleType[] = [
-  {
-    id: 1,
-    movieId: 1,
-    theaterId: 1,
-    showDate: "2025-01-25",
-    showTime: "14:30",
-    price: 12.5,
-    availableSeats: 45,
-    totalSeats: 100,
-    isActive: true,
-    movie: { id: 1, name: "Avengers: Endgame", genre: "Action" } as any,
-    theater: { id: 1, name: "Theater A", location: "Downtown" } as any,
-  },
-  {
-    id: 2,
-    movieId: 2,
-    theaterId: 2,
-    showDate: "2025-01-25",
-    showTime: "19:00",
-    price: 15.0,
-    availableSeats: 28,
-    totalSeats: 80,
-    isActive: true,
-    movie: { id: 2, name: "The Batman", genre: "Action" } as any,
-    theater: { id: 2, name: "Theater B", location: "Mall" } as any,
-  },
-  {
-    id: 3,
-    movieId: 3,
-    theaterId: 1,
-    showDate: "2025-01-26",
-    showTime: "16:15",
-    price: 12.5,
-    availableSeats: 72,
-    totalSeats: 100,
-    isActive: true,
-    movie: { id: 3, name: "Spider-Man: No Way Home", genre: "Action" } as any,
-    theater: { id: 1, name: "Theater A", location: "Downtown" } as any,
-  },
-  {
-    id: 4,
-    movieId: 4,
-    theaterId: 3,
-    showDate: "2025-01-26",
-    showTime: "21:30",
-    price: 18.0,
-    availableSeats: 15,
-    totalSeats: 60,
-    isActive: true,
-    movie: { id: 4, name: "Dune: Part Two", genre: "Sci-Fi" } as any,
-    theater: { id: 3, name: "Theater C", location: "City Center" } as any,
-  },
-];
+type MonthlyRevenue = {
+  month: string;
+  revenue: number;
+};
 
-const AdminDashboard = () => {
+enum RevenueType {
+  last7Day = "last7Day",
+  monthly = "monthly",
+}
+
+type RevenueChartType = {
+  activeChart: RevenueType;
+  sevenDayRevenue: SevenDayRevenue[];
+  monthlyRevenue: MonthlyRevenue[];
+};
+
+type BookingChartType = {
+  activeChart: MovieType;
+  showingMovieBookings: BookingCount[];
+  availableMovieBookings: BookingCount[];
+};
+
+type BookingCount = {
+  movieTitle: string;
+  bookingCount: string;
+};
+
+type UpcomingScheduleType = {
+  availableSeats: number;
+  bookedSeats: string;
+  id: number;
+  isActive: number;
+  movieTitle: string;
+  screenName: string;
+  showDate: string;
+  showTime: string;
+  theatreName: string;
+};
+
+type RecentBookingsType = {
+  bookingDate: string;
+  customerEmail: string;
+  customerName: string;
+  id: number;
+  movieTitle: string;
+  seatList: string;
+  showDate: string;
+  showTime: string;
+  status: string;
+  totalAmount: number;
+};
+
+type TableRecordType = {
+  upcomingSchedules: UpcomingScheduleType[];
+  recentBookings: RecentBookingsType[];
+};
+
+type AdminDashboardProps = {
+  setActiveTab: React.Dispatch<React.SetStateAction<AdminTabType>>;
+  setOpenMovieModal: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpenScheduleModal: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+const AdminDashboard = ({
+  setActiveTab,
+  setOpenMovieModal,
+  setOpenScheduleModal,
+}: AdminDashboardProps) => {
+  const { data: cardInfo } = useCardInfoQuery();
+  const { data: tableData } = useUpcomingSchedulesQuery();
+
+  const [stats, setStats] = useState<StatType | null>(null);
+  const [revenueChart, setRevenueChart] = useState<RevenueChartType>({
+    activeChart: RevenueType.last7Day,
+    sevenDayRevenue: [],
+    monthlyRevenue: [],
+  });
+
+  const [bookingChart, setBookingChart] = useState<BookingChartType>({
+    activeChart: MovieType.showing,
+    showingMovieBookings: [],
+    availableMovieBookings: [],
+  });
+
+  const [tableRecords, setTableRecords] = useState<TableRecordType>({
+    upcomingSchedules: [],
+    recentBookings: [],
+  });
+
+  const updateRevenueChart = <K extends keyof RevenueChartType>(
+    key: K,
+    value: RevenueChartType[K],
+  ) => {
+    setRevenueChart((prev) => ({ ...prev, [key]: value }));
+  };
+  useEffect(() => {
+    if (cardInfo?.data) {
+      const {
+        totalMovies,
+        activeMovies,
+        totalTheatres,
+        totalSchedules,
+        totalRevenue,
+        lastSevenDayRevenue,
+        monthlyRevenue,
+        showingMovieBookings,
+        availableMovieBookings,
+      } = cardInfo.data;
+
+      setStats({
+        totalMovies,
+        activeMovies,
+        totalTheatres,
+        totalSchedules,
+        totalRevenue,
+      });
+
+      setRevenueChart({
+        activeChart: RevenueType.last7Day,
+        sevenDayRevenue: lastSevenDayRevenue?.map((item: SevenDayRevenue) => {
+          return {
+            date: dayjs(item.date).format("MMM DD"),
+            revenue: item.revenue,
+          };
+        }),
+        monthlyRevenue: monthlyRevenue?.map((item: MonthlyRevenue) => {
+          return {
+            month: dayjs(item.month).format("MMM"),
+            revenue: item.revenue,
+          };
+        }),
+      });
+
+      setBookingChart({
+        activeChart: MovieType.showing,
+        showingMovieBookings,
+        availableMovieBookings,
+      });
+    }
+
+    if (tableData?.data) {
+      console.log("upcoming", tableData?.data);
+      setTableRecords({
+        upcomingSchedules: tableData?.data?.upcomingSchedules,
+        recentBookings: tableData?.data?.recentBookings,
+      });
+    }
+  }, [cardInfo]);
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "confirmed":
@@ -119,26 +202,39 @@ const AdminDashboard = () => {
     }
   };
 
+  const chartStyle = {
+    tooltip: "!bg-surface !text-text !border-0",
+    tooltipItemName: "!bg-surface !text-text",
+    tooltipItemData: "!bg-surface !text-text",
+    tooltipLabel: "!bg-surface !text-text",
+  };
+
+  const selectStyle = {
+    input:
+      "dashboard-input !bg-transparent !text-muted !border-surface placeholder:!text-muted",
+    label: "!mb-2 !text-text",
+  };
+  console.log("table data", tableRecords);
   return (
     <div className="space-y-6">
       <Title order={2} className="!mb-3">
         Dashboard Overview
       </Title>
 
-      <Grid>
+      <Grid mt={30}>
         <Grid.Col span={{ base: 12, sm: 6, lg: 2.4 }}>
           <StatsCard
             title="Total Movies"
-            value={mockStats.totalMovies}
+            value={stats?.totalMovies ?? "-"}
             icon={<IconMovie size={20} />}
             color="blue"
-            trend={{ value: 12, isPositive: true }}
+            trend={{ value: 12, isPositive: false }}
           />
         </Grid.Col>
         <Grid.Col span={{ base: 12, sm: 6, lg: 2.4 }}>
           <StatsCard
             title="Active Movies"
-            value={mockStats.activeMovies}
+            value={stats?.activeMovies ?? "-"}
             icon={<IconMovie size={20} />}
             color="green"
           />
@@ -146,15 +242,15 @@ const AdminDashboard = () => {
         <Grid.Col span={{ base: 12, sm: 6, lg: 2.4 }}>
           <StatsCard
             title="Theaters"
-            value={mockStats.totalTheaters}
+            value={stats?.totalTheatres ?? "-"}
             icon={<IconBuilding size={20} />}
-            color="purple"
+            color="violet"
           />
         </Grid.Col>
         <Grid.Col span={{ base: 12, sm: 6, lg: 2.4 }}>
           <StatsCard
             title="Schedules"
-            value={mockStats.totalSchedules}
+            value={stats?.totalSchedules ?? "-"}
             icon={<IconCalendar size={20} />}
             color="orange"
           />
@@ -162,7 +258,7 @@ const AdminDashboard = () => {
         <Grid.Col span={{ base: 12, sm: 6, lg: 2.4 }}>
           <StatsCard
             title="Revenue"
-            value={`$${mockStats.revenue.toLocaleString()}`}
+            value={`$${stats?.totalRevenue}`}
             icon={<IconCurrencyDollar size={20} />}
             color="teal"
             trend={{ value: 8.5, isPositive: true }}
@@ -171,12 +267,88 @@ const AdminDashboard = () => {
       </Grid>
 
       {/* Charts Section */}
-      <Grid>
+      <Grid mt={50}>
         <Grid.Col span={{ base: 12, lg: 6 }}>
-          <RevenueChart />
+          <Group mb={30} className="!justify-between">
+            <Title size={"xl"}>Revenue</Title>
+            <Select
+              size="xs"
+              placeholder="Select Chart Type"
+              defaultValue={RevenueType.last7Day}
+              data={[
+                { label: "Last 7 Days", value: RevenueType.last7Day },
+                { label: "Monthly", value: RevenueType.monthly },
+              ]}
+              onChange={(value) =>
+                updateRevenueChart(
+                  "activeChart",
+                  value == RevenueType.last7Day
+                    ? RevenueType.last7Day
+                    : RevenueType.monthly,
+                )
+              }
+              classNames={selectStyle}
+            />
+          </Group>
+          {revenueChart.activeChart === RevenueType.last7Day ? (
+            <LineChart
+              h={300}
+              data={revenueChart.sevenDayRevenue}
+              dataKey="date"
+              series={[{ name: "revenue", label: "Revenue ($)" }]}
+              classNames={chartStyle}
+            />
+          ) : (
+            <LineChart
+              h={300}
+              data={revenueChart.monthlyRevenue}
+              dataKey="month"
+              yAxisProps={{ domain: [0, 200] }}
+              series={[{ name: "revenue", label: "Revenue ($)" }]}
+              classNames={chartStyle}
+            />
+          )}
         </Grid.Col>
+
         <Grid.Col span={{ base: 12, lg: 6 }}>
-          <MoviesChart />
+          <Group mb={30} className="!justify-between">
+            <Title size={"xl"}>Bookings</Title>
+            <Select
+              size="xs"
+              placeholder="Select Chart Type"
+              defaultValue={MovieType.showing}
+              data={[
+                { label: "Now Showing", value: MovieType.showing },
+                {
+                  label: "Ticket Available",
+                  value: MovieType.available,
+                },
+              ]}
+              onChange={(value) =>
+                setBookingChart((prev) => ({
+                  ...prev,
+                  activeChart:
+                    value == MovieType.showing
+                      ? MovieType.showing
+                      : MovieType.available,
+                }))
+              }
+              color={"var(--color-primary)"}
+              classNames={selectStyle}
+            />
+          </Group>
+          <BarChart
+            h={300}
+            data={
+              bookingChart.activeChart === MovieType.showing
+                ? bookingChart.showingMovieBookings
+                : bookingChart.availableMovieBookings
+            }
+            dataKey="movieTitle"
+            minBarSize={10}
+            series={[{ name: "bookingCount", color: "var(--color-primary)" }]}
+            classNames={chartStyle}
+          />
         </Grid.Col>
       </Grid>
 
@@ -200,31 +372,30 @@ const AdminDashboard = () => {
                     <Table.Th>Movie</Table.Th>
                     <Table.Th>Theater</Table.Th>
                     <Table.Th>Date & Time</Table.Th>
-                    <Table.Th>Price</Table.Th>
                     <Table.Th>Available Seats</Table.Th>
                     <Table.Th>Status</Table.Th>
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                  {mockUpcomingSchedules.map((schedule) => (
+                  {tableRecords.upcomingSchedules?.map((schedule) => (
                     <Table.Tr key={schedule.id}>
                       <Table.Td>
                         <div>
                           <Text size="sm" fw={500}>
-                            {schedule.movie?.name}
+                            {schedule.movieTitle}
                           </Text>
-                          <Text size="xs" c="dimmed">
+                          {/* <Text size="xs" c="dimmed">
                             {schedule.movie?.genres}
-                          </Text>
+                          </Text> */}
                         </div>
                       </Table.Td>
                       <Table.Td>
                         <div>
                           <Text size="sm" fw={500}>
-                            {schedule.theater?.name}
+                            {schedule.theatreName}
                           </Text>
                           <Text size="xs" c="dimmed">
-                            {schedule.theater?.location}
+                            {schedule.screenName}
                           </Text>
                         </div>
                       </Table.Td>
@@ -238,16 +409,19 @@ const AdminDashboard = () => {
                           </Text>
                         </div>
                       </Table.Td>
-                      <Table.Td>${schedule.price}</Table.Td>
                       <Table.Td>
                         <div>
                           <Text size="sm" fw={500}>
-                            {schedule.availableSeats}/{schedule.totalSeats}
+                            {schedule.availableSeats -
+                              schedule.bookedSeats?.length}
+                            /{schedule.availableSeats}
                           </Text>
                           <Text size="xs" c="dimmed">
                             {Math.round(
-                              (schedule.availableSeats / schedule.totalSeats) *
-                                100,
+                              100 -
+                                (schedule.bookedSeats?.length /
+                                  schedule.availableSeats) *
+                                  100,
                             )}
                             % available
                           </Text>
@@ -256,15 +430,23 @@ const AdminDashboard = () => {
                       <Table.Td>
                         <Badge
                           color={schedule.isActive ? "#28a745" : "#dc3545"}
-                          // variant="light"
+                          variant="light"
                         >
-                          {schedule.isActive ? "Active" : "Inactive"}
+                          {schedule.isActive === 1 ? "Active" : "Inactive"}
                         </Badge>
                       </Table.Td>
                     </Table.Tr>
                   ))}
                 </Table.Tbody>
               </Table>
+              {tableRecords.upcomingSchedules?.length === 0 && (
+                <Text ta="center" c="dimmed" py="60px" size="sm">
+                  <div className="flex justify-center mb-2">
+                    <IconCalendar size={25} />
+                  </div>
+                  No Upcoming Schedules
+                </Text>
+              )}
             </div>
           </Card>
         </Grid.Col>
@@ -287,14 +469,15 @@ const AdminDashboard = () => {
                 <Table.Thead>
                   <Table.Tr>
                     <Table.Th>Customer</Table.Th>
+                    <Table.Th>Movie</Table.Th>
+                    <Table.Th>Date & Time</Table.Th>
                     <Table.Th>Seats</Table.Th>
                     <Table.Th>Amount</Table.Th>
-                    <Table.Th>Date</Table.Th>
                     <Table.Th>Status</Table.Th>
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                  {mockRecentBookings.map((booking) => (
+                  {tableRecords.recentBookings?.map((booking) => (
                     <Table.Tr key={booking.id}>
                       <Table.Td>
                         <div>
@@ -306,7 +489,18 @@ const AdminDashboard = () => {
                           </Text>
                         </div>
                       </Table.Td>
-                      <Table.Td>{booking.seats.join(", ")}</Table.Td>
+                      <Table.Td>{booking.movieTitle}</Table.Td>
+                      <Table.Td>
+                        <div>
+                          <Text size="sm" fw={500}>
+                            {new Date(booking.showDate).toLocaleDateString()}
+                          </Text>
+                          <Text size="xs" c="dimmed">
+                            {booking.showTime}
+                          </Text>
+                        </div>
+                      </Table.Td>
+                      <Table.Td>{booking.seatList}</Table.Td>
                       <Table.Td>${booking.totalAmount}</Table.Td>
                       <Table.Td>
                         {new Date(booking.bookingDate).toLocaleDateString()}
@@ -314,7 +508,7 @@ const AdminDashboard = () => {
                       <Table.Td>
                         <Badge
                           color={getStatusColor(booking.status)}
-                          // variant="light"
+                          variant="light"
                         >
                           {booking.status}
                         </Badge>
@@ -323,6 +517,14 @@ const AdminDashboard = () => {
                   ))}
                 </Table.Tbody>
               </Table>
+              {tableRecords.recentBookings?.length === 0 && (
+                <Text ta="center" c="dimmed" py="34px" size="sm">
+                  <div className="flex justify-center mb-2">
+                    <IconTicket size={25} />
+                  </div>
+                  No Recent Bookings
+                </Text>
+              )}
             </div>
           </Card>
         </Grid.Col>
@@ -342,6 +544,10 @@ const AdminDashboard = () => {
               <Card
                 className="cursor-pointer !bg-surface-hover !text-text hover:!bg-primary !transition-all !duration-200"
                 p="sm"
+                onClick={() => {
+                  setActiveTab(AdminTabType.MOVIES);
+                  setOpenMovieModal(true);
+                }}
               >
                 <Group>
                   <IconMovie size={20} />
@@ -351,6 +557,10 @@ const AdminDashboard = () => {
               <Card
                 className="cursor-pointer !bg-surface-hover !text-text hover:!bg-primary !transition-all !duration-200"
                 p="sm"
+                onClick={() => {
+                  setActiveTab(AdminTabType.SCHEDULES);
+                  setOpenScheduleModal(true);
+                }}
               >
                 <Group>
                   <IconCalendar size={20} />
@@ -360,6 +570,9 @@ const AdminDashboard = () => {
               <Card
                 className="cursor-pointer !bg-surface-hover !text-text hover:!bg-primary !transition-all !duration-200"
                 p="sm"
+                onClick={() => {
+                  setActiveTab(AdminTabType.BOOKINGS);
+                }}
               >
                 <Group>
                   <IconTicket size={20} />

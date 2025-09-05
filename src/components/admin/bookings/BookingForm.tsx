@@ -89,6 +89,7 @@ const BookingForm = ({
   const [screens, setScreens] = useState<ScreenType[]>([]);
   const [showDates, setShowDates] = useState<string[]>([]);
   const [showTimes, setShowTimes] = useState<string[]>([]);
+  const [selectedSeats, setSelectedSeats] = useState<SelectedSeatType[]>([]);
 
   const [selectedInfo, setSelectedInfo] = useState<SelectedInfoType>({
     movie: null,
@@ -411,6 +412,9 @@ const BookingForm = ({
                           }}
                           selectedInfo={selectedInfo}
                           updateSelectedInfo={updateSelectedInfo}
+                          setSelectedSeats={setSelectedSeats}
+                          selectedSeats={selectedSeats}
+                          activeStep={activeStep}
                         />
 
                         {seatError && (

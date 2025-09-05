@@ -52,10 +52,16 @@ import { useConfirmModalStore } from "@/store/useConfirmModalStore";
 const languages = ["English", "Tamil", "Hindi", "Telugu", "Chinese"];
 const subtitles = ["English", "Tamil", "Hindi", "Telugu", "Chinese"];
 
-const MovieManagement = () => {
+interface MovieManagementType {
+  openMovieModal: boolean;
+  setOpenMovieModal: (value: boolean) => void;
+}
+const MovieManagement = ({
+  openMovieModal,
+  setOpenMovieModal,
+}: MovieManagementType) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
-  const [formModalOpen, setFormModalOpen] = useState(false);
   const [editingMovie, setEditingMovie] = useState<MovieType | null>(null);
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
@@ -176,7 +182,7 @@ const MovieManagement = () => {
   const handleAddMovie = () => {
     form.reset();
     resetFormValues();
-    setFormModalOpen(true);
+    setOpenMovieModal(true);
   };
 
   const resetFormValues = () => {
@@ -204,7 +210,7 @@ const MovieManagement = () => {
       experience: movie.experience,
       poster: await urlToFile(movie.poster?.url, "poster.jpg", "image/jpeg"),
     });
-    setFormModalOpen(true);
+    setOpenMovieModal(true);
 
     setImagePreviewUrls(movie.photos?.map((img) => img.url));
     setPosterPreviewUrl([movie.poster?.url]);
@@ -253,7 +259,7 @@ const MovieManagement = () => {
         {
           onSuccess: () => {
             showLoading(false);
-            setFormModalOpen(false);
+            setOpenMovieModal(false);
             resetFormValues();
             setImageUploading(false);
           },
@@ -270,7 +276,7 @@ const MovieManagement = () => {
           onSuccess: () => {
             showLoading(false);
 
-            setFormModalOpen(false);
+            setOpenMovieModal(false);
             resetFormValues();
             setImageUploading(false);
           },
@@ -544,8 +550,8 @@ const MovieManagement = () => {
       <Button onClick={handleSubmitImage}>Submit</Button>
       <Image src="https://i.ibb.co/ZpwMRRBC/c1f1951d7c84.jpg" /> */}
       <Modal
-        opened={formModalOpen}
-        onClose={() => setFormModalOpen(false)}
+        opened={openMovieModal}
+        onClose={() => setOpenMovieModal(false)}
         title={editingMovie ? "Edit Movie" : "Add New Movie"}
         size="lg"
         classNames={modalStyle}
@@ -744,7 +750,7 @@ const MovieManagement = () => {
           <Group justify="flex-end" mt="md">
             <Button
               variant="outline"
-              onClick={() => setFormModalOpen(false)}
+              onClick={() => setOpenMovieModal(false)}
               className="dashboard-btn"
             >
               Cancel

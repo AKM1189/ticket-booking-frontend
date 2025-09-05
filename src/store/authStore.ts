@@ -8,17 +8,6 @@ interface AuthStore {
 }
 export const useAuthStore = create<AuthStore>((set) => ({
   user: null,
-  setUser: (user: any) => set({ user: userFromJson(user) }),
+  setUser: (user: any) => set({ user }),
   logout: () => set({ user: null }),
 }));
-
-const userFromJson = (data: any) => {
-  if (!data) return;
-  const { id, name, email, role } = data;
-  return {
-    id,
-    name,
-    email,
-    role,
-  };
-};

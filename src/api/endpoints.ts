@@ -16,7 +16,12 @@ export const endpoints = {
     showTimes: "/admin/schedules/showTime",
     schedulesByShow: "/admin/schedules/show-details",
 
+    cardInfo: "/admin/dashboard/info",
+    upcomingSchedules: "/admin/dashboard/upcoming-schedule",
+
     booking: "/admin/bookings",
+
+    profile: "/admin/profile",
 
     users: "/admin/users",
     me: "/auth/admin/me",

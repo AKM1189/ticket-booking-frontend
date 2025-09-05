@@ -1,5 +1,6 @@
 import {
   AppShell,
+  Avatar,
   Burger,
   Group,
   Switch,
@@ -24,13 +25,13 @@ import { IconSun, IconMoonStars } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { useLogoutMutation } from "@/api/mutation/authMutation";
 import { useConfirmModalStore } from "@/store/useConfirmModalStore";
+import Profile from "../profile/Profile";
 // import { useAuth } from "@/hooks/useAuth";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
   activeTab: AdminTabType;
   onTabChange: (tab: AdminTabType) => void;
-  setOpenBooking: (value: boolean) => void;
 }
 
 const navigationItems = [
@@ -116,7 +117,7 @@ const AdminLayout = ({
             </Text>
           </Group>
 
-          <Group gap="xs" justify="space-between">
+          <Group gap="xl" justify="space-between">
             <Switch
               size="sm"
               color="var(--color-surface-hover)"
@@ -139,9 +140,10 @@ const AdminLayout = ({
               }
               onChange={handleThemeChange}
             />
-            <div className="max-sm:hidden">
+            <Profile />
+            {/* <div className="max-sm:hidden">
               <LogoutBtn close={close} handleLogout={handleLogout} />
-            </div>
+            </div> */}
           </Group>
         </Group>
       </AppShell.Header>
@@ -150,29 +152,31 @@ const AdminLayout = ({
         p="md"
         className="!bg-background !border-red !min-w-[250px]"
       >
-        <div className="space-y-2">
-          {navigationItems.map((item) => (
-            <UnstyledButton
-              key={item.value}
-              onClick={() => {
-                close();
-                onTabChange(item.value);
-              }}
-              className={`w-full rounded-lg transition-colors !p-3 ${
-                activeTab === item.value
-                  ? "!bg-primary !text-white"
-                  : "hover:!bg-surface"
-              }`}
-            >
-              <Group gap="sm">
-                <item.icon size={20} />
-                <Text size="sm" fw={500}>
-                  {item.label}
-                </Text>
-              </Group>
-            </UnstyledButton>
-          ))}
-          <div className="sm:hidden">
+        <div className="flex flex-col flex-grow space-y-2">
+          <div className="space-y-2 flex-grow">
+            {navigationItems.map((item) => (
+              <UnstyledButton
+                key={item.value}
+                onClick={() => {
+                  close();
+                  onTabChange(item.value);
+                }}
+                className={`w-full rounded-lg transition-colors !p-3 ${
+                  activeTab === item.value
+                    ? "!bg-primary !text-white"
+                    : "hover:!bg-surface"
+                }`}
+              >
+                <Group gap="sm">
+                  <item.icon size={20} />
+                  <Text size="sm" fw={500}>
+                    {item.label}
+                  </Text>
+                </Group>
+              </UnstyledButton>
+            ))}
+          </div>
+          <div className="">
             <LogoutBtn close={close} handleLogout={handleLogout} />
           </div>
         </div>
