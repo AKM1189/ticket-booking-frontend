@@ -10,15 +10,15 @@ const ProtectedRoute = ({ allowedRoles }) => {
   if (isLoading) {
     return (
       <div>
-        <Login />
+        {/* <Login /> */}
         <LoadingOverlay
           visible={true}
           zIndex={1000}
           overlayProps={{
             radius: "sm",
             blur: 1,
-            backgroundOpacity: 0.3,
-            color: "var(--color-primary)",
+            backgroundOpacity: 1,
+            color: "var(--color-surface)",
           }}
           loaderProps={{
             color: "var(--color-blueGray)",

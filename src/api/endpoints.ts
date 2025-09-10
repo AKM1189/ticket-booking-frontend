@@ -19,6 +19,8 @@ export const endpoints = {
     cardInfo: "/admin/dashboard/info",
     upcomingSchedules: "/admin/dashboard/upcoming-schedule",
 
+    notifications: "/admin/notifications",
+
     booking: "/admin/bookings",
 
     profile: "/admin/profile",
