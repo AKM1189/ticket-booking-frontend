@@ -3,10 +3,11 @@ import { getCurrentUser } from "../function/authApi";
 import { useAuthStore } from "@/store/authStore";
 
 export const useGetUser = () => {
-  const { setUser } = useAuthStore();
+  const setUser = useAuthStore((state) => state.setUser);
   return useQuery({
     queryFn: () =>
       getCurrentUser().then((data) => {
+        console.log("getting updated user data.....", data);
         setUser(data);
         return data;
       }),

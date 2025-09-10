@@ -61,7 +61,7 @@ const Ticket = () => {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col justify-center items-center h-[500px] w-[480px]">
+      <div className="flex flex-col justify-center items-center h-[500px] w-full">
         <Loader type="dots" size={60} />
         <p className="text-[12px] text-gray-500">Generating Ticket</p>
       </div>

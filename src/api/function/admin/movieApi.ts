@@ -3,15 +3,21 @@ import { endpoints } from "@/api/endpoints";
 import type { MovieInputType } from "@/types/MovieTypes";
 
 export const getMovies = async (
+  page: number = 1,
   searchTerm?: string,
   status?: string | null,
 ) => {
   let parameters = "";
-  if (searchTerm) parameters += "search=" + searchTerm;
-  if (status) parameters += "status=" + status;
+  if (searchTerm) parameters += "&search=" + searchTerm;
+  if (status) parameters += "&status=" + status;
   const response = await api.get(
-    `${endpoints.admin.movies}${parameters ? "?" + parameters : ""}`,
+    `${endpoints.admin.movies}?page=${page}${parameters}`,
   );
+  return response.data;
+};
+
+export const getAllMovies = async () => {
+  const response = await api.get(`${endpoints.admin.movies}/all`);
   return response.data;
 };
 

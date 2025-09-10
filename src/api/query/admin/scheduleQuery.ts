@@ -4,9 +4,13 @@ import {
 } from "@/api/function/admin/scheduleApi";
 import { useQuery } from "@tanstack/react-query";
 
-export const useScheduleQuery = () => {
+export const useScheduleQuery = (
+  page: number,
+  searchTerm: string,
+  dateFilter: string,
+) => {
   return useQuery({
-    queryFn: getSchedule,
+    queryFn: () => getSchedule(page, searchTerm, dateFilter),
     queryKey: ["schedules"],
     retry: 5,
   });

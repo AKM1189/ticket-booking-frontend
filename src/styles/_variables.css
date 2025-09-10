@@ -22,8 +22,10 @@
   --standard: #3f95ff;
   --premium: #00d273;
   --vip: #ff8f44;
-  --booked: #717171;
+  --booked: #2a5adf;
   --temp: #7192c3;
+
+  --notiBorder: #465893; /* Medium navy blue */
 }
 
 [data-theme="light"] {
@@ -50,6 +52,8 @@
   --vip: #913a00;
   --booked: #d2d2d2;
   --temp: #a4a4a4;
+
+  --notiBorder: rgb(119, 119, 119); /* Medium navy blue */
 }
 
 @theme {
@@ -76,4 +80,5 @@
   --color-booked: var(--booked);
   --color-disabled: var(--disabled);
   --color-temp: var(--temp);
+  --color-notiBorder: var(--notiBorder);
 }

@@ -14,7 +14,9 @@ const AdminRoutes = () => {
   }, [navigate]);
   return (
     <Routes>
-      <Route element={<ProtectedRoute allowedRoles={[Role.admin]} />}>
+      <Route
+        element={<ProtectedRoute allowedRoles={[Role.admin, Role.staff]} />}
+      >
         <Route path={routes.admin.home} element={<AdminPanel />} />
         <Route path={routes.admin.dashboard} element={<AdminPanel />} />
       </Route>

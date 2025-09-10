@@ -2,8 +2,17 @@ import { api } from "@/api/api";
 import { endpoints } from "@/api/endpoints";
 import type { GenreType } from "@/types/GenreTypes";
 
-export const getGenre = async () => {
-  const response = await api.get(endpoints.admin.genres);
+export const getGenre = async (page: number, searchTerm: string) => {
+  let parameters = "";
+  if (searchTerm) parameters += "&search=" + searchTerm;
+  const response = await api.get(
+    `${endpoints.admin.genres}?page=${page}${parameters}`,
+  );
+  return response.data;
+};
+
+export const getAllGenre = async () => {
+  const response = await api.get(`${endpoints.admin.genres}/all`);
   return response.data;
 };
 

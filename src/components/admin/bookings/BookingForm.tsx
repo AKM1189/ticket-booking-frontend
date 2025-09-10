@@ -426,8 +426,11 @@ const BookingForm = ({
                     )}
 
                   {selectedInfo.seats?.length > 0 && (
-                    <Paper p="md" className="!bg-transparent !shadow-none">
-                      <Text size="sm" fw={500} mb="xs">
+                    <Paper
+                      p="md"
+                      className="!bg-transparent !shadow-none mx-auto"
+                    >
+                      <Text size="sm" fw={500} mb="xs" className="text-center">
                         Selected Seats: ({selectedInfo.seats?.length})
                       </Text>
                       {/* <Group gap="xs" flex={"col"}> */}

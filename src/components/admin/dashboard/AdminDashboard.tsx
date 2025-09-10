@@ -26,6 +26,12 @@ import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import { MovieType } from "@/constants/movieConstants";
 import { AdminTabType } from "@/types/AdminTypes";
+import type { StatusType } from "@/types/NotificationType";
+import { getScheduleStatusColor } from "../schedules/ScheduleManagement";
+import { usePermisson } from "@/hooks/usePermisson";
+import { permissionList } from "@/constants/permissons";
+import { useAuthStore } from "@/store/authStore";
+import { Role } from "@/types/AuthType";
 
 type StatType = {
   totalMovies: number;
@@ -33,6 +39,7 @@ type StatType = {
   totalTheatres: number;
   totalSchedules: number;
   totalRevenue: number;
+  todayTicketSales: number;
 };
 
 type SevenDayRevenue = {
@@ -71,7 +78,7 @@ type UpcomingScheduleType = {
   availableSeats: number;
   bookedSeats: string;
   id: number;
-  isActive: number;
+  status: StatusType;
   movieTitle: string;
   screenName: string;
   showDate: string;
@@ -129,12 +136,16 @@ const AdminDashboard = ({
     recentBookings: [],
   });
 
+  const { hasAccess } = usePermisson();
+  const { user } = useAuthStore();
+
   const updateRevenueChart = <K extends keyof RevenueChartType>(
     key: K,
     value: RevenueChartType[K],
   ) => {
     setRevenueChart((prev) => ({ ...prev, [key]: value }));
   };
+
   useEffect(() => {
     if (cardInfo?.data) {
       const {
@@ -147,6 +158,7 @@ const AdminDashboard = ({
         monthlyRevenue,
         showingMovieBookings,
         availableMovieBookings,
+        todayTicketSales,
       } = cardInfo.data;
 
       setStats({
@@ -155,6 +167,7 @@ const AdminDashboard = ({
         totalTheatres,
         totalSchedules,
         totalRevenue,
+        todayTicketSales,
       });
 
       setRevenueChart({
@@ -214,7 +227,7 @@ const AdminDashboard = ({
       "dashboard-input !bg-transparent !text-muted !border-surface placeholder:!text-muted",
     label: "!mb-2 !text-text",
   };
-  console.log("table data", tableRecords);
+
   return (
     <div className="space-y-6">
       <Title order={2} className="!mb-3">
@@ -222,15 +235,28 @@ const AdminDashboard = ({
       </Title>
 
       <Grid mt={30}>
-        <Grid.Col span={{ base: 12, sm: 6, lg: 2.4 }}>
-          <StatsCard
-            title="Total Movies"
-            value={stats?.totalMovies ?? "-"}
-            icon={<IconMovie size={20} />}
-            color="blue"
-            trend={{ value: 12, isPositive: false }}
-          />
-        </Grid.Col>
+        {user?.role === Role.staff && (
+          <Grid.Col span={{ base: 12, sm: 6, lg: 2.4 }}>
+            <StatsCard
+              title="Today Ticket Sales"
+              value={stats?.todayTicketSales ?? "-"}
+              icon={<IconTicket size={20} />}
+              color="blue"
+              trend={{ value: 12, isPositive: false }}
+            />
+          </Grid.Col>
+        )}
+        {hasAccess(permissionList.readReport) && (
+          <Grid.Col span={{ base: 12, sm: 6, lg: 2.4 }}>
+            <StatsCard
+              title="Total Movies"
+              value={stats?.totalMovies ?? "-"}
+              icon={<IconMovie size={20} />}
+              color="blue"
+              trend={{ value: 12, isPositive: false }}
+            />
+          </Grid.Col>
+        )}
         <Grid.Col span={{ base: 12, sm: 6, lg: 2.4 }}>
           <StatsCard
             title="Active Movies"
@@ -255,102 +281,106 @@ const AdminDashboard = ({
             color="orange"
           />
         </Grid.Col>
-        <Grid.Col span={{ base: 12, sm: 6, lg: 2.4 }}>
-          <StatsCard
-            title="Revenue"
-            value={`$${stats?.totalRevenue}`}
-            icon={<IconCurrencyDollar size={20} />}
-            color="teal"
-            trend={{ value: 8.5, isPositive: true }}
-          />
-        </Grid.Col>
+        {hasAccess(permissionList.readReport) && (
+          <Grid.Col span={{ base: 12, sm: 6, lg: 2.4 }}>
+            <StatsCard
+              title="Revenue"
+              value={`$${stats?.totalRevenue}`}
+              icon={<IconCurrencyDollar size={20} />}
+              color="teal"
+              trend={{ value: 8.5, isPositive: true }}
+            />
+          </Grid.Col>
+        )}
       </Grid>
 
       {/* Charts Section */}
-      <Grid mt={50}>
-        <Grid.Col span={{ base: 12, lg: 6 }}>
-          <Group mb={30} className="!justify-between">
-            <Title size={"xl"}>Revenue</Title>
-            <Select
-              size="xs"
-              placeholder="Select Chart Type"
-              defaultValue={RevenueType.last7Day}
-              data={[
-                { label: "Last 7 Days", value: RevenueType.last7Day },
-                { label: "Monthly", value: RevenueType.monthly },
-              ]}
-              onChange={(value) =>
-                updateRevenueChart(
-                  "activeChart",
-                  value == RevenueType.last7Day
-                    ? RevenueType.last7Day
-                    : RevenueType.monthly,
-                )
-              }
-              classNames={selectStyle}
-            />
-          </Group>
-          {revenueChart.activeChart === RevenueType.last7Day ? (
-            <LineChart
-              h={300}
-              data={revenueChart.sevenDayRevenue}
-              dataKey="date"
-              series={[{ name: "revenue", label: "Revenue ($)" }]}
-              classNames={chartStyle}
-            />
-          ) : (
-            <LineChart
-              h={300}
-              data={revenueChart.monthlyRevenue}
-              dataKey="month"
-              yAxisProps={{ domain: [0, 200] }}
-              series={[{ name: "revenue", label: "Revenue ($)" }]}
-              classNames={chartStyle}
-            />
-          )}
-        </Grid.Col>
+      {hasAccess(permissionList.readReport) && (
+        <Grid mt={50}>
+          <Grid.Col span={{ base: 12, lg: 6 }}>
+            <Group mb={30} className="!justify-between">
+              <Title size={"xl"}>Revenue</Title>
+              <Select
+                size="xs"
+                placeholder="Select Chart Type"
+                defaultValue={RevenueType.last7Day}
+                data={[
+                  { label: "Last 7 Days", value: RevenueType.last7Day },
+                  { label: "Monthly", value: RevenueType.monthly },
+                ]}
+                onChange={(value) =>
+                  updateRevenueChart(
+                    "activeChart",
+                    value == RevenueType.last7Day
+                      ? RevenueType.last7Day
+                      : RevenueType.monthly,
+                  )
+                }
+                classNames={selectStyle}
+              />
+            </Group>
+            {revenueChart.activeChart === RevenueType.last7Day ? (
+              <LineChart
+                h={300}
+                data={revenueChart.sevenDayRevenue}
+                dataKey="date"
+                series={[{ name: "revenue", label: "Revenue ($)" }]}
+                classNames={chartStyle}
+              />
+            ) : (
+              <LineChart
+                h={300}
+                data={revenueChart.monthlyRevenue}
+                dataKey="month"
+                yAxisProps={{ domain: [0, 200] }}
+                series={[{ name: "revenue", label: "Revenue ($)" }]}
+                classNames={chartStyle}
+              />
+            )}
+          </Grid.Col>
 
-        <Grid.Col span={{ base: 12, lg: 6 }}>
-          <Group mb={30} className="!justify-between">
-            <Title size={"xl"}>Bookings</Title>
-            <Select
-              size="xs"
-              placeholder="Select Chart Type"
-              defaultValue={MovieType.showing}
-              data={[
-                { label: "Now Showing", value: MovieType.showing },
-                {
-                  label: "Ticket Available",
-                  value: MovieType.available,
-                },
-              ]}
-              onChange={(value) =>
-                setBookingChart((prev) => ({
-                  ...prev,
-                  activeChart:
-                    value == MovieType.showing
-                      ? MovieType.showing
-                      : MovieType.available,
-                }))
+          <Grid.Col span={{ base: 12, lg: 6 }}>
+            <Group mb={30} className="!justify-between">
+              <Title size={"xl"}>Bookings</Title>
+              <Select
+                size="xs"
+                placeholder="Select Chart Type"
+                defaultValue={MovieType.showing}
+                data={[
+                  { label: "Now Showing", value: MovieType.showing },
+                  {
+                    label: "Ticket Available",
+                    value: MovieType.available,
+                  },
+                ]}
+                onChange={(value) =>
+                  setBookingChart((prev) => ({
+                    ...prev,
+                    activeChart:
+                      value == MovieType.showing
+                        ? MovieType.showing
+                        : MovieType.available,
+                  }))
+                }
+                color={"var(--color-primary)"}
+                classNames={selectStyle}
+              />
+            </Group>
+            <BarChart
+              h={300}
+              data={
+                bookingChart.activeChart === MovieType.showing
+                  ? bookingChart.showingMovieBookings
+                  : bookingChart.availableMovieBookings
               }
-              color={"var(--color-primary)"}
-              classNames={selectStyle}
+              dataKey="movieTitle"
+              minBarSize={10}
+              series={[{ name: "bookingCount", color: "var(--color-primary)" }]}
+              classNames={chartStyle}
             />
-          </Group>
-          <BarChart
-            h={300}
-            data={
-              bookingChart.activeChart === MovieType.showing
-                ? bookingChart.showingMovieBookings
-                : bookingChart.availableMovieBookings
-            }
-            dataKey="movieTitle"
-            minBarSize={10}
-            series={[{ name: "bookingCount", color: "var(--color-primary)" }]}
-            classNames={chartStyle}
-          />
-        </Grid.Col>
-      </Grid>
+          </Grid.Col>
+        </Grid>
+      )}
 
       {/* Upcoming Schedules Section */}
       <Grid>
@@ -429,10 +459,10 @@ const AdminDashboard = ({
                       </Table.Td>
                       <Table.Td>
                         <Badge
-                          color={schedule.isActive ? "#28a745" : "#dc3545"}
+                          color={getScheduleStatusColor(schedule.status)}
                           variant="light"
                         >
-                          {schedule.isActive === 1 ? "Active" : "Inactive"}
+                          {schedule.status}
                         </Badge>
                       </Table.Td>
                     </Table.Tr>
@@ -453,7 +483,9 @@ const AdminDashboard = ({
       </Grid>
 
       <Grid>
-        <Grid.Col span={{ base: 12, lg: 8 }}>
+        <Grid.Col
+          span={hasAccess(permissionList.readReport) ? { base: 12, lg: 8 } : 12}
+        >
           <Card
             shadow="sm"
             padding="lg"
@@ -474,6 +506,7 @@ const AdminDashboard = ({
                     <Table.Th>Seats</Table.Th>
                     <Table.Th>Amount</Table.Th>
                     <Table.Th>Status</Table.Th>
+                    <Table.Th>Booked Date</Table.Th>
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
@@ -529,59 +562,61 @@ const AdminDashboard = ({
           </Card>
         </Grid.Col>
 
-        <Grid.Col span={{ base: 12, lg: 4 }}>
-          <Card
-            shadow="sm"
-            padding="lg"
-            radius="md"
-            withBorder
-            className="!bg-surface !border-0 !text-text"
-          >
-            <Title order={3} mb="md">
-              Quick Actions
-            </Title>
-            <div className="space-y-3">
-              <Card
-                className="cursor-pointer !bg-surface-hover !text-text hover:!bg-primary !transition-all !duration-200"
-                p="sm"
-                onClick={() => {
-                  setActiveTab(AdminTabType.MOVIES);
-                  setOpenMovieModal(true);
-                }}
-              >
-                <Group>
-                  <IconMovie size={20} />
-                  <Text size="sm">Add New Movie</Text>
-                </Group>
-              </Card>
-              <Card
-                className="cursor-pointer !bg-surface-hover !text-text hover:!bg-primary !transition-all !duration-200"
-                p="sm"
-                onClick={() => {
-                  setActiveTab(AdminTabType.SCHEDULES);
-                  setOpenScheduleModal(true);
-                }}
-              >
-                <Group>
-                  <IconCalendar size={20} />
-                  <Text size="sm">Create Schedule</Text>
-                </Group>
-              </Card>
-              <Card
-                className="cursor-pointer !bg-surface-hover !text-text hover:!bg-primary !transition-all !duration-200"
-                p="sm"
-                onClick={() => {
-                  setActiveTab(AdminTabType.BOOKINGS);
-                }}
-              >
-                <Group>
-                  <IconTicket size={20} />
-                  <Text size="sm">View All Bookings</Text>
-                </Group>
-              </Card>
-            </div>
-          </Card>
-        </Grid.Col>
+        {hasAccess(permissionList.readReport) && (
+          <Grid.Col span={{ base: 12, lg: 4 }}>
+            <Card
+              shadow="sm"
+              padding="lg"
+              radius="md"
+              withBorder
+              className="!bg-surface !border-0 !text-text"
+            >
+              <Title order={3} mb="md">
+                Quick Actions
+              </Title>
+              <div className="space-y-3">
+                <Card
+                  className="cursor-pointer !bg-surface-hover !text-text hover:!bg-primary !transition-all !duration-200"
+                  p="sm"
+                  onClick={() => {
+                    setActiveTab(AdminTabType.MOVIES);
+                    setOpenMovieModal(true);
+                  }}
+                >
+                  <Group>
+                    <IconMovie size={20} />
+                    <Text size="sm">Add New Movie</Text>
+                  </Group>
+                </Card>
+                <Card
+                  className="cursor-pointer !bg-surface-hover !text-text hover:!bg-primary !transition-all !duration-200"
+                  p="sm"
+                  onClick={() => {
+                    setActiveTab(AdminTabType.SCHEDULES);
+                    setOpenScheduleModal(true);
+                  }}
+                >
+                  <Group>
+                    <IconCalendar size={20} />
+                    <Text size="sm">Create Schedule</Text>
+                  </Group>
+                </Card>
+                <Card
+                  className="cursor-pointer !bg-surface-hover !text-text hover:!bg-primary !transition-all !duration-200"
+                  p="sm"
+                  onClick={() => {
+                    setActiveTab(AdminTabType.BOOKINGS);
+                  }}
+                >
+                  <Group>
+                    <IconTicket size={20} />
+                    <Text size="sm">View All Bookings</Text>
+                  </Group>
+                </Card>
+              </div>
+            </Card>
+          </Grid.Col>
+        )}
       </Grid>
     </div>
   );

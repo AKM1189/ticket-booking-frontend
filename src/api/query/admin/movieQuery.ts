@@ -1,10 +1,27 @@
-import { getMovies, getShowingMovies } from "@/api/function/admin/movieApi";
+import {
+  getAllMovies,
+  getMovies,
+  getShowingMovies,
+} from "@/api/function/admin/movieApi";
 import { useQuery } from "@tanstack/react-query";
 
-export const useMovieQuery = (searchTerm?: string, status?: string | null) => {
+export const useMovieQuery = (
+  page: number,
+  searchTerm?: string,
+  status?: string | null,
+) => {
   return useQuery({
-    queryFn: () => getMovies(searchTerm, status),
+    queryFn: () => getMovies(page, searchTerm, status),
     queryKey: ["movies"],
+    retry: 5,
+    staleTime: 0,
+  });
+};
+
+export const useAllMoviesQuery = () => {
+  return useQuery({
+    queryFn: () => getAllMovies(),
+    queryKey: ["allMovies"],
     retry: 5,
     staleTime: 0,
   });

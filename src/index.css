@@ -28,20 +28,23 @@ body {
 
 ::-webkit-scrollbar {
   width: 3px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-background);
+  border-radius: 8px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-surface);
+  background: var(--color-darkGray);
+  height: 5px;
   border-radius: 8px;
-  border: 3px solid var(--color-darkGray);
+  border: 1px solid var(--color-darkGray);
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: #718096;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-corner {

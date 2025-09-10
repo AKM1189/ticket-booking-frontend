@@ -14,7 +14,7 @@ export type ScheduleType = {
   totalSeats: number;
   language: string;
   subtitle: string;
-  isActive: boolean;
+  status: ScheduleStatus;
   bookedSeats: string[];
   priceList: {
     id: number;
@@ -22,6 +22,13 @@ export type ScheduleType = {
     price: string;
   }[];
 };
+
+export enum ScheduleStatus {
+  active = "Active",
+  inActive = "Inactive",
+  ongoing = "Ongoing",
+  completed = "Completed",
+}
 
 export type ScheduleInputType = {
   movieId: number;

@@ -7,7 +7,6 @@ import {
   FileInput,
   Grid,
   Group,
-  Image,
   Menu,
   Modal,
   PasswordInput,
@@ -16,7 +15,7 @@ import {
   ThemeIcon,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { IconPencil, IconUpload } from "@tabler/icons-react";
+import { IconPencil } from "@tabler/icons-react";
 import { useEffect, useRef, useState } from "react";
 
 import "react-phone-number-input/style.css";
@@ -25,6 +24,7 @@ import {
   useChangePasswordMutation,
   useUpdateProfileMutation,
 } from "@/api/mutation/admin/profileMutation";
+import { useLoadingStore } from "@/store/useLoading";
 
 const Profile = () => {
   const { user } = useAuthStore();
@@ -36,19 +36,27 @@ const Profile = () => {
       <Menu width={180} position="bottom-start">
         <Menu.Target>
           <Group gap={"xs"} className="cursor-pointer">
-            <Avatar radius="xl" color="var(--color-blueGray)" />
+            <Avatar
+              radius="xl"
+              size={40}
+              src={user?.image?.url}
+              color="var(--color-blueGray)"
+            />
             <Text color="var(--color-blueGray)">{user?.name}</Text>
           </Group>
         </Menu.Target>
 
         <Menu.Dropdown
           classNames={{
-            dropdown: "!bg-surface !text-text !border-0",
+            dropdown:
+              "!bg-surface !text-text !border !border-surface-hover !shadow-lg",
           }}
         >
           <Menu.Item
             className="!text-sm !text-text hover:!bg-surface-hover"
-            onClick={() => setOpenProfileModal(true)}
+            onClick={() => {
+              setOpenProfileModal(true);
+            }}
           >
             Profile
           </Menu.Item>
@@ -85,7 +93,8 @@ export type ProfileInputType = {
 const UpdateProfile = ({ openProfileModal, setOpenProfileModal }) => {
   const { user } = useAuthStore();
   const [imagePreview, setImagePreivew] = useState<string | null>(null);
-  const profileRef = useRef(null);
+  const profileRef = useRef<HTMLButtonElement>(null);
+  const { showLoading } = useLoadingStore();
 
   const { mutate } = useUpdateProfileMutation();
 
@@ -106,12 +115,21 @@ const UpdateProfile = ({ openProfileModal, setOpenProfileModal }) => {
 
   useEffect(() => {
     form.reset();
-    setImagePreivew(null);
+    if (user) {
+      form.setValues({
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        image: null,
+        phoneNo: user.phoneNo,
+      });
+      setImagePreivew(user.image?.url || null);
+    }
   }, [openProfileModal]);
 
   const handleImageChange = (file: File | null) => {
     if (!file) {
-      setImagePreivew(user?.image || null);
+      setImagePreivew(user?.image?.url || null);
       return;
     }
     form.setFieldValue("image", file);
@@ -125,12 +143,22 @@ const UpdateProfile = ({ openProfileModal, setOpenProfileModal }) => {
   };
 
   const handleSubmit = (values: typeof form.values) => {
-    console.log("profile", values);
     if (user) {
-      mutate({
-        userId: user.id,
-        data: values,
-      });
+      showLoading(true);
+      mutate(
+        {
+          userId: user.id,
+          data: values,
+        },
+        {
+          onSuccess: () => {
+            showLoading(false);
+            setOpenProfileModal(false);
+            form.reset();
+          },
+          onError: () => showLoading(false),
+        },
+      );
     }
   };
   return (
@@ -194,7 +222,6 @@ const UpdateProfile = ({ openProfileModal, setOpenProfileModal }) => {
                   defaultCountry="MM"
                   value={form.values.phoneNo}
                   onChange={(val: any) => {
-                    console.log("val", val);
                     form.setFieldValue("phoneNo", val);
                   }}
                 />
@@ -213,7 +240,11 @@ const UpdateProfile = ({ openProfileModal, setOpenProfileModal }) => {
             </Grid.Col>
           </Grid>
           <Group justify="end">
-            <Button variant="outline" className="dashboard-btn">
+            <Button
+              variant="outline"
+              className="dashboard-btn"
+              onClick={() => setOpenProfileModal(false)}
+            >
               Cancel
             </Button>
             <Button type="submit" className="dashboard-btn">
@@ -234,6 +265,7 @@ export type PasswordInputType = {
 const ChangePassword = ({ openPasswordModal, setOpenPasswordModal }) => {
   const { user } = useAuthStore();
   const { mutate } = useChangePasswordMutation();
+  const { showLoading } = useLoadingStore();
 
   const form = useForm({
     initialValues: {
@@ -244,8 +276,10 @@ const ChangePassword = ({ openPasswordModal, setOpenPasswordModal }) => {
     validate: {
       currentPassword: (value) =>
         !value ? "Please enter your current password" : null,
-      newPassword: (value) => {
+      newPassword: (value, values) => {
         if (!value) return "Please enter new password";
+        else if (value === values.currentPassword)
+          return "Don't reuse the current password";
         else if (value.length < 8)
           return "Password must be at least 8 characters";
         else if (!/[A-Z]/.test(value))
@@ -260,12 +294,21 @@ const ChangePassword = ({ openPasswordModal, setOpenPasswordModal }) => {
   });
 
   const handleSubmit = (values: typeof form.values) => {
-    console.log("passowrd", values);
     if (user) {
-      mutate({
-        userId: user.id,
-        data: values,
-      });
+      showLoading(true);
+      mutate(
+        {
+          userId: user.id,
+          data: values,
+        },
+        {
+          onSuccess: () => {
+            showLoading(false);
+            setOpenPasswordModal(false);
+          },
+          onError: () => showLoading(false),
+        },
+      );
     }
   };
 
@@ -300,7 +343,11 @@ const ChangePassword = ({ openPasswordModal, setOpenPasswordModal }) => {
             />
           </div>
           <Group justify="end">
-            <Button variant="outline" className="dashboard-btn">
+            <Button
+              variant="outline"
+              className="dashboard-btn"
+              onClick={() => setOpenPasswordModal(false)}
+            >
               Cancel
             </Button>
             <Button type="submit" className="dashboard-btn">

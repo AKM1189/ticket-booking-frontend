@@ -9,6 +9,7 @@ export default defineConfig({
     open: true,
     port: 5178,
     cors: true,
+    host: true,
     watch: {
       ignored: ["**/node_modules/**", "**/dist/**", "**/.git/**"],
     },

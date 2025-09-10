@@ -44,7 +44,7 @@ export const useLoginMutation = () => {
       Cookies.set("accessToken", data?.accessToken, {
         expires: 3 * 24 * 60 * 60,
       });
-      data?.role === Role.admin
+      data?.role === Role.admin || data?.role === Role.staff
         ? navigate(routes.admin.dashboard)
         : navigate(routes.user.home);
     },
@@ -121,7 +121,7 @@ export const useLogoutMutation = () => {
       removeUser();
       Cookies.remove("accessToken");
       getSuccessNoti("Logout", data, "You have logout successfully");
-      queryClient.removeQueries({ queryKey: ["user"] });
+      queryClient.removeQueries({ queryKey: ["currentUser"] });
       queryClient.clear();
       navigate(routes.auth.login);
       // window.location.href = routes.auth.login;

@@ -49,6 +49,8 @@ import { zodResolver } from "mantine-form-zod-resolver";
 import { screenSchema } from "@/schema/ScreenSchema";
 import { inputStyle } from "@/constants/styleConstants";
 import SeatTypeSelector from "./SeatTypeSelector";
+import { usePermisson } from "@/hooks/usePermisson";
+import { permissionList } from "@/constants/permissons";
 
 const ScreenManagement = () => {
   const [screens, setScreens] = useState<ScreenType[]>([]);
@@ -66,6 +68,7 @@ const ScreenManagement = () => {
   const [selectedTypeList, setSelectedTypeList] = useState<SelectedTypeList[]>(
     [],
   );
+  const { hasAccess } = usePermisson();
 
   const [pagination, setPagination] = useState<PaginationType>({
     page: 1,
@@ -274,13 +277,15 @@ const ScreenManagement = () => {
     <div className="space-y-6">
       <Group justify="space-between">
         <Title order={2}>Screen Management</Title>
-        <Button
-          leftSection={<IconPlus size={16} />}
-          className="dashboard-btn"
-          onClick={handleAddTheater}
-        >
-          Add Screen
-        </Button>
+        {hasAccess(permissionList.createScreen) && (
+          <Button
+            leftSection={<IconPlus size={16} />}
+            className="dashboard-btn"
+            onClick={handleAddTheater}
+          >
+            Add Screen
+          </Button>
+        )}
       </Group>
 
       <Card
@@ -355,15 +360,19 @@ const ScreenManagement = () => {
                         </Text>
                       </Table.Td>
                       <Table.Td>
-                        <Badge
-                          color={
-                            screen.disabledSeats?.length > 0 ? "red" : "gray"
-                          }
-                          variant="light"
-                        >
-                          {screen.disabledSeats?.length} seat
-                          {screen.disabledSeats?.length > 1 && "s"}
-                        </Badge>
+                        {screen.disabledSeats?.length === 0 ? (
+                          <div className="ms-8">-</div>
+                        ) : (
+                          <Badge
+                            color={
+                              screen.disabledSeats?.length > 0 ? "red" : "gray"
+                            }
+                            variant="light"
+                          >
+                            {screen.disabledSeats?.length} seat
+                            {screen.disabledSeats?.length > 1 && "s"}
+                          </Badge>
+                        )}
                       </Table.Td>
 
                       <Table.Td>{screen.multiplier}</Table.Td>
@@ -391,20 +400,15 @@ const ScreenManagement = () => {
                           <ActionIcon
                             variant="light"
                             color="orange"
+                            disabled={!hasAccess(permissionList.updateScreen)}
                             onClick={() => handleEditTheater(screen)}
                           >
                             <IconEdit size={16} />
                           </ActionIcon>
-                          {/* <Tooltip
-                        classNames={{
-                          tooltip: "!bg-surface-hover !text-text !text-[12px]",
-                        }}
-                        withArrow
-                        label="Deactivate"
-                      > */}
                           <ActionIcon
                             variant="light"
                             color="red"
+                            disabled={!hasAccess(permissionList.deleteScreen)}
                             onClick={() => handleDeleteTheater(screen)}
                           >
                             <IconCancel size={16} />

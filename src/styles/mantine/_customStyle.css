@@ -58,7 +58,7 @@
   padding: 3px 0 3px 3px !important;
   border-color: var(--color-surface-hover) !important;
   border-radius: 7px !important;
-  background-color: var(--color-surface-hover) !important;
+  background-color: var(--color-surface) !important;
   color: var(--color-text) !important;
 }
 
@@ -95,8 +95,12 @@
   color: white !important;
 } */
 
+.mantine-Tabs-tab {
+  color: var(--color-muted) !important;
+}
 .mantine-Tabs-tab:hover {
-  background-color: var(--color-surface-hover) !important;
+  background-color: var(--color-surface) !important;
+  color: var(--color-text) !important;
 }
 
 .PhoneInputInput {
@@ -123,12 +127,14 @@
 }
 
 .mantine-Tabs-tab:where([data-active]) {
-  background-color: var(--color-surface-hover);
-  border-color: var(--color-primary);
+  background-color: var(--color-surface);
+  color: var(--color-text) !important;
+  border-color: var(--color-text);
 }
 
 .mantine-Tabs-tab:hover:where(:not([data-active])) {
   background: transparent !important;
+  color: var(--color-text) !important;
   border-color: var(--color-surface-hover);
 }
 

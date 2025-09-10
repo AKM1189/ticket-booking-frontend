@@ -182,7 +182,7 @@ const SeatLayoutViewer = ({
       label: seatId,
       type: selectedType?.seatType?.name,
       price: typeDetail?.price || "",
-      countDown: 120,
+      countDown: 30,
     };
 
     if (seatExists) {
@@ -254,7 +254,7 @@ const SeatLayoutViewer = ({
                 selectedSeatList?.length <= 10 &&
                   "hover:bg-accent hover:text-black hover:border-accent cursor-pointer transition-color duration-100",
                 isDisabled &&
-                  "bg-red-300 border-red-300 text-red-600 hover:bg-red-300 hover:text-red-600 cursor-not-allowed",
+                  "bg-red-300 border-red-300 text-red-600 hover:bg-red-300 hover:text-red-600 cursor-default pointer-events-none",
                 selectedType?.seatType?.name === "Premium" &&
                   " border-premium text-premium",
                 selectedType?.seatType?.name === "VIP" && "border-vip text-vip",
@@ -321,7 +321,6 @@ const SeatLayoutViewer = ({
             <Text size="xs">{getSeatLabel("VIP")}</Text>
           </Group>
         </Group>
-        <div>Reset Timer - {resetTimer}</div>
       </Group>
 
       <div className="bg-surface-hover p-4 rounded-lg">
@@ -332,7 +331,9 @@ const SeatLayoutViewer = ({
         </div>
 
         <div className="max-w-[400px] mx-auto overflow-x-auto p-2">
-          <div className="">{generateSeatGrid()}</div>
+          <div className="inline-flex min-w-full flex-col items-center justify-center">
+            {generateSeatGrid()}
+          </div>
         </div>
       </div>
     </Card>

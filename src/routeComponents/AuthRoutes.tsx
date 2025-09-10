@@ -3,6 +3,7 @@ import { ForgotPassword, Login, OTP, ResetPassword, Signup } from "@/pages";
 import Unauthorized from "@/pages/admin/Unauthorized";
 import AuthLayout from "@/pages/auth/AuthLayout";
 import { routes } from "@/routes";
+import { Role } from "@/types/AuthType";
 import { LoadingOverlay } from "@mantine/core";
 import { Navigate, Outlet, Route, Routes } from "react-router";
 
@@ -54,8 +55,9 @@ const PublicRoute = () => {
     );
 
   // If already logged in → redirect to correct dashboard
-  if (user?.role === "admin")
+  if (user?.role === Role.admin || user?.role === Role.staff)
     return <Navigate to={routes.admin.dashboard} replace />;
-  if (user?.role === "user") return <Navigate to={routes.user.home} replace />;
+  if (user?.role === Role.user)
+    return <Navigate to={routes.user.home} replace />;
   return <Outlet />;
 };

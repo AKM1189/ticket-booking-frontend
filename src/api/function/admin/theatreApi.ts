@@ -15,6 +15,11 @@ export const getTheatres = async (
   return response.data;
 };
 
+export const getAllTheatres = async () => {
+  const response = await api.get(`${endpoints.admin.theatres}/all`);
+  return response.data;
+};
+
 export const getTheatresByShow = async (movieId: string) => {
   const response = await api.get(
     `${endpoints.admin.theatresByShow}?movieId=${movieId}`,

@@ -1,4 +1,5 @@
 import type { Role } from "./AuthType";
+import type { TheatreType } from "./TheatreTypes";
 
 export type UserType = {
   id: number;
@@ -7,6 +8,7 @@ export type UserType = {
   profile: string;
   phoneNo: string;
   role: Role;
+  theatre: TheatreType;
   active: boolean;
 };
 
@@ -14,4 +16,5 @@ export type UserInputType = {
   name: string;
   email: string;
   phoneNo: string;
+  role: Role.admin | Role.staff;
 };

@@ -4,6 +4,7 @@ import {
   Button,
   Card,
   Group,
+  Loader,
   Modal,
   Pagination,
   Select,
@@ -38,6 +39,8 @@ import {
   useUpdateTheatreMutation,
 } from "@/api/mutation/admin/theatreMutation";
 import type { PaginationType } from "@/types/PagintationType";
+import { usePermisson } from "@/hooks/usePermisson";
+import { permissionList } from "@/constants/permissons";
 
 const TheatreManagement = () => {
   const [opened, { open, close }] = useDisclosure(false);
@@ -57,13 +60,15 @@ const TheatreManagement = () => {
     totalPages: 1,
   });
 
-  const { data, isLoading, refetch } = useTheatreQuery(
+  const { data, isPending, refetch } = useTheatreQuery(
     searchTerm,
     statusFilter,
   );
   const { mutate: addTheatreMutation } = useAddTheatreMutation();
   const { mutate: updateTheatreMutation } = useUpdateTheatreMutation();
   const { mutate: deactivateTheatreMutation } = useDeleteTheatreMutation();
+
+  const { hasAccess } = usePermisson();
 
   const form = useForm({
     initialValues: {
@@ -140,13 +145,15 @@ const TheatreManagement = () => {
     <div className="space-y-6">
       <Group justify="space-between">
         <Title order={2}>Theatre Management</Title>
-        <Button
-          leftSection={<IconPlus size={16} />}
-          onClick={handleAddTheater}
-          className="dashboard-btn"
-        >
-          Add Theatre
-        </Button>
+        {hasAccess(permissionList.createTheatre) && (
+          <Button
+            leftSection={<IconPlus size={16} />}
+            onClick={handleAddTheater}
+            className="dashboard-btn"
+          >
+            Add Theatre
+          </Button>
+        )}
       </Group>
 
       <Card
@@ -175,82 +182,95 @@ const TheatreManagement = () => {
           />
         </Group>
 
-        <div className="w-full overflow-x-auto">
-          <Table striped highlightOnHover mt={"md"}>
-            <Table.Thead>
-              <Table.Tr>
-                <Table.Th>Name</Table.Th>
-                <Table.Th>Location</Table.Th>
-                <Table.Th>Region</Table.Th>
-                <Table.Th>City</Table.Th>
-                <Table.Th>Phone</Table.Th>
-                <Table.Th>Total Screens</Table.Th>
-                <Table.Th>Status</Table.Th>
-                <Table.Th>Actions</Table.Th>
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>
-              {theatres?.map((theatre) => (
-                <Table.Tr key={theatre.id}>
-                  <Table.Td className="min-w-[150px]">{theatre.name}</Table.Td>
-                  <Table.Td className="min-w-[150px]">
-                    {theatre.location}
-                  </Table.Td>
-                  <Table.Td>{theatre.region}</Table.Td>
-                  <Table.Td>{theatre.city}</Table.Td>
-                  <Table.Td>{theatre.phoneNo}</Table.Td>
-                  <Table.Td>{theatre.totalScreens}</Table.Td>
-                  <Table.Td className="min-w-[80px]">
-                    {theatre.active ? (
-                      <Badge color="green" variant="light">
-                        Active
-                      </Badge>
-                    ) : (
-                      <Badge color="red" variant="light">
-                        Inactive
-                      </Badge>
-                    )}
-                  </Table.Td>
-                  <Table.Td>
-                    <Group gap="xs">
-                      <ActionIcon
-                        variant="light"
-                        color="orange"
-                        onClick={() => handleEditTheatre(theatre)}
-                      >
-                        <IconEdit size={16} />
-                      </ActionIcon>
-                      <ActionIcon
-                        variant="light"
-                        color="red"
-                        onClick={() =>
-                          openConfirm({
-                            title: `${
-                              theatre.active ? "Deactivate" : "Activate"
-                            } Theatre`,
-                            message: `Are you sure you want to ${
-                              theatre.active ? "deactivate" : "activate"
-                            } this theatre?`,
-                            onConfirm: () => handleDeactivate(theatre.id),
-                          })
-                        }
-                        style={{
-                          "--mantine-color-disabled": "var(--color-darkGray)", // your desired border color (e.g. blue)
-                        }}
-                      >
-                        <IconCancel size={16} />
-                      </ActionIcon>
-                    </Group>
-                  </Table.Td>
-                </Table.Tr>
-              ))}
-            </Table.Tbody>
-          </Table>
+        <div className="overflow-scroll">
+          {isPending ? (
+            <div className="h-full min-h-[200px] flex justify-center items-center">
+              <Loader size={"md"} />
+            </div>
+          ) : (
+            <div>
+              <Table striped highlightOnHover mt={"md"}>
+                <Table.Thead>
+                  <Table.Tr>
+                    <Table.Th>Name</Table.Th>
+                    <Table.Th>Location</Table.Th>
+                    <Table.Th>Region</Table.Th>
+                    <Table.Th>City</Table.Th>
+                    <Table.Th>Phone</Table.Th>
+                    <Table.Th>Total Screens</Table.Th>
+                    <Table.Th>Status</Table.Th>
+                    <Table.Th>Actions</Table.Th>
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
+                  {theatres?.map((theatre) => (
+                    <Table.Tr key={theatre.id}>
+                      <Table.Td className="min-w-[150px]">
+                        {theatre.name}
+                      </Table.Td>
+                      <Table.Td className="min-w-[150px]">
+                        {theatre.location}
+                      </Table.Td>
+                      <Table.Td>{theatre.region}</Table.Td>
+                      <Table.Td>{theatre.city}</Table.Td>
+                      <Table.Td>{theatre.phoneNo}</Table.Td>
+                      <Table.Td>{theatre.totalScreens}</Table.Td>
+                      <Table.Td className="min-w-[80px]">
+                        {theatre.active ? (
+                          <Badge color="green" variant="light">
+                            Active
+                          </Badge>
+                        ) : (
+                          <Badge color="red" variant="light">
+                            Inactive
+                          </Badge>
+                        )}
+                      </Table.Td>
+                      <Table.Td>
+                        <Group gap="xs">
+                          <ActionIcon
+                            variant="light"
+                            color="orange"
+                            disabled={!hasAccess(permissionList.updateTheatre)}
+                            onClick={() => handleEditTheatre(theatre)}
+                          >
+                            <IconEdit size={16} />
+                          </ActionIcon>
+                          <ActionIcon
+                            variant="light"
+                            color="red"
+                            disabled={!hasAccess(permissionList.deleteTheatre)}
+                            onClick={() =>
+                              openConfirm({
+                                title: `${
+                                  theatre.active ? "Deactivate" : "Activate"
+                                } Theatre`,
+                                message: `Are you sure you want to ${
+                                  theatre.active ? "deactivate" : "activate"
+                                } this theatre?`,
+                                onConfirm: () => handleDeactivate(theatre.id),
+                              })
+                            }
+                            style={{
+                              "--mantine-color-disabled":
+                                "var(--color-darkGray)", // your desired border color (e.g. blue)
+                            }}
+                          >
+                            <IconCancel size={16} />
+                          </ActionIcon>
+                        </Group>
+                      </Table.Td>
+                    </Table.Tr>
+                  ))}
+                </Table.Tbody>
+              </Table>
+            </div>
+          )}
 
           {/* <MantineReactTable */}
         </div>
 
-        {theatres?.length === 0 && !isLoading && (
+        {theatres?.length === 0 && !isPending && (
           <Text ta="center" c="dimmed" py="xl">
             <div className="flex justify-center mb-2">
               <IconBuilding size={30} />
@@ -259,16 +279,18 @@ const TheatreManagement = () => {
           </Text>
         )}
 
-        <Group justify="center" mt={"xl"}>
-          <Pagination
-            total={pagination?.totalPages}
-            size={"sm"}
-            value={pagination?.page}
-            onChange={(value) =>
-              setPagination((prev) => ({ ...prev, page: value }))
-            }
-          />
-        </Group>
+        {theatres?.length > 0 && (
+          <Group justify="center" mt={"xl"}>
+            <Pagination
+              total={pagination?.totalPages}
+              size={"sm"}
+              value={pagination?.page}
+              onChange={(value) =>
+                setPagination((prev) => ({ ...prev, page: value }))
+              }
+            />
+          </Group>
+        )}
       </Card>
 
       <Modal

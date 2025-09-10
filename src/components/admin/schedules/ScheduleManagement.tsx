@@ -14,6 +14,8 @@ import {
   Grid,
   NumberInput,
   Switch,
+  Pagination,
+  Loader,
 } from "@mantine/core";
 import {
   IconPlus,
@@ -21,12 +23,16 @@ import {
   IconTrash,
   IconSearch,
   IconCalendar,
+  IconEye,
 } from "@tabler/icons-react";
 import { useForm } from "@mantine/form";
 import type { MovieType } from "@/types/MovieTypes";
-import { useTheatreQuery } from "@/api/query/admin/theatreQuery";
+import {
+  useAllTheatresQuery,
+  useTheatreQuery,
+} from "@/api/query/admin/theatreQuery";
 import type { TheatreType } from "@/types/TheatreTypes";
-import { useMovieQuery } from "@/api/query/admin/movieQuery";
+import { useAllMoviesQuery } from "@/api/query/admin/movieQuery";
 import type { ScreenType } from "@/types/ScreenTypes";
 import { useScheduleQuery } from "@/api/query/admin/scheduleQuery";
 import {
@@ -34,12 +40,17 @@ import {
   useDeleteScheduleMutation,
   useUpdateScheduleMutation,
 } from "@/api/mutation/admin/scheduleMutation";
-import type { ScheduleType } from "@/types/ScheduleTypes";
+import { ScheduleStatus, type ScheduleType } from "@/types/ScheduleTypes";
 import dayjs from "dayjs";
 import { useLoadingStore } from "@/store/useLoading";
 import { getScreenByTheatre } from "@/api/function/admin/screenApi";
 import { inputStyle, numInputStyle } from "@/constants/styleConstants";
 import { useConfirmModalStore } from "@/store/useConfirmModalStore";
+import { usePermisson } from "@/hooks/usePermisson";
+import { permissionList } from "@/constants/permissons";
+import SeatLayoutViewer from "./SeatLayoutViewer";
+import type { PaginationType } from "@/types/PagintationType";
+import { useDebouncedValue } from "@mantine/hooks";
 
 const showTimes = ["10:00", "13:00", "16:00", "19:00", "22:00"];
 
@@ -47,6 +58,7 @@ const ScheduleManagement = ({ openScheduleModal, setOpenScheduleModal }) => {
   const [schedules, setSchedules] = useState<ScheduleType[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [dateFilter, setDateFilter] = useState("");
+  const [debouncedSearchTerm] = useDebouncedValue(searchTerm, 300);
   const { showLoading } = useLoadingStore();
 
   const [editingSchedule, setEditingSchedule] = useState<ScheduleType | null>(
@@ -62,6 +74,7 @@ const ScheduleManagement = ({ openScheduleModal, setOpenScheduleModal }) => {
   const { open: openConfirm } = useConfirmModalStore();
 
   const [showTimeList, setShowTimeList] = useState(showTimes);
+  const { hasAccess } = usePermisson();
 
   const form = useForm({
     initialValues: {
@@ -97,20 +110,36 @@ const ScheduleManagement = ({ openScheduleModal, setOpenScheduleModal }) => {
     },
   });
 
-  const { data: theatreData } = useTheatreQuery();
-  const { data: movieData } = useMovieQuery();
+  const { data: theatreData } = useAllTheatresQuery();
+  const { data: movieData } = useAllMoviesQuery();
   // const { data: screenData, refetch: refetchScreen } = useScreenByTheatreQuery(
   //   parseInt(form.values.theatreId || "1"),
   // );
+  const [pagination, setPagination] = useState<PaginationType>({
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 1,
+  });
 
-  const { data: scheduleData } = useScheduleQuery();
+  const {
+    data: scheduleData,
+    refetch,
+    isPending,
+  } = useScheduleQuery(pagination?.page, searchTerm, dateFilter);
 
   const { mutate: addScheduleMutation } = useAddScheduleMutation();
   const { mutate: updateScheduleMutation } = useUpdateScheduleMutation();
   const { mutate: deleteScheduleMutation } = useDeleteScheduleMutation();
 
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [selectedSchedule, setSelectedSchedule] = useState<ScheduleType | null>(
+    null,
+  );
+
   useEffect(() => {
     setSchedules(scheduleData?.data);
+    setPagination(scheduleData?.pagination);
   }, [scheduleData]);
 
   useEffect(() => {
@@ -122,6 +151,10 @@ const ScheduleManagement = ({ openScheduleModal, setOpenScheduleModal }) => {
   }, [movieData]);
 
   useEffect(() => {
+    refetch();
+  }, [debouncedSearchTerm, dateFilter, pagination]);
+
+  useEffect(() => {
     if (dayjs().isSame(form.values.showDate, "day")) {
       setShowTimeList((prev) =>
         prev.filter((time) => time > dayjs().format("HH:mm")),
@@ -130,10 +163,6 @@ const ScheduleManagement = ({ openScheduleModal, setOpenScheduleModal }) => {
       setShowTimeList(showTimes);
     }
   }, [form.values.showDate]);
-
-  // useEffect(() => {
-  //   setScreens(screenData?.data);
-  // }, [screenData]);
 
   useEffect(() => {
     if (!editingSchedule) {
@@ -178,7 +207,7 @@ const ScheduleManagement = ({ openScheduleModal, setOpenScheduleModal }) => {
       language: schedule.language,
       subtitle: schedule.subtitle,
       multiplier: parseFloat(schedule.multiplier),
-      isActive: schedule.isActive,
+      isActive: schedule.status !== ScheduleStatus.inActive,
     });
     setOpenScheduleModal(true);
   };
@@ -266,17 +295,20 @@ const ScheduleManagement = ({ openScheduleModal, setOpenScheduleModal }) => {
 
     return hasBookings || passedShowTime;
   };
+
   return (
     <div className="space-y-6">
       <Group justify="space-between">
         <Title order={2}>Schedule Management</Title>
-        <Button
-          leftSection={<IconPlus size={16} />}
-          onClick={handleAddSchedule}
-          className="dashboard-btn"
-        >
-          Add Schedule
-        </Button>
+        {hasAccess(permissionList.createSchedule) && (
+          <Button
+            leftSection={<IconPlus size={16} />}
+            onClick={handleAddSchedule}
+            className="dashboard-btn"
+          >
+            Add Schedule
+          </Button>
+        )}
       </Group>
 
       <Card
@@ -288,7 +320,7 @@ const ScheduleManagement = ({ openScheduleModal, setOpenScheduleModal }) => {
       >
         <Group mb="md">
           <TextInput
-            placeholder="Search by movie or theater..."
+            placeholder="Search schedules by movie, theatre, screen, show time, status"
             leftSection={<IconSearch size={16} />}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -306,111 +338,157 @@ const ScheduleManagement = ({ openScheduleModal, setOpenScheduleModal }) => {
         </Group>
 
         <div className="overflow-scroll">
-          <Table striped highlightOnHover>
-            <Table.Thead>
-              <Table.Tr>
-                <Table.Th>Movie</Table.Th>
-                <Table.Th>Theater</Table.Th>
-                <Table.Th>Screen</Table.Th>
-                <Table.Th>Show Date</Table.Th>
-                <Table.Th>Show Time</Table.Th>
-                <Table.Th>Price</Table.Th>
-                <Table.Th>Occupancy</Table.Th>
-                <Table.Th>Status</Table.Th>
-                <Table.Th>Actions</Table.Th>
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>
-              {schedules?.map((schedule: ScheduleType) => (
-                <Table.Tr key={schedule.id}>
-                  <Table.Td>
-                    <Text size="sm" fw={500}>
-                      {schedule.movie?.title}
-                    </Text>
-                  </Table.Td>
-                  <Table.Td>
-                    <Text size="sm">{schedule?.theatre?.name}</Text>
-                  </Table.Td>
-                  <Table.Td>
-                    <Text size="sm">
-                      {schedule?.screen?.name} ({schedule?.screen?.type})
-                    </Text>
-                  </Table.Td>
-                  <Table.Td>
-                    <div>
-                      <Text size="sm">
-                        {new Date(schedule.showDate).toLocaleDateString()}
-                      </Text>
-                    </div>
-                  </Table.Td>
-                  <Table.Td>
-                    <Text size="sm">{schedule.showTime}</Text>
-                  </Table.Td>
-                  <Table.Td>${schedule.multiplier}</Table.Td>
-                  <Table.Td>
-                    <Group gap="xs">
-                      <Badge
-                        color={getOccupancyColor(
-                          schedule.availableSeats,
-                          schedule.screen.capacity,
-                        )}
-                        variant="outline"
-                      >
-                        {schedule.bookedSeats?.length ?? 0}/
-                        {schedule.screen.capacity}
-                      </Badge>
-                      <Text size="xs" className="!text-blueGray" c="dimmed">
-                        {Math.round(
-                          (schedule?.bookedSeats?.length /
-                            schedule.screen.capacity) *
-                            100,
-                        ) || 0}
-                        %
-                      </Text>
-                    </Group>
-                  </Table.Td>
-                  <Table.Td>
-                    <Badge
-                      color={schedule.isActive ? "green" : "red"}
-                      variant="light"
-                      style={{ cursor: "pointer" }}
-                      onClick={toggleScheduleStatus}
-                    >
-                      {schedule.isActive ? "Active" : "Inactive"}
-                    </Badge>
-                  </Table.Td>
-                  <Table.Td>
-                    <Group gap="xs">
-                      <ActionIcon
-                        variant="light"
-                        disabled={disableActions(schedule)}
-                        className=""
-                        color="orange"
-                        onClick={() => handleEditSchedule(schedule)}
-                      >
-                        <IconEdit size={16} />
-                      </ActionIcon>
-                      <ActionIcon
-                        variant="light"
-                        color="red"
-                        disabled={disableActions(schedule)}
-                        onClick={() =>
-                          openConfirm({
-                            title: "Delete Schedule",
-                            message:
-                              "Are you sure you want to delete this schedule?",
-                            onConfirm: () => handleDeleteSchedule(schedule.id),
-                          })
-                        }
-                      >
-                        <IconTrash size={16} />
-                      </ActionIcon>
-                    </Group>
-                  </Table.Td>
-                </Table.Tr>
-              ))}
-            </Table.Tbody>
-          </Table>
+          {isPending ? (
+            <div className="h-full min-h-[200px] flex justify-center items-center">
+              <Loader size={"md"} />
+            </div>
+          ) : (
+            <div>
+              <Table striped highlightOnHover>
+                <Table.Thead>
+                  <Table.Tr>
+                    <Table.Th>Movie</Table.Th>
+                    <Table.Th>Theater</Table.Th>
+                    <Table.Th>Screen</Table.Th>
+                    <Table.Th>Show Date</Table.Th>
+                    <Table.Th>Show Time</Table.Th>
+                    <Table.Th>Price</Table.Th>
+                    <Table.Th>Occupancy</Table.Th>
+                    <Table.Th>Status</Table.Th>
+                    <Table.Th>Actions</Table.Th>
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
+                  {schedules?.map((schedule: ScheduleType) => (
+                    <Table.Tr key={schedule.id}>
+                      <Table.Td>
+                        <Text size="sm" fw={500}>
+                          {schedule.movie?.title}
+                        </Text>
+                      </Table.Td>
+                      <Table.Td>
+                        <Text size="sm">{schedule?.theatre?.name}</Text>
+                      </Table.Td>
+                      <Table.Td>
+                        <Text size="sm">
+                          {schedule?.screen?.name} ({schedule?.screen?.type})
+                        </Text>
+                      </Table.Td>
+                      <Table.Td>
+                        <div>
+                          <Text size="sm">
+                            {new Date(schedule.showDate).toLocaleDateString()}
+                          </Text>
+                        </div>
+                      </Table.Td>
+                      <Table.Td>
+                        <Text size="sm">{schedule.showTime}</Text>
+                      </Table.Td>
+                      <Table.Td>${schedule.multiplier}</Table.Td>
+                      <Table.Td>
+                        <Group gap="xs">
+                          <Badge
+                            color={getOccupancyColor(
+                              schedule.availableSeats,
+                              schedule.screen.capacity,
+                            )}
+                            variant="outline"
+                          >
+                            {schedule.bookedSeats?.length ?? 0}/
+                            {schedule.screen.capacity}
+                          </Badge>
+                          <Text size="xs" className="!text-blueGray" c="dimmed">
+                            {Math.round(
+                              (schedule?.bookedSeats?.length /
+                                schedule.screen.capacity) *
+                                100,
+                            ) || 0}
+                            %
+                          </Text>
+                        </Group>
+                      </Table.Td>
+                      <Table.Td>
+                        <Badge
+                          color={getScheduleStatusColor(schedule.status)}
+                          variant="light"
+                          style={{ cursor: "pointer" }}
+                          onClick={toggleScheduleStatus}
+                        >
+                          {schedule.status}
+                        </Badge>
+                      </Table.Td>
+                      <Table.Td>
+                        <Group gap="xs">
+                          <ActionIcon
+                            variant="light"
+                            onClick={() => {
+                              setDetailOpen(true);
+                              setSelectedSchedule(schedule);
+                            }}
+                          >
+                            <IconEye size={16} />
+                          </ActionIcon>
+                          <ActionIcon
+                            variant="light"
+                            disabled={
+                              disableActions(schedule) ||
+                              !hasAccess(permissionList.updateSchedule)
+                            }
+                            className=""
+                            color="orange"
+                            onClick={() => handleEditSchedule(schedule)}
+                          >
+                            <IconEdit size={16} />
+                          </ActionIcon>
+                          <ActionIcon
+                            variant="light"
+                            color="red"
+                            disabled={
+                              disableActions(schedule) ||
+                              !hasAccess(permissionList.deleteSchedule)
+                            }
+                            onClick={() =>
+                              openConfirm({
+                                title: "Delete Schedule",
+                                message:
+                                  "Are you sure you want to delete this schedule?",
+                                onConfirm: () =>
+                                  handleDeleteSchedule(schedule.id),
+                              })
+                            }
+                          >
+                            <IconTrash size={16} />
+                          </ActionIcon>
+                        </Group>
+                      </Table.Td>
+                    </Table.Tr>
+                  ))}
+                </Table.Tbody>
+              </Table>
+            </div>
+          )}
+
+          {schedules?.length > 0 && (
+            <Group justify="center" mt={"xl"}>
+              <Pagination
+                total={pagination?.totalPages}
+                size={"sm"}
+                value={pagination?.page}
+                onChange={(value) =>
+                  setPagination((prev) => ({ ...prev, page: value }))
+                }
+              />
+            </Group>
+          )}
+
+          {!isPending && schedules?.length === 0 && (
+            <Text ta="center" c="dimmed" py="xl">
+              <div className="flex justify-center mb-2">
+                <IconCalendar size={30} />
+              </div>
+              No schedule found
+            </Text>
+          )}
         </div>
       </Card>
 
@@ -561,8 +639,54 @@ const ScheduleManagement = ({ openScheduleModal, setOpenScheduleModal }) => {
           </Group>
         </form>
       </Modal>
+
+      <Modal
+        opened={detailOpen}
+        onClose={() => setDetailOpen(false)}
+        title={"Schedule Seats Info"}
+        size="lg"
+        classNames={{
+          title: "!text-lg !font-medium",
+          header: "dashboard-bg",
+          content: "dashboard-bg",
+          close: "!text-text hover:!bg-surface-hover",
+        }}
+        centered
+      >
+        {selectedSchedule?.screen && (
+          <SeatLayoutViewer
+            key={selectedSchedule?.screen.id}
+            seatTypes={selectedSchedule?.screen?.seatTypes}
+            layout={{
+              rows: selectedSchedule?.screen?.rows,
+              seatsPerRow: selectedSchedule?.screen?.cols,
+              disabledSeats: selectedSchedule?.screen?.disabledSeats,
+              aisles: selectedSchedule?.screen?.aisles.map((aisle: any) =>
+                parseInt(aisle),
+              ),
+            }}
+            bookedSeats={selectedSchedule.bookedSeats}
+            theaterName={selectedSchedule?.screen.name}
+          />
+        )}
+      </Modal>
     </div>
   );
 };
 
 export default ScheduleManagement;
+
+export const getScheduleStatusColor = (status: string) => {
+  switch (status) {
+    case ScheduleStatus.ongoing:
+      return "#007bff";
+    case ScheduleStatus.active:
+      return "green";
+    case ScheduleStatus.inActive:
+      return "red";
+    case ScheduleStatus.completed:
+      return "#6c757d";
+    default:
+      return "green";
+  }
+};

@@ -13,18 +13,19 @@ export const useAddUserMutation = () => {
   return useMutation({
     mutationFn: ({ data }: { data: UserInputType }) => addUser(data),
     onSuccess: (data) => {
-      getSuccessNoti("Add Admin", data, "Admin successfully added");
+      getSuccessNoti("Add Admin Staff", data, "Admin staff successfully added");
       queryClient.invalidateQueries({ queryKey: ["users"] });
     },
     onError: (error) => {
-      getErrorNoti("Add User", error, "User adding failed");
+      getErrorNoti("Add Admin Staff", error, "User adding failed");
     },
   });
 };
 
 export const useUpdateUserMutation = (role: Role | undefined) => {
   const queryClient = useQueryClient();
-  const userType = role === Role.admin ? "Admin" : "User";
+  const userType =
+    role === Role.admin ? "Admin" : role === Role.staff ? "Staff" : "User";
 
   return useMutation({
     mutationFn: ({ data, id }: { data: UserInputType; id: number }) =>

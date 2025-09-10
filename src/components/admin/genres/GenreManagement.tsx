@@ -12,8 +12,10 @@ import {
   Badge,
   Textarea,
   SegmentedControl,
+  Loader,
+  Pagination,
 } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
+import { useDebouncedValue, useDisclosure } from "@mantine/hooks";
 import {
   IconPlus,
   IconEdit,
@@ -22,6 +24,7 @@ import {
   IconTable,
   IconTags,
   IconGrid3x3,
+  IconGridDots,
 } from "@tabler/icons-react";
 import { useForm } from "@mantine/form";
 import { useGenreQuery } from "@/api/query/admin/genreQuery";
@@ -32,6 +35,9 @@ import {
   useUpdateGenreMutation,
 } from "@/api/mutation/admin/genreMutation";
 import { useConfirmModalStore } from "@/store/useConfirmModalStore";
+import { usePermisson } from "@/hooks/usePermisson";
+import { permissionList } from "@/constants/permissons";
+import type { PaginationType } from "@/types/PagintationType";
 
 const colorOptions = [
   { label: "red", value: "#dc3545" },
@@ -47,20 +53,38 @@ const colorOptions = [
 ];
 
 const GenreManagement = () => {
-  const { data } = useGenreQuery();
+  const [pagination, setPagination] = useState<PaginationType>({
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 1,
+  });
+
   const { mutate: addGenre } = useAddGenreMutation();
   const { mutate: editGenre } = useUpdateGenreMutation();
   const { mutate: deleteGenre } = useDeleteGenreMutation();
   const [genres, setGenres] = useState<GenreType[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm] = useDebouncedValue(searchTerm, 300);
+
+  const { data, refetch, isPending } = useGenreQuery(
+    pagination.page,
+    debouncedSearchTerm,
+  );
+
   const [opened, { open, close }] = useDisclosure(false);
   const [editingGenre, setEditingGenre] = useState<GenreType | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const { open: deleteConfirm } = useConfirmModalStore();
+  const { hasAccess } = usePermisson();
 
   useEffect(() => {
     setGenres(data?.data);
   }, [data]);
+
+  useEffect(() => {
+    refetch();
+  }, [debouncedSearchTerm, pagination]);
 
   const form = useForm({
     initialValues: {
@@ -69,16 +93,6 @@ const GenreManagement = () => {
       color: "blue",
     },
   });
-
-  // Memoize filtered genres to prevent unnecessary recalculations
-  const filteredGenres = useMemo(() => {
-    return genres?.filter(
-      (genre) =>
-        genre.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (genre.description &&
-          genre.description.toLowerCase().includes(searchTerm.toLowerCase())),
-    );
-  }, [genres, searchTerm]);
 
   const handleAddGenre = () => {
     setEditingGenre(null);
@@ -114,14 +128,6 @@ const GenreManagement = () => {
 
   const handleDeleteGenre = (id: number) => {
     deleteGenre({ id });
-    // const genre = genres?.find((g) => g.id === id);
-    // if (genre && genre.movieCount > 0) {
-    //   alert(
-    //     `Cannot delete genre "${genre.name}" as it is used by ${genre.movieCount} movies.`,
-    //   );
-    //   return;
-    // }
-    // setGenres((prev) => prev.filter((genre) => genre.id !== id));
   };
 
   const inputStyle = {
@@ -133,13 +139,15 @@ const GenreManagement = () => {
     <div className="space-y-6">
       <Group justify="space-between">
         <Title order={2}>Genre Management</Title>
-        <Button
-          leftSection={<IconPlus size={16} />}
-          className="dashboard-btn"
-          onClick={handleAddGenre}
-        >
-          Add Genre
-        </Button>
+        {hasAccess(permissionList.createGenre) && (
+          <Button
+            leftSection={<IconPlus size={16} />}
+            className="dashboard-btn"
+            onClick={handleAddGenre}
+          >
+            Add Genre
+          </Button>
+        )}
       </Group>
 
       <Card
@@ -171,15 +179,13 @@ const GenreManagement = () => {
                 value: "grid",
                 label: (
                   <Group gap="xs">
-                    {/* <IconGrid3x3 size={16} /> */}
-                    <IconGrid3x3
+                    <IconGridDots
                       color={
                         viewMode === "grid"
                           ? "var(--color-selected-text)"
                           : "var(--color-muted)"
                       }
                     />
-                    {/* <span>Grid</span> */}
                   </Group>
                 ),
               },
@@ -195,7 +201,6 @@ const GenreManagement = () => {
                           : "var(--color-muted)"
                       }
                     />
-                    {/* <span>Table</span> */}
                   </Group>
                 ),
               },
@@ -203,139 +208,173 @@ const GenreManagement = () => {
           />
         </Group>
 
-        {viewMode === "grid" ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredGenres?.map((genre) => (
-              <Card
-                key={genre.id}
-                shadow="xs"
-                padding="md"
-                radius="md"
-                className="!bg-surface-hover"
-              >
-                <Group justify="space-between" mb="xs">
-                  <Badge color={genre.color} size="lg">
-                    {genre.name}
-                  </Badge>
-                  <Group gap="xs">
-                    <ActionIcon
-                      variant="light"
-                      color="orange"
-                      size="sm"
-                      onClick={() => handleEditGenre(genre)}
+        <div className="overflow-scroll">
+          {isPending ? (
+            <div className="h-full min-h-[200px] flex justify-center items-center">
+              <Loader size={"md"} />
+            </div>
+          ) : (
+            <div>
+              {viewMode === "grid" ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {genres?.map((genre) => (
+                    <Card
+                      key={genre.id}
+                      shadow="xs"
+                      padding="md"
+                      radius="md"
+                      className="!bg-surface-hover"
                     >
-                      <IconEdit size={14} />
-                    </ActionIcon>
-                    <ActionIcon
-                      variant="light"
-                      color="red"
-                      size="sm"
-                      onClick={() => {
-                        deleteConfirm({
-                          title: "Delete Genre",
-                          message:
-                            "Are you sure you want to delete this genre?",
-                          onConfirm: () => handleDeleteGenre(genre.id),
-                        });
-                      }}
-                      style={{
-                        "--mantine-color-disabled": "var(--color-darkGray)", // your desired border color (e.g. blue)
-                      }}
-                      disabled={genre.movieCount > 0}
-                    >
-                      <IconTrash size={14} />
-                    </ActionIcon>
-                  </Group>
-                </Group>
+                      <Group justify="space-between" mb="xs">
+                        <Badge color={genre.color} size="lg">
+                          {genre.name}
+                        </Badge>
+                        <Group gap="xs">
+                          <ActionIcon
+                            variant="light"
+                            color="orange"
+                            size="sm"
+                            onClick={() => handleEditGenre(genre)}
+                            disabled={!hasAccess(permissionList.updateGenre)}
+                          >
+                            <IconEdit size={14} />
+                          </ActionIcon>
+                          <ActionIcon
+                            variant="light"
+                            color="red"
+                            size="sm"
+                            onClick={() => {
+                              deleteConfirm({
+                                title: "Delete Genre",
+                                message:
+                                  "Are you sure you want to delete this genre?",
+                                onConfirm: () => handleDeleteGenre(genre.id),
+                              });
+                            }}
+                            style={{
+                              "--mantine-color-disabled":
+                                "var(--color-darkGray)", // your desired border color (e.g. blue)
+                            }}
+                            disabled={
+                              genre.movieCount > 0 ||
+                              !hasAccess(permissionList.deleteGenre)
+                            }
+                          >
+                            <IconTrash size={14} />
+                          </ActionIcon>
+                        </Group>
+                      </Group>
 
-                {genre.description && (
-                  <Text size="sm" c="dimmed" className="!text-text" mb="xs">
-                    {genre.description}
-                  </Text>
-                )}
+                      {genre.description && (
+                        <Text
+                          size="sm"
+                          c="dimmed"
+                          className="!text-text"
+                          mb="xs"
+                        >
+                          {genre.description}
+                        </Text>
+                      )}
 
-                <Text size="xs" c="dimmed" className="!text-muted">
-                  Used in {genre.movieCount} movies
-                </Text>
-              </Card>
-            ))}
-          </div>
-        ) : (
-          <Table striped highlightOnHover>
-            <Table.Thead>
-              <Table.Tr>
-                <Table.Th>Genre</Table.Th>
-                <Table.Th>Description</Table.Th>
-                <Table.Th>Movies Count</Table.Th>
-                <Table.Th>Actions</Table.Th>
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>
-              {filteredGenres?.map((genre) => (
-                <Table.Tr key={genre.id}>
-                  <Table.Td>
-                    <Badge
-                      color={genre.color}
-                      //  variant="light"
-                    >
-                      {genre.name}
-                    </Badge>
-                  </Table.Td>
-                  <Table.Td>
-                    <Text
-                      size="sm"
-                      c="dimmed"
-                      lineClamp={2}
-                      className="!text-text"
-                    >
-                      {genre.description || "No description"}
-                    </Text>
-                  </Table.Td>
-                  <Table.Td>
-                    <Badge
-                      variant="outline"
-                      color="gray"
-                      className="!text-text"
-                    >
-                      {genre.movieCount}
-                    </Badge>
-                  </Table.Td>
-                  <Table.Td>
-                    <Group gap="xs">
-                      <ActionIcon
-                        variant="light"
-                        color="orange"
-                        onClick={() => handleEditGenre(genre)}
-                      >
-                        <IconEdit size={16} />
-                      </ActionIcon>
-                      <ActionIcon
-                        variant="light"
-                        color="red"
-                        onClick={() => {
-                          deleteConfirm({
-                            title: "Delete Genre",
-                            message:
-                              "Are you sure you want to delete this genre?",
-                            onConfirm: () => handleDeleteGenre(genre.id),
-                          });
-                        }}
-                        disabled={genre.movieCount > 0}
-                        style={{
-                          "--mantine-color-disabled": "var(--color-darkGray)", // your desired border color (e.g. blue)
-                        }}
-                      >
-                        <IconTrash size={16} />
-                      </ActionIcon>
-                    </Group>
-                  </Table.Td>
-                </Table.Tr>
-              ))}
-            </Table.Tbody>
-          </Table>
+                      <Text size="xs" c="dimmed" className="!text-muted">
+                        Used in {genre.movieCount} movies
+                      </Text>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <Table striped highlightOnHover>
+                  <Table.Thead>
+                    <Table.Tr>
+                      <Table.Th>Genre</Table.Th>
+                      <Table.Th>Description</Table.Th>
+                      <Table.Th>Movies Count</Table.Th>
+                      <Table.Th>Actions</Table.Th>
+                    </Table.Tr>
+                  </Table.Thead>
+                  <Table.Tbody>
+                    {genres?.map((genre) => (
+                      <Table.Tr key={genre.id}>
+                        <Table.Td>
+                          <Badge
+                            color={genre.color}
+                            //  variant="light"
+                          >
+                            {genre.name}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          <Text
+                            size="sm"
+                            c="dimmed"
+                            lineClamp={2}
+                            className="!text-text"
+                          >
+                            {genre.description || "No description"}
+                          </Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge
+                            variant="outline"
+                            color="gray"
+                            className="!text-text"
+                          >
+                            {genre.movieCount}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          <Group gap="xs">
+                            <ActionIcon
+                              variant="light"
+                              color="orange"
+                              onClick={() => handleEditGenre(genre)}
+                            >
+                              <IconEdit size={16} />
+                            </ActionIcon>
+                            <ActionIcon
+                              variant="light"
+                              color="red"
+                              onClick={() => {
+                                deleteConfirm({
+                                  title: "Delete Genre",
+                                  message:
+                                    "Are you sure you want to delete this genre?",
+                                  onConfirm: () => handleDeleteGenre(genre.id),
+                                });
+                              }}
+                              disabled={genre.movieCount > 0}
+                              style={{
+                                "--mantine-color-disabled":
+                                  "var(--color-darkGray)", // your desired border color (e.g. blue)
+                              }}
+                            >
+                              <IconTrash size={16} />
+                            </ActionIcon>
+                          </Group>
+                        </Table.Td>
+                      </Table.Tr>
+                    ))}
+                  </Table.Tbody>
+                </Table>
+              )}
+            </div>
+          )}
+        </div>
+
+        {genres?.length > 0 && (
+          <Group justify="center" mt={"xl"}>
+            <Pagination
+              total={pagination?.totalPages}
+              size={"sm"}
+              value={pagination?.page}
+              onChange={(value) =>
+                setPagination((prev) => ({ ...prev, page: value }))
+              }
+            />
+          </Group>
         )}
 
-        {filteredGenres?.length === 0 && (
+        {genres?.length === 0 && !isPending && (
           <Text ta="center" c="dimmed" py="xl">
             <div className="flex justify-center mb-2">
               <IconTags size={30} />

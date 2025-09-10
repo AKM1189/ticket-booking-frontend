@@ -1,9 +1,15 @@
 import { getBookingById, getBookings } from "@/api/function/admin/bookingApi";
 import { useQuery } from "@tanstack/react-query";
 
-export const useBookingQuery = () => {
+export const useBookingQuery = (
+  page: number,
+  searchTerm: string,
+  date: string,
+  staffID: number | null,
+  status: string,
+) => {
   return useQuery({
-    queryFn: getBookings,
+    queryFn: () => getBookings(page, searchTerm, date, staffID, status),
     queryKey: ["bookings"],
     retry: 5,
   });

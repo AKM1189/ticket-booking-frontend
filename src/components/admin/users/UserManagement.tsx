@@ -8,8 +8,10 @@ import {
   Button,
   Card,
   Group,
+  Loader,
   Modal,
   Pagination,
+  Select,
   Table,
   Tabs,
   Text,
@@ -26,6 +28,7 @@ import {
   IconUserCancel,
   IconUserCheck,
   IconUserCog,
+  IconUserDollar,
 } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import "react-phone-number-input/style.css";
@@ -41,6 +44,9 @@ import {
 import { useConfirmModalStore } from "@/store/useConfirmModalStore";
 import { useAuthStore } from "@/store/authStore";
 import type { PaginationType } from "@/types/PagintationType";
+import { usePermisson } from "@/hooks/usePermisson";
+import { permissionList } from "@/constants/permissons";
+import { useAllTheatresQuery } from "@/api/query/admin/theatreQuery";
 
 const UserManagement = () => {
   const [opened, { open, close }] = useDisclosure(false);
@@ -56,7 +62,7 @@ const UserManagement = () => {
     total: 0,
     totalPages: 1,
   });
-  const { data, refetch } = useUserQuery(
+  const { data, isPending, refetch } = useUserQuery(
     searchTerm,
     activeTab,
     pagination.page,
@@ -73,11 +79,17 @@ const UserManagement = () => {
   const { open: deactivateConfirm } = useConfirmModalStore();
   const [debouncedSearchTerm] = useDebouncedValue(searchTerm, 300);
 
+  const { data: theatres } = useAllTheatresQuery();
+
+  const { hasAccess } = usePermisson();
+
   const form = useForm({
     initialValues: {
       name: "",
       email: "",
       phoneNo: "",
+      role: "",
+      theatreId: "",
     },
     validate: zodResolver(userSchema),
   });
@@ -104,7 +116,9 @@ const UserManagement = () => {
         {
           onSuccess: () => {
             showLoading(false);
+            setEditingUser(null);
             close();
+            form.reset();
           },
           onError: () => {
             showLoading(false);
@@ -113,11 +127,12 @@ const UserManagement = () => {
       );
     } else {
       addUserMutation(
-        { data: { ...data, role: "admin" } },
+        { data: { ...data } },
         {
           onSuccess: () => {
             showLoading(false);
             close();
+            form.reset();
           },
           onError: () => {
             showLoading(false);
@@ -150,6 +165,8 @@ const UserManagement = () => {
       name: user.name,
       email: user.email,
       phoneNo: user.phoneNo,
+      role: user.role,
+      theatreId: user?.theatre?.id.toString(),
     });
     open();
   };
@@ -157,13 +174,15 @@ const UserManagement = () => {
     <div className="space-y-6">
       <Group justify="space-between">
         <Title order={2}>Genre Management</Title>
-        <Button
-          className="dashboard-btn"
-          leftSection={<IconPlus size={16} />}
-          onClick={open}
-        >
-          Add Admin
-        </Button>
+        {hasAccess(permissionList.createUser) && (
+          <Button
+            className="dashboard-btn"
+            leftSection={<IconPlus size={16} />}
+            onClick={open}
+          >
+            Add Admin & Staff
+          </Button>
+        )}
       </Group>
 
       <Card
@@ -202,101 +221,127 @@ const UserManagement = () => {
                 Admin
               </Group>
             </Tabs.Tab>
+            <Tabs.Tab value="staff">
+              <Group gap={5} align="center">
+                <IconUserDollar size={18} />
+                Staff
+              </Group>
+            </Tabs.Tab>
           </Tabs.List>
           <Tabs.Panel value={activeTab} py={"lg"}>
             <div className="overflow-scroll">
-              <Table striped highlightOnHover>
-                <Table.Thead>
-                  <Table.Tr>
-                    <Table.Th>No</Table.Th>
-                    <Table.Th className="min-w-[150px]">Name</Table.Th>
-                    <Table.Th>Email</Table.Th>
-                    <Table.Th>Phone No</Table.Th>
-                    <Table.Th>Status</Table.Th>
-                    <Table.Th>Actions</Table.Th>
-                  </Table.Tr>
-                </Table.Thead>
-                <Table.Tbody>
-                  {users &&
-                    users?.map((user, index) => (
-                      <Table.Tr key={user.id}>
-                        <Table.Td>
-                          {data?.pagination?.page > 1
-                            ? index +
-                              1 +
-                              (data?.pagination?.page - 1) *
-                                data?.pagination?.limit
-                            : index + 1}
-                        </Table.Td>
-                        <Table.Td>
-                          {user.name +
-                            (user.email === currentUser?.email ? " (You)" : "")}
-                        </Table.Td>
-                        <Table.Td>{user.email}</Table.Td>
-                        <Table.Td>{user.phoneNo}</Table.Td>
-                        <Table.Td>
-                          {user.active ? (
-                            <Badge color="green" variant="light">
-                              Active
-                            </Badge>
-                          ) : (
-                            <Badge color="red" variant="light">
-                              Deactivated
-                            </Badge>
-                          )}
-                        </Table.Td>
-                        <Table.Td>
-                          <Group gap="xs">
-                            <ActionIcon
-                              variant="light"
-                              color="orange"
-                              onClick={() => handleEditUser(user)}
-                            >
-                              <IconEdit size={16} />
-                            </ActionIcon>
-
-                            {user.active ? (
-                              user.email !== currentUser?.email && (
+              {isPending ? (
+                <div className="h-full min-h-[200px] flex justify-center items-center">
+                  <Loader size={"md"} />
+                </div>
+              ) : (
+                <div>
+                  <Table striped highlightOnHover>
+                    <Table.Thead>
+                      <Table.Tr>
+                        <Table.Th>No</Table.Th>
+                        <Table.Th className="min-w-[150px]">Name</Table.Th>
+                        <Table.Th>Email</Table.Th>
+                        <Table.Th>Phone No</Table.Th>
+                        <Table.Th>Status</Table.Th>
+                        <Table.Th>Actions</Table.Th>
+                      </Table.Tr>
+                    </Table.Thead>
+                    <Table.Tbody>
+                      {users &&
+                        users?.map((user, index) => (
+                          <Table.Tr key={user.id}>
+                            <Table.Td>
+                              {data?.pagination?.page > 1
+                                ? index +
+                                  1 +
+                                  (data?.pagination?.page - 1) *
+                                    data?.pagination?.limit
+                                : index + 1}
+                            </Table.Td>
+                            <Table.Td>
+                              {user.name +
+                                (user.email === currentUser?.email
+                                  ? " (You)"
+                                  : "")}
+                            </Table.Td>
+                            <Table.Td>{user.email}</Table.Td>
+                            <Table.Td>{user.phoneNo}</Table.Td>
+                            <Table.Td>
+                              {user.active ? (
+                                <Badge color="green" variant="light">
+                                  Active
+                                </Badge>
+                              ) : (
+                                <Badge color="red" variant="light">
+                                  Deactivated
+                                </Badge>
+                              )}
+                            </Table.Td>
+                            <Table.Td>
+                              <Group gap="xs">
                                 <ActionIcon
                                   variant="light"
-                                  color="red"
-                                  onClick={() => {
-                                    setEditingUser(user);
-                                    deactivateConfirm({
-                                      title: "Deactivate User",
-                                      message:
-                                        "Are you sure you want to deactivate this user?",
-                                      onConfirm: () =>
-                                        handleDeactivate(user.id),
-                                    });
-                                  }}
+                                  color="orange"
+                                  disabled={
+                                    !hasAccess(permissionList.updateUser)
+                                  }
+                                  onClick={() => handleEditUser(user)}
                                 >
-                                  <IconUserCancel size={16} />
+                                  <IconEdit size={16} />
                                 </ActionIcon>
-                              )
-                            ) : (
-                              <ActionIcon
-                                variant="light"
-                                color="green"
-                                onClick={() => {
-                                  setEditingUser(user);
-                                  deactivateConfirm({
-                                    title: "Activate User",
-                                    message:
-                                      "Are you sure you want to activate this user?",
-                                    onConfirm: () => handleDeactivate(user.id),
-                                  });
-                                }}
-                              >
-                                <IconUserCheck size={16} />
-                              </ActionIcon>
-                            )}
-                          </Group>
-                        </Table.Td>
-                      </Table.Tr>
-                    ))}
-                </Table.Tbody>
-              </Table>
+
+                                {user.active ? (
+                                  user.email !== currentUser?.email && (
+                                    <ActionIcon
+                                      variant="light"
+                                      color="red"
+                                      disabled={
+                                        !hasAccess(permissionList.deleteUser)
+                                      }
+                                      onClick={() => {
+                                        setEditingUser(user);
+                                        deactivateConfirm({
+                                          title: "Deactivate User",
+                                          message:
+                                            "Are you sure you want to deactivate this user?",
+                                          onConfirm: () =>
+                                            handleDeactivate(user.id),
+                                        });
+                                      }}
+                                    >
+                                      <IconUserCancel size={16} />
+                                    </ActionIcon>
+                                  )
+                                ) : (
+                                  <ActionIcon
+                                    variant="light"
+                                    color="green"
+                                    disabled={
+                                      !hasAccess(permissionList.deleteUser)
+                                    }
+                                    onClick={() => {
+                                      setEditingUser(user);
+                                      deactivateConfirm({
+                                        title: "Activate User",
+                                        message:
+                                          "Are you sure you want to activate this user?",
+                                        onConfirm: () =>
+                                          handleDeactivate(user.id),
+                                      });
+                                    }}
+                                  >
+                                    <IconUserCheck size={16} />
+                                  </ActionIcon>
+                                )}
+                              </Group>
+                            </Table.Td>
+                          </Table.Tr>
+                        ))}
+                    </Table.Tbody>
+                  </Table>
+                </div>
+              )}
             </div>
             {users?.length > 0 && (
               <Group justify="center" mt={"xl"}>
@@ -311,7 +356,7 @@ const UserManagement = () => {
               </Group>
             )}
 
-            {users?.length === 0 && (
+            {users?.length === 0 && !isPending && (
               <Text ta="center" c="dimmed" py="xl">
                 <div className="flex justify-center mb-2">
                   {activeTab == "user" ? (
@@ -370,13 +415,33 @@ const UserManagement = () => {
               />
               <p className="text-xs text-red-400 mt-1">{form.errors.phoneNo}</p>
             </div>
+
+            <Select
+              label="Role"
+              data={[
+                { label: "Admin", value: Role.admin },
+                { label: "Staff", value: Role.staff },
+              ]}
+              classNames={inputStyle}
+              placeholder="Select Role"
+              {...form.getInputProps("role")}
+            />
+
+            {form.values.role === Role.staff && (
+              <Select
+                label="Theatre"
+                data={theatres?.data?.map((theatre) => ({
+                  label: theatre?.name,
+                  value: theatre?.id?.toString(),
+                }))}
+                classNames={inputStyle}
+                placeholder="Select Theatre"
+                {...form.getInputProps("theatreId")}
+              />
+            )}
           </div>
           <Group justify="flex-end" mt="lg">
-            <Button
-              variant="outline"
-              className="dashboard-btn"
-              //   onClick={onClose}
-            >
+            <Button variant="outline" className="dashboard-btn" onClick={close}>
               Cancel
             </Button>
             <Button

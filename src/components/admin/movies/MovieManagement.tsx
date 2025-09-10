@@ -19,6 +19,7 @@ import {
   Loader,
   NumberInput,
   LoadingOverlay,
+  Pagination,
 } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
 import {
@@ -39,7 +40,7 @@ import {
   useDeleteMovie,
   useUpdateMovie,
 } from "@/api/mutation/admin/movieMutation";
-import { useGenreQuery } from "@/api/query/admin/genreQuery";
+import { useAllGenreQuery, useGenreQuery } from "@/api/query/admin/genreQuery";
 import ImagePreview from "./ImagePreview";
 import { CastSelector } from "../casts";
 import { urlToFile } from "@/utils/imageUploads";
@@ -48,6 +49,11 @@ import { zodResolver } from "mantine-form-zod-resolver";
 import { movieSchema } from "@/schema/MovieSchema";
 import dayjs from "dayjs";
 import { useConfirmModalStore } from "@/store/useConfirmModalStore";
+import { useAuthStore } from "@/store/authStore";
+import { Role } from "@/types/AuthType";
+import { usePermisson } from "@/hooks/usePermisson";
+import { permissionList } from "@/constants/permissons";
+import type { PaginationType } from "@/types/PagintationType";
 
 const languages = ["English", "Tamil", "Hindi", "Telugu", "Chinese"];
 const subtitles = ["English", "Tamil", "Hindi", "Telugu", "Chinese"];
@@ -72,12 +78,23 @@ const MovieManagement = ({
   const fileInputRef = useRef<HTMLButtonElement>(null);
   const [isLoading, _setIsLoading] = useState(false);
 
-  const { data: genres } = useGenreQuery();
+  const { data: genres } = useAllGenreQuery();
   const genreList = genres?.data;
 
   const [isImageUploading, setImageUploading] = useState(false);
 
-  const { data, refetch } = useMovieQuery(searchTerm, statusFilter);
+  const [pagination, setPagination] = useState<PaginationType>({
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 1,
+  });
+
+  const { data, refetch, isPending } = useMovieQuery(
+    pagination.page,
+    searchTerm,
+    statusFilter,
+  );
   const [movies, setMovies] = useState<MovieType[]>([]);
   const { showLoading } = useLoadingStore();
 
@@ -86,6 +103,8 @@ const MovieManagement = ({
   const { mutate: deleteMovieMutation } = useDeleteMovie();
 
   const [debouncedSearchTerm] = useDebouncedValue(searchTerm, 300);
+
+  const { hasAccess } = usePermisson();
 
   const { open: openConfirm } = useConfirmModalStore();
 
@@ -350,13 +369,15 @@ const MovieManagement = ({
       />
       <Group justify="space-between">
         <Title order={2}>Movie Management</Title>
-        <Button
-          leftSection={<IconPlus size={16} />}
-          className="!text-sm"
-          onClick={handleAddMovie}
-        >
-          Add Movie
-        </Button>
+        {hasAccess(permissionList.createMovie) && (
+          <Button
+            leftSection={<IconPlus size={16} />}
+            className="!text-sm"
+            onClick={handleAddMovie}
+          >
+            Add Movie
+          </Button>
+        )}
       </Group>
 
       <Card
@@ -377,7 +398,7 @@ const MovieManagement = ({
           />
           <Select
             placeholder="Filter by status"
-            data={["Now Showing", "Coming Soon", "Ended"]}
+            data={["Now Showing", "Ticket Available", "Coming Soon", "Ended"]}
             value={statusFilter}
             onChange={setStatusFilter}
             clearable
@@ -385,158 +406,141 @@ const MovieManagement = ({
           />
         </Group>
         <div className="overflow-scroll">
-          <Table striped highlightOnHover>
-            <Table.Thead>
-              <Table.Tr>
-                <Table.Th>Movie</Table.Th>
-                <Table.Th>Duration</Table.Th>
-                <Table.Th>Genres</Table.Th>
-                <Table.Th>Release Date</Table.Th>
-                <Table.Th>Rating</Table.Th>
-                <Table.Th>Status</Table.Th>
-                <Table.Th>Actions</Table.Th>
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>
-              {movies?.map((movie) => (
-                <Table.Tr key={movie.id}>
-                  <Table.Td>
-                    <Group gap="sm" className="relative">
-                      {movie.poster?.url ? (
-                        <Image
-                          src={movie.poster?.url}
-                          alt={movie.title}
-                          w={50}
-                          h={60}
-                          radius="sm"
-                          fallbackSrc="/no_poster.jpeg"
-                          className=""
-                        />
-                      ) : (
-                        <div className=" w-[40px] h-[60px] rounded-md bg-surface-hover text-[10px] text-center text-muted flex items-center">
-                          {" "}
-                          No Poster
-                        </div>
-                      )}
+          {isPending ? (
+            <div className="h-full min-h-[200px] flex justify-center items-center">
+              <Loader size={"md"} />
+            </div>
+          ) : (
+            <div>
+              <Table striped highlightOnHover>
+                <Table.Thead>
+                  <Table.Tr>
+                    <Table.Th>Movie</Table.Th>
+                    <Table.Th>Duration</Table.Th>
+                    <Table.Th>Genres</Table.Th>
+                    <Table.Th>Release Date</Table.Th>
+                    <Table.Th>Rating</Table.Th>
+                    <Table.Th>Status</Table.Th>
+                    <Table.Th>Actions</Table.Th>
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
+                  {movies?.map((movie) => (
+                    <Table.Tr key={movie.id}>
+                      <Table.Td>
+                        <Group gap="sm" className="relative">
+                          {movie.poster?.url ? (
+                            <Image
+                              src={movie.poster?.url}
+                              alt={movie.title}
+                              w={50}
+                              h={60}
+                              radius="sm"
+                              fallbackSrc="/no_poster.jpeg"
+                              className=""
+                            />
+                          ) : (
+                            <div className=" w-[40px] h-[60px] rounded-md bg-surface-hover text-[10px] text-center text-muted flex items-center">
+                              {" "}
+                              No Poster
+                            </div>
+                          )}
 
-                      <div>
-                        <Text size="sm" fw={500}>
-                          {movie.title}
-                        </Text>
-                      </div>
-                    </Group>
-                  </Table.Td>
-                  <Table.Td>{movie.duration}</Table.Td>
-                  <Table.Td>
-                    <Group gap="xs">
-                      {movie?.genres.map((genre: any) => (
-                        // index < 2 && (
-                        //   <Badge
-                        //     key={genre.id}
-                        //     variant="outline"
-                        //     color={genre.color}
-                        //     size="sm"
-                        //   >
-                        //     {genre.name}
-                        //   </Badge>
-                        // ),
-                        <Badge
-                          key={genre.id}
-                          variant="light"
-                          color={genre.color}
-                          size="sm"
-                        >
-                          {genre.name}
-                        </Badge>
-                      ))}
-                      {/* {movie?.genres.length > 2 && (
-                        <Popover
-                          width={200}
-                          position="bottom"
-                          withArrow
-                          shadow="md"
-                        >
-                          <Popover.Target>
+                          <div>
+                            <Text size="sm" fw={500}>
+                              {movie.title}
+                            </Text>
+                          </div>
+                        </Group>
+                      </Table.Td>
+                      <Table.Td>{movie.duration}</Table.Td>
+                      <Table.Td>
+                        <Group gap="xs">
+                          {movie?.genres.map((genre: any) => (
                             <Badge
-                              size="sm"
+                              key={genre.id}
                               variant="light"
-                              color="var(--color-secondary)"
-                              className="!cursor-pointer"
+                              color={genre.color}
+                              size="sm"
                             >
-                              +{movie?.genres.length - 2}
+                              {genre.name}
                             </Badge>
-                          </Popover.Target>
-                          <Popover.Dropdown className="!bg-surface !py-3 !w-[100px] !flex !flex-col !items-center">
-                            {movie?.genres.map(
-                              (genre: any, index: number) =>
-                                index >= 2 && (
-                                  <Badge
-                                    key={genre.id}
-                                    variant="light"
-                                    color={genre.color}
-                                    size="sm"
-                                  >
-                                    {genre.name}
-                                  </Badge>
-                                ),
-                            )}
-                          </Popover.Dropdown>
-                        </Popover>
-                      )} */}
-                    </Group>
-                  </Table.Td>
-                  <Table.Td className="!text-sm">
-                    {movie?.releaseDate &&
-                      dayjs(movie.releaseDate).format("YYYY-MM-DD")}
-                  </Table.Td>
-                  <Table.Td>
-                    {" "}
-                    {movie.rating ? (
-                      "⭐" + movie.rating
-                    ) : (
-                      <Text size="xs" c={"dimmed"}>
-                        -
-                      </Text>
-                    )}
-                  </Table.Td>
-                  <Table.Td>
-                    <Badge color={getStatusColor(movie.status)} variant="light">
-                      {movie.status}
-                    </Badge>
-                  </Table.Td>
-                  <Table.Td>
-                    <Group gap="xs">
-                      <ActionIcon
-                        variant="light"
-                        color="orange"
-                        onClick={() => handleEditMovie(movie)}
-                      >
-                        <IconEdit size={16} />
-                      </ActionIcon>
-                      <ActionIcon
-                        variant="light"
-                        color="red"
-                        onClick={() => {
-                          setEditingMovie(movie);
-                          // setDeleteModalOpen(true);
-                          openConfirm({
-                            title: "Delete Movie",
-                            message:
-                              "Are you sure you want to delete this movie?",
-                            onConfirm: () => handleDeleteMovie(movie?.id),
-                          });
-                        }}
-                      >
-                        <IconTrash size={16} />
-                      </ActionIcon>
-                    </Group>
-                  </Table.Td>
-                </Table.Tr>
-              ))}
-            </Table.Tbody>
-          </Table>
+                          ))}
+                        </Group>
+                      </Table.Td>
+                      <Table.Td className="!text-sm">
+                        {movie?.releaseDate &&
+                          dayjs(movie.releaseDate).format("YYYY-MM-DD")}
+                      </Table.Td>
+                      <Table.Td>
+                        {" "}
+                        {movie.rating ? (
+                          "⭐" + movie.rating
+                        ) : (
+                          <Text size="xs" c={"dimmed"}>
+                            -
+                          </Text>
+                        )}
+                      </Table.Td>
+                      <Table.Td>
+                        <Badge
+                          color={getStatusColor(movie.status)}
+                          variant="light"
+                        >
+                          {movie.status}
+                        </Badge>
+                      </Table.Td>
+                      <Table.Td>
+                        <Group gap="xs">
+                          <ActionIcon
+                            variant="light"
+                            color="orange"
+                            disabled={!hasAccess(permissionList.updateMovie)}
+                            onClick={() => handleEditMovie(movie)}
+                          >
+                            <IconEdit size={16} />
+                          </ActionIcon>
+                          <ActionIcon
+                            variant="light"
+                            color="red"
+                            disabled={!hasAccess(permissionList.deleteMovie)}
+                            onClick={() => {
+                              setEditingMovie(movie);
+                              // setDeleteModalOpen(true);
+                              openConfirm({
+                                title: "Delete Movie",
+                                message:
+                                  "Are you sure you want to delete this movie?",
+                                onConfirm: () => handleDeleteMovie(movie?.id),
+                              });
+                            }}
+                          >
+                            <IconTrash size={16} />
+                          </ActionIcon>
+                        </Group>
+                      </Table.Td>
+                    </Table.Tr>
+                  ))}
+                </Table.Tbody>
+              </Table>
+            </div>
+          )}
         </div>
-        {movies?.length === 0 && (
+
+        {movies?.length > 0 && (
+          <Group justify="center" mt={"xl"}>
+            <Pagination
+              total={pagination?.totalPages}
+              size={"sm"}
+              value={pagination?.page}
+              onChange={(value) =>
+                setPagination((prev) => ({ ...prev, page: value }))
+              }
+            />
+          </Group>
+        )}
+
+        {!isPending && movies?.length === 0 && (
           <Text ta="center" c="dimmed" py="xl" size="sm">
             <div className="flex justify-center mb-2">
               <IconMovie size={30} />

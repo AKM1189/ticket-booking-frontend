@@ -2,8 +2,18 @@ import { api } from "@/api/api";
 import { endpoints } from "@/api/endpoints";
 import type { ScheduleInputType } from "@/types/ScheduleTypes";
 
-export const getSchedule = async () => {
-  const response = await api.get(endpoints.admin.schedules);
+export const getSchedule = async (
+  page: number = 1,
+  searchTerm: string,
+  dateFilter: string,
+) => {
+  let parameters = "";
+  if (searchTerm) parameters += "&search=" + searchTerm;
+  if (dateFilter) parameters += "&date=" + dateFilter;
+  const response = await api.get(
+    `${endpoints.admin.schedules}?page=${page}${parameters || ""}`,
+  );
+
   return response.data;
 };
 
