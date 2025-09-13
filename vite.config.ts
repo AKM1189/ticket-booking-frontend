@@ -9,20 +9,21 @@ export default defineConfig({
   plugins: [react(), tailwindcss(), tsConfigPaths()],
   server: {
     open: true,
-    port: 5175,
+    port: 5178,
     cors: true,
-    // proxy: {
-    //   "/api": {
-    //     target: "http://localhost:3000",
-    //     changeOrigin: true,
-    //     secure: false,
-    //   },
-    // },
+    proxy: {
+      "/api": {
+        target: "http://localhost:3000",
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
-  base: "./",
+  // base: "./",
   resolve: {
     alias: {
       "@/*": "src/*",
+      "@tabler/icons-react": "@tabler/icons-react/dist/esm/icons/index.mjs",
     },
   },
 });

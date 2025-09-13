@@ -38,7 +38,7 @@ const ForgotPassword = () => {
                 root: "mt-5",
                 label: "text-[16px]",
                 input: twMerge(
-                  "login-input",
+                  "login-input !text-text",
                   form.errors.email && "border-red-500",
                 ),
                 error: "text-red-500",
