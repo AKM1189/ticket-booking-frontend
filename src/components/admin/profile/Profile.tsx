@@ -38,11 +38,13 @@ const Profile = () => {
           <Group gap={"xs"} className="cursor-pointer">
             <Avatar
               radius="xl"
-              size={40}
+              size={28}
               src={user?.image?.url}
               color="var(--color-blueGray)"
             />
-            <Text color="var(--color-blueGray)">{user?.name}</Text>
+            <Text color="var(--color-blueGray)" size="sm">
+              {user?.name}
+            </Text>
           </Group>
         </Menu.Target>
 
