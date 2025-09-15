@@ -293,7 +293,7 @@ const NotiList = ({ notifications, activeTab, ref, isFetching }) => {
             <IconBellZ size={30} />
           </ThemeIcon>
           <Text size="sm" color="var(--color-muted)">
-            No {activeTab} Notifications
+            No {activeTab} notifications
           </Text>
         </div>
       )}
