@@ -112,6 +112,8 @@ const CastModal = ({ opened, onClose, cast }: CastModalProps) => {
           },
         );
       } else {
+        showLoading(true);
+
         addCastMutation(
           { data: values },
           {

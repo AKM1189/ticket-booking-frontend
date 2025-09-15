@@ -53,6 +53,7 @@ import { useAddBookingMutation } from "@/api/mutation/admin/bookingMutation";
 import { useLoadingStore } from "@/store/useLoading";
 import { BookingCompType } from "./BookingPage";
 import { useBookingStore } from "@/store/bookingStore";
+import { Role } from "@/types/AuthType";
 
 dayjs.extend(customParseFormat);
 
@@ -144,8 +145,10 @@ const BookingForm = ({
   const { movieId, theatreId, screenId, showDate, showTime, customerName } =
     form.values;
 
-  const getTheatres = async () => {
-    await getTheatresByShow(movieId).then((data) => setTheatres(data?.data));
+  const getTheatres = async (): Promise<TheatreType[]> => {
+    const theatres = await getTheatresByShow(movieId);
+    setTheatres(theatres?.data);
+    return theatres?.data;
   };
 
   const getScreens = async () => {
@@ -172,57 +175,76 @@ const BookingForm = ({
   }, [movieData]);
 
   useEffect(() => {
-    if (movieId) {
-      const choseMovie = movies.find((movie) => movie.id.toString() == movieId);
-      updateSelectedInfo("movie", choseMovie || null);
-      if (movieId != selectedInfo?.movie?.id.toString()) {
-        form.resetField("theatreId");
-        form.resetField("screenId");
-        form.resetField("showDate");
-        form.resetField("showTime");
-      }
-      getTheatres();
-    }
+    const updateFormData = async () => {
+      if (movieId) {
+        const choseMovie = movies.find(
+          (movie) => movie.id.toString() == movieId,
+        );
+        updateSelectedInfo("movie", choseMovie || null);
+        if (movieId != selectedInfo?.movie?.id.toString()) {
+          form.resetField("theatreId");
+          form.resetField("screenId");
+          form.resetField("showDate");
+          form.resetField("showTime");
+        }
+        const theatres: TheatreType[] = await getTheatres();
 
-    if (theatreId) {
-      const choseTheatre = theatres.find(
-        (theatre) => theatre.id.toString() == theatreId,
-      );
-      updateSelectedInfo("theatre", choseTheatre || null);
-      if (theatreId != selectedInfo?.theatre?.id.toString()) {
-        form.resetField("screenId");
-        form.resetField("showDate");
-        form.resetField("showTime");
-      }
-      getScreens();
-    }
+        if (
+          user?.role === Role.staff &&
+          user?.theatre &&
+          theatres?.length > 0
+        ) {
+          const selectedTheatre = theatres?.find(
+            (theatre) => theatre?.id === user?.theatre?.id,
+          );
 
-    if (screenId) {
-      const choseScreen = screens.find(
-        (screen) => screen.id.toString() == screenId,
-      );
-      updateSelectedInfo("screen", choseScreen || null);
-      updateSelectedInfo("seats", []);
-      if (screenId != selectedInfo?.screen?.id.toString()) {
-        form.resetField("showDate");
-        form.resetField("showTime");
+          if (selectedTheatre) {
+            form.setFieldValue("theatreId", selectedTheatre.id.toString());
+            updateSelectedInfo("theatre", selectedTheatre || null);
+          }
+        } else {
+          if (theatreId) {
+            const choseTheatre = theatres.find(
+              (theatre) => theatre.id.toString() == theatreId,
+            );
+            updateSelectedInfo("theatre", choseTheatre || null);
+            if (theatreId != selectedInfo?.theatre?.id.toString()) {
+              form.resetField("screenId");
+              form.resetField("showDate");
+              form.resetField("showTime");
+            }
+          }
+        }
+        getScreens();
       }
-      getDateList();
-    }
-    if (showDate) {
-      updateSelectedInfo("showDate", showDate);
-      if (showDate !== selectedInfo?.showDate) {
-        form.resetField("showTime");
-        console.log("show time 1", showTime);
-        updateSelectedInfo("showTime", null);
-      }
-      getTimeList();
-    }
-    if (showTime) {
-      console.log("show time 2", showTime);
 
-      updateSelectedInfo("showTime", showTime);
-    }
+      if (screenId) {
+        const choseScreen = screens.find(
+          (screen) => screen.id.toString() == screenId,
+        );
+        updateSelectedInfo("screen", choseScreen || null);
+        updateSelectedInfo("seats", []);
+        if (screenId != selectedInfo?.screen?.id.toString()) {
+          form.resetField("showDate");
+          form.resetField("showTime");
+        }
+        getDateList();
+      }
+      if (showDate) {
+        updateSelectedInfo("showDate", showDate);
+        if (showDate !== selectedInfo?.showDate) {
+          form.resetField("showTime");
+          console.log("show time 1", showTime);
+          updateSelectedInfo("showTime", null);
+        }
+        getTimeList();
+      }
+      if (showTime) {
+        updateSelectedInfo("showTime", showTime);
+        console.log("updated info", selectedInfo);
+      }
+    };
+    updateFormData();
   }, [movieId, theatreId, screenId, showDate, showTime]);
 
   const calculateTotal = () => {
@@ -339,17 +361,19 @@ const BookingForm = ({
                     {...form.getInputProps("movieId")}
                   />
 
-                  <Select
-                    label="theatre"
-                    placeholder="Select a theatre"
-                    data={theatres?.map((theatre) => ({
-                      value: theatre.id.toString(),
-                      label: theatre.name,
-                    }))}
-                    leftSection={<IconBuilding size={16} />}
-                    classNames={inputStyle}
-                    {...form.getInputProps("theatreId")}
-                  />
+                  {user?.role === Role.admin && (
+                    <Select
+                      label="Theatre"
+                      placeholder="Select a theatre"
+                      data={theatres?.map((theatre) => ({
+                        value: theatre.id.toString(),
+                        label: theatre.name,
+                      }))}
+                      leftSection={<IconBuilding size={16} />}
+                      classNames={inputStyle}
+                      {...form.getInputProps("theatreId")}
+                    />
+                  )}
 
                   <Select
                     label="Screen"
@@ -405,7 +429,10 @@ const BookingForm = ({
                           layout={{
                             rows: selectedInfo.screen?.rows,
                             seatsPerRow: selectedInfo.screen?.cols,
-                            disabledSeats: selectedInfo.screen?.disabledSeats,
+                            disabledSeats:
+                              selectedInfo.screen?.disabledSeats?.map((seat) =>
+                                seat?.trim(),
+                              ),
                             aisles: selectedInfo.screen?.aisles.map(
                               (aisle: any) => parseInt(aisle),
                             ),
@@ -437,7 +464,7 @@ const BookingForm = ({
                       <div className="flex flex-col gap-2">
                         {selectedInfo.seats?.map((seat) => {
                           return (
-                            <Group gap={4}>
+                            <Group gap={4} key={seat?.label}>
                               <Badge
                                 key={seat.label}
                                 w={"60px"}
@@ -479,8 +506,10 @@ const BookingForm = ({
                       <Stack gap="xs" style={{ flex: 1 }}>
                         <Group>
                           <Title order={3}>
-                            {selectedInfo.movie?.title} (
-                            {selectedInfo.screen?.type})
+                            {selectedInfo.movie?.title}
+                            {selectedInfo.screen?.type
+                              ? `(${selectedInfo.screen?.type})`
+                              : ""}
                           </Title>{" "}
                           {/* <div className="text-md">
                             ({" "}
@@ -492,11 +521,12 @@ const BookingForm = ({
                           </Badge>
                         </Group>
                         <Group gap="xs">
-                          {selectedInfo.movie?.genres?.map((item) => (
+                          {selectedInfo.movie?.genres?.map((item, index) => (
                             <Badge
                               variant="light"
                               size="sm"
                               color={item?.color}
+                              key={index}
                             >
                               {item?.name}
                             </Badge>

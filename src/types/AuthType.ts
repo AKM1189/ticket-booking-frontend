@@ -1,3 +1,4 @@
+import type { TheaterType } from "./AdminTypes";
 import type { ImageType } from "./MovieTypes";
 
 export type AuthType = {
@@ -7,6 +8,7 @@ export type AuthType = {
   role: Role;
   image: ImageType;
   phoneNo: string;
+  theatre?: TheaterType;
 };
 
 export enum Role {

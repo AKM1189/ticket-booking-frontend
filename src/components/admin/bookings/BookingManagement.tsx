@@ -51,6 +51,7 @@ import { permissionList } from "@/constants/permissons";
 import { useAuthStore } from "@/store/authStore";
 import { Role } from "@/types/AuthType";
 import type { PaginationType } from "@/types/PagintationType";
+import dayjs from "dayjs";
 
 const BookingManagement = ({
   setCurrentComp,
@@ -356,7 +357,7 @@ const BookingManagement = ({
         <div className="overflow-x-auto">
           {isPending ? (
             <div className="h-full min-h-[200px] flex justify-center items-center">
-              <Loader size={"md"} />
+              <Loader type="dots" size={"md"} />
             </div>
           ) : (
             <div>
@@ -451,9 +452,11 @@ const BookingManagement = ({
                           ).toLocaleDateString()}
                         </Text>
                         <Text c="dimmed" size="xs">
-                          {new Date(
+                          {dayjs(booking.bookingDate).format("hh:mm A")}
+
+                          {/* {new Date(
                             booking.bookingDate || "",
-                          ).toLocaleTimeString()}
+                          ).toLocaleTimeString()} */}
                         </Text>
                       </Table.Td>
                       {/* <Table.Td>
@@ -663,17 +666,19 @@ const BookingManagement = ({
               </Grid.Col>
             </Grid>
 
-            <div className="flex justify-end">
-              <Button
-                className="dashboard-btn"
-                onClick={() => {
-                  setTicketOpen(true);
-                  setCurrentBooking(selectedBooking.id);
-                }}
-              >
-                Generate Ticket
-              </Button>
-            </div>
+            {selectedBooking?.status === "confirmed" && (
+              <div className="flex justify-end">
+                <Button
+                  className="dashboard-btn"
+                  onClick={() => {
+                    setTicketOpen(true);
+                    setCurrentBooking(selectedBooking.id);
+                  }}
+                >
+                  Generate Ticket
+                </Button>
+              </div>
+            )}
           </div>
         )}
       </Modal>
@@ -687,7 +692,7 @@ const BookingManagement = ({
         shadow="0"
         classNames={{
           header: "dashboard-bg",
-          content: "dashboard-bg h-full",
+          content: "dashboard-bg h-full !min-w-[480px]",
           close: "!text-text hover:!bg-surface-hover",
         }}
       >

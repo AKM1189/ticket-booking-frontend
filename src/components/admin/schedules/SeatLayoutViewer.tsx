@@ -17,6 +17,7 @@ const SeatLayoutViewer = ({
   theaterName,
   bookedSeats,
 }: SeatLayoutViewerProps) => {
+  console.log("layout", layout);
   const generateSeatGrid = useCallback(() => {
     const rows: JSX.Element[] = [];
     const rowLabels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
