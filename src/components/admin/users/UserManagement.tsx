@@ -144,7 +144,8 @@ const UserManagement = () => {
   };
 
   const handleDeactivate = (id: number) => {
-    if (editingUser) {
+    if (id) {
+      showLoading(true);
       deleteUserMutation(
         { id },
         {
@@ -233,7 +234,7 @@ const UserManagement = () => {
             <div className="overflow-scroll">
               {isPending ? (
                 <div className="h-full min-h-[200px] flex justify-center items-center">
-                  <Loader size={"md"} />
+                  <Loader size={"md"} type="dots" />
                 </div>
               ) : (
                 <div>
@@ -244,6 +245,9 @@ const UserManagement = () => {
                         <Table.Th className="min-w-[150px]">Name</Table.Th>
                         <Table.Th>Email</Table.Th>
                         <Table.Th>Phone No</Table.Th>
+                        {activeTab === Role.staff && (
+                          <Table.Th miw={150}>Theatre</Table.Th>
+                        )}
                         <Table.Th>Status</Table.Th>
                         <Table.Th>Actions</Table.Th>
                       </Table.Tr>
@@ -268,6 +272,14 @@ const UserManagement = () => {
                             </Table.Td>
                             <Table.Td>{user.email}</Table.Td>
                             <Table.Td>{user.phoneNo}</Table.Td>
+                            {activeTab === Role.staff && (
+                              <Table.Td>
+                                <Text size="sm">{user.theatre?.name}</Text>
+                                <Text size="xs" c={"dimmed"}>
+                                  {user.theatre?.location}
+                                </Text>
+                              </Table.Td>
+                            )}
                             <Table.Td>
                               {user.active ? (
                                 <Badge color="green" variant="light">

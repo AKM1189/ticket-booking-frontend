@@ -7,6 +7,8 @@ import {
   Badge,
   Group,
   Select,
+  Skeleton,
+  Loader,
 } from "@mantine/core";
 import {
   IconMovie,
@@ -115,8 +117,13 @@ const AdminDashboard = ({
   setOpenMovieModal,
   setOpenScheduleModal,
 }: AdminDashboardProps) => {
-  const { data: cardInfo } = useCardInfoQuery();
-  const { data: tableData } = useUpcomingSchedulesQuery();
+  const { data: cardInfo, isPending: isCardPending } = useCardInfoQuery();
+  const {
+    data: tableData,
+    isPending,
+    isLoading,
+    isFetching,
+  } = useUpcomingSchedulesQuery();
 
   const [stats, setStats] = useState<StatType | null>(null);
   const [revenueChart, setRevenueChart] = useState<RevenueChartType>({
@@ -243,6 +250,7 @@ const AdminDashboard = ({
               icon={<IconTicket size={20} />}
               color="blue"
               trend={{ value: 12, isPositive: false }}
+              isLoading={isCardPending}
             />
           </Grid.Col>
         )}
@@ -254,6 +262,7 @@ const AdminDashboard = ({
               icon={<IconMovie size={20} />}
               color="blue"
               trend={{ value: 12, isPositive: false }}
+              isLoading={isCardPending}
             />
           </Grid.Col>
         )}
@@ -263,6 +272,7 @@ const AdminDashboard = ({
             value={stats?.activeMovies ?? "-"}
             icon={<IconMovie size={20} />}
             color="green"
+            isLoading={isCardPending}
           />
         </Grid.Col>
         <Grid.Col span={{ base: 12, sm: 6, lg: 2.4 }}>
@@ -271,6 +281,7 @@ const AdminDashboard = ({
             value={stats?.totalTheatres ?? "-"}
             icon={<IconBuilding size={20} />}
             color="violet"
+            isLoading={isCardPending}
           />
         </Grid.Col>
         <Grid.Col span={{ base: 12, sm: 6, lg: 2.4 }}>
@@ -279,16 +290,18 @@ const AdminDashboard = ({
             value={stats?.totalSchedules ?? "-"}
             icon={<IconCalendar size={20} />}
             color="orange"
+            isLoading={isCardPending}
           />
         </Grid.Col>
         {hasAccess(permissionList.readReport) && (
           <Grid.Col span={{ base: 12, sm: 6, lg: 2.4 }}>
             <StatsCard
               title="Revenue"
-              value={`$${stats?.totalRevenue}`}
+              value={`$${stats?.totalRevenue?.toFixed(2)}`}
               icon={<IconCurrencyDollar size={20} />}
               color="teal"
               trend={{ value: 8.5, isPositive: true }}
+              isLoading={isCardPending}
             />
           </Grid.Col>
         )}
@@ -298,86 +311,92 @@ const AdminDashboard = ({
       {hasAccess(permissionList.readReport) && (
         <Grid mt={50}>
           <Grid.Col span={{ base: 12, lg: 6 }}>
-            <Group mb={30} className="!justify-between">
-              <Title size={"xl"}>Revenue</Title>
-              <Select
-                size="xs"
-                placeholder="Select Chart Type"
-                defaultValue={RevenueType.last7Day}
-                data={[
-                  { label: "Last 7 Days", value: RevenueType.last7Day },
-                  { label: "Monthly", value: RevenueType.monthly },
-                ]}
-                onChange={(value) =>
-                  updateRevenueChart(
-                    "activeChart",
-                    value == RevenueType.last7Day
-                      ? RevenueType.last7Day
-                      : RevenueType.monthly,
-                  )
-                }
-                classNames={selectStyle}
-              />
-            </Group>
-            {revenueChart.activeChart === RevenueType.last7Day ? (
-              <LineChart
-                h={300}
-                data={revenueChart.sevenDayRevenue}
-                dataKey="date"
-                series={[{ name: "revenue", label: "Revenue ($)" }]}
-                classNames={chartStyle}
-              />
-            ) : (
-              <LineChart
-                h={300}
-                data={revenueChart.monthlyRevenue}
-                dataKey="month"
-                yAxisProps={{ domain: [0, 200] }}
-                series={[{ name: "revenue", label: "Revenue ($)" }]}
-                classNames={chartStyle}
-              />
-            )}
+            <Skeleton visible={isCardPending} animate>
+              <Group mb={30} className="!justify-between">
+                <Title size={"xl"}>Revenue</Title>
+                <Select
+                  size="xs"
+                  placeholder="Select Chart Type"
+                  defaultValue={RevenueType.last7Day}
+                  data={[
+                    { label: "Last 7 Days", value: RevenueType.last7Day },
+                    { label: "Monthly", value: RevenueType.monthly },
+                  ]}
+                  onChange={(value) =>
+                    updateRevenueChart(
+                      "activeChart",
+                      value == RevenueType.last7Day
+                        ? RevenueType.last7Day
+                        : RevenueType.monthly,
+                    )
+                  }
+                  classNames={selectStyle}
+                />
+              </Group>
+              {revenueChart.activeChart === RevenueType.last7Day ? (
+                <LineChart
+                  h={300}
+                  data={revenueChart.sevenDayRevenue}
+                  dataKey="date"
+                  series={[{ name: "revenue", label: "Revenue ($)" }]}
+                  classNames={chartStyle}
+                />
+              ) : (
+                <LineChart
+                  h={300}
+                  data={revenueChart.monthlyRevenue}
+                  dataKey="month"
+                  yAxisProps={{ domain: [0, 200] }}
+                  series={[{ name: "revenue", label: "Revenue ($)" }]}
+                  classNames={chartStyle}
+                />
+              )}
+            </Skeleton>
           </Grid.Col>
 
           <Grid.Col span={{ base: 12, lg: 6 }}>
-            <Group mb={30} className="!justify-between">
-              <Title size={"xl"}>Bookings</Title>
-              <Select
-                size="xs"
-                placeholder="Select Chart Type"
-                defaultValue={MovieType.showing}
-                data={[
-                  { label: "Now Showing", value: MovieType.showing },
-                  {
-                    label: "Ticket Available",
-                    value: MovieType.available,
-                  },
-                ]}
-                onChange={(value) =>
-                  setBookingChart((prev) => ({
-                    ...prev,
-                    activeChart:
-                      value == MovieType.showing
-                        ? MovieType.showing
-                        : MovieType.available,
-                  }))
+            <Skeleton visible={isCardPending} animate>
+              <Group mb={30} className="!justify-between">
+                <Title size={"xl"}>Bookings</Title>
+                <Select
+                  size="xs"
+                  placeholder="Select Chart Type"
+                  defaultValue={MovieType.showing}
+                  data={[
+                    { label: "Now Showing", value: MovieType.showing },
+                    {
+                      label: "Ticket Available",
+                      value: MovieType.available,
+                    },
+                  ]}
+                  onChange={(value) =>
+                    setBookingChart((prev) => ({
+                      ...prev,
+                      activeChart:
+                        value == MovieType.showing
+                          ? MovieType.showing
+                          : MovieType.available,
+                    }))
+                  }
+                  color={"var(--color-primary)"}
+                  classNames={selectStyle}
+                />
+              </Group>
+              <BarChart
+                h={300}
+                data={
+                  bookingChart.activeChart === MovieType.showing
+                    ? bookingChart.showingMovieBookings
+                    : bookingChart.availableMovieBookings
                 }
-                color={"var(--color-primary)"}
-                classNames={selectStyle}
+                dataKey="movieTitle"
+                minBarSize={10}
+                series={[
+                  { name: "bookingCount", color: "var(--color-primary)" },
+                ]}
+                classNames={chartStyle}
               />
-            </Group>
-            <BarChart
-              h={300}
-              data={
-                bookingChart.activeChart === MovieType.showing
-                  ? bookingChart.showingMovieBookings
-                  : bookingChart.availableMovieBookings
-              }
-              dataKey="movieTitle"
-              minBarSize={10}
-              series={[{ name: "bookingCount", color: "var(--color-primary)" }]}
-              classNames={chartStyle}
-            />
+            </Skeleton>
           </Grid.Col>
         </Grid>
       )}
@@ -385,100 +404,113 @@ const AdminDashboard = ({
       {/* Upcoming Schedules Section */}
       <Grid>
         <Grid.Col span={12}>
-          <Card
-            shadow="sm"
-            padding="lg"
-            radius="md"
-            withBorder
-            className="!bg-surface !border-0 !text-text"
-          >
-            <Title order={3} mb="md">
-              Upcoming Schedules
-            </Title>
-            <div className="overflow-scroll">
-              <Table striped highlightOnHover>
-                <Table.Thead>
-                  <Table.Tr>
-                    <Table.Th>Movie</Table.Th>
-                    <Table.Th>Theater</Table.Th>
-                    <Table.Th>Date & Time</Table.Th>
-                    <Table.Th>Available Seats</Table.Th>
-                    <Table.Th>Status</Table.Th>
-                  </Table.Tr>
-                </Table.Thead>
-                <Table.Tbody>
-                  {tableRecords.upcomingSchedules?.map((schedule) => (
-                    <Table.Tr key={schedule.id}>
-                      <Table.Td>
-                        <div>
-                          <Text size="sm" fw={500}>
-                            {schedule.movieTitle}
-                          </Text>
-                          {/* <Text size="xs" c="dimmed">
+          <Skeleton visible={isPending} animate>
+            <Card
+              shadow="sm"
+              padding="lg"
+              radius="md"
+              withBorder
+              className="!bg-surface !border-0 !text-text"
+            >
+              <Title order={3} mb="md">
+                Upcoming Schedules
+              </Title>
+              <div className="overflow-scroll">
+                {isLoading ? (
+                  <div className="h-full min-h-[200px] flex justify-center items-center">
+                    <Loader type="dots" size={"md"} />
+                  </div>
+                ) : (
+                  <Table striped highlightOnHover>
+                    <Table.Thead>
+                      <Table.Tr>
+                        <Table.Th>Movie</Table.Th>
+                        <Table.Th>Theater</Table.Th>
+                        <Table.Th>Date & Time</Table.Th>
+                        <Table.Th>Available Seats</Table.Th>
+                        <Table.Th>Status</Table.Th>
+                      </Table.Tr>
+                    </Table.Thead>
+                    <Table.Tbody>
+                      {tableRecords.upcomingSchedules?.map((schedule) => (
+                        <Table.Tr key={schedule.id}>
+                          <Table.Td>
+                            <div>
+                              <Text size="sm" fw={500}>
+                                {schedule.movieTitle}
+                              </Text>
+                              {/* <Text size="xs" c="dimmed">
                             {schedule.movie?.genres}
                           </Text> */}
-                        </div>
-                      </Table.Td>
-                      <Table.Td>
-                        <div>
-                          <Text size="sm" fw={500}>
-                            {schedule.theatreName}
-                          </Text>
-                          <Text size="xs" c="dimmed">
-                            {schedule.screenName}
-                          </Text>
-                        </div>
-                      </Table.Td>
-                      <Table.Td>
-                        <div>
-                          <Text size="sm" fw={500}>
-                            {new Date(schedule.showDate).toLocaleDateString()}
-                          </Text>
-                          <Text size="xs" c="dimmed">
-                            {schedule.showTime}
-                          </Text>
-                        </div>
-                      </Table.Td>
-                      <Table.Td>
-                        <div>
-                          <Text size="sm" fw={500}>
-                            {schedule.availableSeats -
-                              schedule.bookedSeats?.length}
-                            /{schedule.availableSeats}
-                          </Text>
-                          <Text size="xs" c="dimmed">
-                            {Math.round(
-                              100 -
-                                (schedule.bookedSeats?.length /
-                                  schedule.availableSeats) *
-                                  100,
-                            )}
-                            % available
-                          </Text>
-                        </div>
-                      </Table.Td>
-                      <Table.Td>
-                        <Badge
-                          color={getScheduleStatusColor(schedule.status)}
-                          variant="light"
-                        >
-                          {schedule.status}
-                        </Badge>
-                      </Table.Td>
-                    </Table.Tr>
-                  ))}
-                </Table.Tbody>
-              </Table>
-              {tableRecords.upcomingSchedules?.length === 0 && (
-                <Text ta="center" c="dimmed" py="60px" size="sm">
-                  <div className="flex justify-center mb-2">
-                    <IconCalendar size={25} />
-                  </div>
-                  No Upcoming Schedules
-                </Text>
-              )}
-            </div>
-          </Card>
+                            </div>
+                          </Table.Td>
+                          <Table.Td>
+                            <div>
+                              <Text size="sm" fw={500}>
+                                {schedule.theatreName}
+                              </Text>
+                              <Text size="xs" c="dimmed">
+                                {schedule.screenName}
+                              </Text>
+                            </div>
+                          </Table.Td>
+                          <Table.Td>
+                            <div>
+                              <Text size="sm" fw={500}>
+                                {new Date(
+                                  schedule.showDate,
+                                ).toLocaleDateString()}
+                              </Text>
+                              <Text size="xs" c="dimmed">
+                                {schedule.showTime}
+                              </Text>
+                            </div>
+                          </Table.Td>
+                          <Table.Td>
+                            <div>
+                              <Text size="sm" fw={500}>
+                                {schedule.availableSeats -
+                                  schedule.bookedSeats?.split(",")?.length}
+                                /{schedule.availableSeats}
+                              </Text>
+                              <Text size="xs" c="dimmed">
+                                {Math.round(
+                                  100 -
+                                    (schedule.bookedSeats?.split(",")?.length /
+                                      schedule.availableSeats) *
+                                      100,
+                                )}
+                                % available
+                              </Text>
+                            </div>
+                          </Table.Td>
+                          <Table.Td>
+                            <Badge
+                              color={getScheduleStatusColor(schedule.status)}
+                              variant="light"
+                            >
+                              {schedule.status}
+                            </Badge>
+                          </Table.Td>
+                        </Table.Tr>
+                      ))}
+                    </Table.Tbody>
+                  </Table>
+                )}
+                {tableRecords.upcomingSchedules?.length === 0 &&
+                  !isLoading &&
+                  !isPending &&
+                  !isFetching && (
+                    <Text ta="center" c="dimmed" py="60px" size="sm">
+                      <div className="flex justify-center mb-2">
+                        <IconCalendar size={25} />
+                      </div>
+                      No Upcoming Schedules
+                    </Text>
+                  )}
+              </div>
+            </Card>
+          </Skeleton>
         </Grid.Col>
       </Grid>
 
@@ -486,80 +518,93 @@ const AdminDashboard = ({
         <Grid.Col
           span={hasAccess(permissionList.readReport) ? { base: 12, lg: 8 } : 12}
         >
-          <Card
-            shadow="sm"
-            padding="lg"
-            radius="md"
-            withBorder
-            className="!bg-surface !border-0 !text-text"
-          >
-            <Title order={3} mb="md">
-              Recent Bookings
-            </Title>
-            <div className="overflow-scroll">
-              <Table striped highlightOnHover>
-                <Table.Thead>
-                  <Table.Tr>
-                    <Table.Th>Customer</Table.Th>
-                    <Table.Th>Movie</Table.Th>
-                    <Table.Th>Date & Time</Table.Th>
-                    <Table.Th>Seats</Table.Th>
-                    <Table.Th>Amount</Table.Th>
-                    <Table.Th>Status</Table.Th>
-                    <Table.Th>Booked Date</Table.Th>
-                  </Table.Tr>
-                </Table.Thead>
-                <Table.Tbody>
-                  {tableRecords.recentBookings?.map((booking) => (
-                    <Table.Tr key={booking.id}>
-                      <Table.Td>
-                        <div>
-                          <Text size="sm" fw={500}>
-                            {booking.customerName}
-                          </Text>
-                          <Text size="xs" c="dimmed">
-                            {booking.customerEmail}
-                          </Text>
-                        </div>
-                      </Table.Td>
-                      <Table.Td>{booking.movieTitle}</Table.Td>
-                      <Table.Td>
-                        <div>
-                          <Text size="sm" fw={500}>
-                            {new Date(booking.showDate).toLocaleDateString()}
-                          </Text>
-                          <Text size="xs" c="dimmed">
-                            {booking.showTime}
-                          </Text>
-                        </div>
-                      </Table.Td>
-                      <Table.Td>{booking.seatList}</Table.Td>
-                      <Table.Td>${booking.totalAmount}</Table.Td>
-                      <Table.Td>
-                        {new Date(booking.bookingDate).toLocaleDateString()}
-                      </Table.Td>
-                      <Table.Td>
-                        <Badge
-                          color={getStatusColor(booking.status)}
-                          variant="light"
-                        >
-                          {booking.status}
-                        </Badge>
-                      </Table.Td>
+          <Skeleton visible={isPending} animate>
+            <Card
+              shadow="sm"
+              padding="lg"
+              radius="md"
+              withBorder
+              className="!bg-surface !border-0 !text-text"
+            >
+              <Title order={3} mb="md">
+                Recent Bookings
+              </Title>
+              <div className="overflow-scroll">
+                <Table striped highlightOnHover>
+                  <Table.Thead>
+                    <Table.Tr>
+                      <Table.Th>Customer</Table.Th>
+                      <Table.Th>Movie</Table.Th>
+                      <Table.Th>Date & Time</Table.Th>
+                      <Table.Th>Seats</Table.Th>
+                      <Table.Th>Amount</Table.Th>
+                      <Table.Th>Status</Table.Th>
+                      <Table.Th>Booked Date</Table.Th>
                     </Table.Tr>
-                  ))}
-                </Table.Tbody>
-              </Table>
-              {tableRecords.recentBookings?.length === 0 && (
-                <Text ta="center" c="dimmed" py="34px" size="sm">
-                  <div className="flex justify-center mb-2">
-                    <IconTicket size={25} />
-                  </div>
-                  No Recent Bookings
-                </Text>
-              )}
-            </div>
-          </Card>
+                  </Table.Thead>
+                  <Table.Tbody>
+                    {tableRecords.recentBookings?.map((booking) => (
+                      <Table.Tr key={booking.id}>
+                        <Table.Td>
+                          <div>
+                            <Text size="sm" fw={500}>
+                              {booking.customerName}
+                            </Text>
+                            <Text size="xs" c="dimmed">
+                              {booking.customerEmail}
+                            </Text>
+                          </div>
+                        </Table.Td>
+                        <Table.Td>{booking.movieTitle}</Table.Td>
+                        <Table.Td>
+                          <div>
+                            <Text size="sm" fw={500}>
+                              {new Date(booking.showDate).toLocaleDateString()}
+                            </Text>
+                            <Text size="xs" c="dimmed">
+                              {booking.showTime}
+                            </Text>
+                          </div>
+                        </Table.Td>
+                        <Table.Td>{booking.seatList}</Table.Td>
+                        <Table.Td>${booking.totalAmount}</Table.Td>
+                        <Table.Td>
+                          {" "}
+                          <Text size="sm">
+                            {new Date(
+                              booking.bookingDate || "",
+                            ).toLocaleDateString()}
+                          </Text>
+                          <Text c="dimmed" size="xs">
+                            {dayjs(booking.bookingDate).format("hh:mm A")}
+                            {/* {new Date(
+                              booking.bookingDate || "",
+                            ).toLocaleTimeString()} */}
+                          </Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge
+                            color={getStatusColor(booking.status)}
+                            variant="light"
+                          >
+                            {booking.status}
+                          </Badge>
+                        </Table.Td>
+                      </Table.Tr>
+                    ))}
+                  </Table.Tbody>
+                </Table>
+                {tableRecords.recentBookings?.length === 0 && (
+                  <Text ta="center" c="dimmed" py="34px" size="sm">
+                    <div className="flex justify-center mb-2">
+                      <IconTicket size={25} />
+                    </div>
+                    No Recent Bookings
+                  </Text>
+                )}
+              </div>
+            </Card>
+          </Skeleton>
         </Grid.Col>
 
         {hasAccess(permissionList.readReport) && (

@@ -27,7 +27,7 @@ interface TempSeat {
   userId: string;
   // expiresAt: number; // timestamp when the 2 minutes expire
 }
-const socket = io("http://localhost:3000");
+export const socket = io("http://localhost:3000");
 const SeatLayoutViewer = ({
   layout,
   selectedInfo,

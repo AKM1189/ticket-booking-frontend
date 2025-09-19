@@ -262,7 +262,6 @@ const MovieManagement = ({
   const handleSubmit = async (values: typeof form.values) => {
     const result = form.validate();
     if (result.hasErrors) console.log("Form validation errors:", result.errors);
-    // showLoading(true);
     // setImageUploading(true);
     const data: MovieInputType = {
       ...values,
@@ -274,6 +273,8 @@ const MovieManagement = ({
     };
 
     if (editingMovie) {
+      showLoading(true);
+
       updateMovieMutation(
         { data, id: editingMovie.id },
         {
@@ -290,6 +291,8 @@ const MovieManagement = ({
         },
       );
     } else {
+      showLoading(true);
+
       addMovieMutation(
         { data },
         {
@@ -409,7 +412,7 @@ const MovieManagement = ({
         <div className="overflow-scroll">
           {isPending ? (
             <div className="h-full min-h-[200px] flex justify-center items-center">
-              <Loader size={"md"} />
+              <Loader type="dots" size={"md"} />
             </div>
           ) : (
             <div>

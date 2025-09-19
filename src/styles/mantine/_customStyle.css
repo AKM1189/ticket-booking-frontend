@@ -58,6 +58,14 @@
   padding: 3px 0 3px 3px !important;
   border-color: var(--color-surface-hover) !important;
   border-radius: 7px !important;
+  background-color: var(--color-surface-hover) !important;
+  color: var(--color-text) !important;
+}
+
+.noti-dropdown {
+  padding: 3px 0 3px 3px !important;
+  border-color: var(--color-surface-hover) !important;
+  border-radius: 7px !important;
   background-color: var(--color-surface) !important;
   color: var(--color-text) !important;
 }

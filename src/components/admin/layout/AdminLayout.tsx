@@ -54,7 +54,7 @@ const adminNavigationItems = [
 const staffNavigationItems = [
   { icon: IconDashboard, label: "Dashboard", value: AdminTabType.DASHBOARD },
   { icon: IconTicket, label: "Bookings", value: AdminTabType.BOOKINGS },
-  { icon: IconMovie, label: "Movies", value: AdminTabType.MOVIES },
+  // { icon: IconMovie, label: "Movies", value: AdminTabType.MOVIES },
   { icon: IconCalendar, label: "Schedules", value: AdminTabType.SCHEDULES },
 ];
 

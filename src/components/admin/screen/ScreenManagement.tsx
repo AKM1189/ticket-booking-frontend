@@ -114,7 +114,7 @@ const ScreenManagement = () => {
   useEffect(() => {
     form.setFieldValue("capacity", rowTotal * form.values.cols);
     form.setFieldValue("rows", rowTotal);
-  }, [rowTotal, form.values.cols]);
+  }, [form.values.rows, rowTotal, form.values.cols]);
 
   useEffect(() => {
     let rowLetter: string[] = [];
@@ -149,6 +149,8 @@ const ScreenManagement = () => {
   const handleEditTheater = (screen: ScreenType) => {
     setEditingScreen(screen);
     if (screen) {
+      setRowTotal(screen?.rows);
+
       form.setValues({
         name: screen.name,
         theatreId: String(screen?.theatre?.id),
@@ -171,22 +173,19 @@ const ScreenManagement = () => {
           seatList: item.seatList,
         });
       });
-      setRowTotal(screen?.rows);
       setSelectedTypeList(typeList);
     }
     open();
   };
 
   const handleSubmit = (values: typeof form.values) => {
-    showLoading(true);
-
     let totalRows = 0;
 
     selectedTypeList.map((item) => {
       totalRows += item.seatList.length;
     });
 
-    if (totalRows !== rowLetters.length) {
+    if (form.values.rows !== rowLetters.length) {
       form.setFieldError(
         "seatTypes",
         "Some rows are missing in type assignment.",
@@ -218,6 +217,7 @@ const ScreenManagement = () => {
       seatTypes: selectedTypeList,
     };
     if (editingScreen) {
+      showLoading(true);
       updateScreenMutation(
         { data: body, id: editingScreen?.id },
         {
@@ -232,6 +232,7 @@ const ScreenManagement = () => {
         },
       );
     } else {
+      showLoading(true);
       addScreenMutation(
         { data: body },
         {
@@ -320,7 +321,7 @@ const ScreenManagement = () => {
         <div className="overflow-x-scroll min-h-[200px]">
           {isPending ? (
             <div className="h-full min-h-[200px] flex justify-center items-center">
-              <Loader size={"md"} />
+              <Loader type="dots" size={"md"} />
             </div>
           ) : (
             <div>
@@ -376,7 +377,7 @@ const ScreenManagement = () => {
                         )}
                       </Table.Td>
 
-                      <Table.Td>{screen.multiplier}</Table.Td>
+                      <Table.Td>{screen.multiplier?.toFixed(2)}</Table.Td>
 
                       <Table.Td>
                         <Badge
@@ -466,7 +467,9 @@ const ScreenManagement = () => {
             layout={{
               rows: editingScreen?.rows,
               seatsPerRow: editingScreen?.cols,
-              disabledSeats: editingScreen?.disabledSeats,
+              disabledSeats: editingScreen?.disabledSeats?.map((seat) =>
+                seat?.trim(),
+              ),
               aisles: editingScreen?.aisles.map((aisle: any) =>
                 parseInt(aisle),
               ),

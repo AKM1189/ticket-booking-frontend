@@ -1,6 +1,6 @@
 import { inputStyle, modalStyle } from "@/constants/styleConstants";
 import { useAuthStore } from "@/store/authStore";
-import type { Role } from "@/types/AuthType";
+import { Role } from "@/types/AuthType";
 import {
   Avatar,
   Button,
@@ -88,6 +88,7 @@ export type ProfileInputType = {
   role: Role;
   image: File | null;
   phoneNo: string;
+  theatre: string;
 };
 
 const UpdateProfile = ({ openProfileModal, setOpenProfileModal }) => {
@@ -105,6 +106,7 @@ const UpdateProfile = ({ openProfileModal, setOpenProfileModal }) => {
       role: user?.role as Role,
       image: null,
       phoneNo: user?.phoneNo as string,
+      theatre: `${user?.theatre?.name} (${user?.theatre?.location})`,
     },
     validate: {
       name: (value) => (!value ? "Please enter your name" : null),
@@ -122,6 +124,7 @@ const UpdateProfile = ({ openProfileModal, setOpenProfileModal }) => {
         role: user.role,
         image: null,
         phoneNo: user.phoneNo,
+        theatre: `${user.theatre?.name} (${user.theatre?.location})`,
       });
       setImagePreivew(user.image?.url || null);
     }
@@ -238,6 +241,17 @@ const UpdateProfile = ({ openProfileModal, setOpenProfileModal }) => {
                 {...form.getInputProps("role")}
               />
             </Grid.Col>
+
+            {user?.role === Role.staff && (
+              <Grid.Col>
+                <TextInput
+                  label="Theatre"
+                  disabled
+                  classNames={inputStyle}
+                  {...form.getInputProps("theatre")}
+                />
+              </Grid.Col>
+            )}
           </Grid>
           <Group justify="end">
             <Button

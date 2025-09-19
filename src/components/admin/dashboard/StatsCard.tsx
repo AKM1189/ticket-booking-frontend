@@ -1,4 +1,4 @@
-import { Card, Text, Group, ThemeIcon } from "@mantine/core";
+import { Card, Text, Group, ThemeIcon, Skeleton } from "@mantine/core";
 import { IconTrendingUp, IconTrendingDown } from "@tabler/icons-react";
 import "@/styles/css/tableStyle.css";
 
@@ -11,6 +11,7 @@ interface StatsCardProps {
     isPositive: boolean;
   };
   color?: string;
+  isLoading: boolean;
 }
 
 const StatsCard = ({
@@ -19,28 +20,35 @@ const StatsCard = ({
   icon,
   trend,
   color = "blue",
+  isLoading,
 }: StatsCardProps) => {
   return (
-    <Card
-      shadow="sm"
-      padding="lg"
-      radius="md"
-      withBorder
-      className="!bg-surface !text-text !border-0"
-    >
-      <Group justify="space-between" mb="xs">
-        <Text size="sm" c="dimmed" fw={500} className="!text-blueGray">
-          {title}
-        </Text>
-        <ThemeIcon color={color} variant="light" size="lg">
-          {icon}
-        </ThemeIcon>
-      </Group>
+    <div>
+      {isLoading ? (
+        <Skeleton visible={true} h={127} radius={"md"} animate />
+      ) : (
+        <Card
+          shadow="sm"
+          padding="lg"
+          radius="md"
+          withBorder
+          className="!bg-surface !text-text !border-0"
+        >
+          <Group justify="space-between" mb="xs">
+            <Text size="sm" c="dimmed" fw={500} className="!text-blueGray">
+              {title}
+            </Text>
+            <ThemeIcon color={color} variant="light" size="lg">
+              {icon}
+            </ThemeIcon>
+          </Group>
 
-      <Text size="xl" fw={700} mb="xs">
-        {value}
-      </Text>
-    </Card>
+          <Text size="xl" fw={700} mb="xs">
+            {value}
+          </Text>
+        </Card>
+      )}
+    </div>
   );
 };
 

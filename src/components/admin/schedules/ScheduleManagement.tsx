@@ -222,7 +222,11 @@ const ScheduleManagement = ({ openScheduleModal, setOpenScheduleModal }) => {
     const selectedScreen = screens.find(
       (s) => s.id === parseInt(values.screenId),
     );
-
+    let availableSeats = selectedScreen?.capacity || 0;
+    if (selectedScreen?.capacity && selectedScreen?.disabledSeats) {
+      availableSeats =
+        selectedScreen?.capacity - selectedScreen?.disabledSeats?.length;
+    }
     const scheduleData = {
       ...values,
       movieId: parseInt(values.movieId),
@@ -230,7 +234,7 @@ const ScheduleManagement = ({ openScheduleModal, setOpenScheduleModal }) => {
       screenId: parseInt(values.screenId),
       isActive: values.isActive,
       multiplier: parseFloat(values.multiplier.toString()).toFixed(2),
-      availableSeats: selectedScreen?.capacity || 0,
+      availableSeats: availableSeats,
       totalSeats: selectedScreen?.capacity || 0,
     };
 
@@ -341,7 +345,7 @@ const ScheduleManagement = ({ openScheduleModal, setOpenScheduleModal }) => {
         <div className="overflow-scroll">
           {isPending ? (
             <div className="h-full min-h-[200px] flex justify-center items-center">
-              <Loader size={"md"} />
+              <Loader type="dots" size={"md"} />
             </div>
           ) : (
             <div>
@@ -353,10 +357,10 @@ const ScheduleManagement = ({ openScheduleModal, setOpenScheduleModal }) => {
                     <Table.Th>Screen</Table.Th>
                     <Table.Th>Show Date</Table.Th>
                     <Table.Th>Show Time</Table.Th>
-                    <Table.Th>Price</Table.Th>
+                    <Table.Th>Multiplier</Table.Th>
                     <Table.Th>Occupancy</Table.Th>
                     <Table.Th>Status</Table.Th>
-                    <Table.Th>Actions</Table.Th>
+                    <Table.Th miw={120}>Actions</Table.Th>
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
@@ -385,7 +389,7 @@ const ScheduleManagement = ({ openScheduleModal, setOpenScheduleModal }) => {
                       <Table.Td>
                         <Text size="sm">{schedule.showTime}</Text>
                       </Table.Td>
-                      <Table.Td>${schedule.multiplier}</Table.Td>
+                      <Table.Td>{schedule.multiplier}</Table.Td>
                       <Table.Td>
                         <Group gap="xs">
                           <Badge
@@ -429,37 +433,42 @@ const ScheduleManagement = ({ openScheduleModal, setOpenScheduleModal }) => {
                           >
                             <IconEye size={16} />
                           </ActionIcon>
-                          <ActionIcon
-                            variant="light"
-                            disabled={
-                              disableActions(schedule) ||
-                              !hasAccess(permissionList.updateSchedule)
-                            }
-                            className=""
-                            color="orange"
-                            onClick={() => handleEditSchedule(schedule)}
-                          >
-                            <IconEdit size={16} />
-                          </ActionIcon>
-                          <ActionIcon
-                            variant="light"
-                            color="red"
-                            disabled={
-                              disableActions(schedule) ||
-                              !hasAccess(permissionList.deleteSchedule)
-                            }
-                            onClick={() =>
-                              openConfirm({
-                                title: "Delete Schedule",
-                                message:
-                                  "Are you sure you want to delete this schedule?",
-                                onConfirm: () =>
-                                  handleDeleteSchedule(schedule.id),
-                              })
-                            }
-                          >
-                            <IconTrash size={16} />
-                          </ActionIcon>
+
+                          {hasAccess(permissionList.updateSchedule) && (
+                            <Group>
+                              <ActionIcon
+                                variant="light"
+                                disabled={
+                                  disableActions(schedule) ||
+                                  !hasAccess(permissionList.updateSchedule)
+                                }
+                                className=""
+                                color="orange"
+                                onClick={() => handleEditSchedule(schedule)}
+                              >
+                                <IconEdit size={16} />
+                              </ActionIcon>
+                              <ActionIcon
+                                variant="light"
+                                color="red"
+                                disabled={
+                                  disableActions(schedule) ||
+                                  !hasAccess(permissionList.deleteSchedule)
+                                }
+                                onClick={() =>
+                                  openConfirm({
+                                    title: "Delete Schedule",
+                                    message:
+                                      "Are you sure you want to delete this schedule?",
+                                    onConfirm: () =>
+                                      handleDeleteSchedule(schedule.id),
+                                  })
+                                }
+                              >
+                                <IconTrash size={16} />
+                              </ActionIcon>
+                            </Group>
+                          )}
                         </Group>
                       </Table.Td>
                     </Table.Tr>
@@ -658,7 +667,9 @@ const ScheduleManagement = ({ openScheduleModal, setOpenScheduleModal }) => {
             layout={{
               rows: selectedSchedule?.screen?.rows,
               seatsPerRow: selectedSchedule?.screen?.cols,
-              disabledSeats: selectedSchedule?.screen?.disabledSeats,
+              disabledSeats: selectedSchedule?.screen?.disabledSeats?.map(
+                (seat) => seat?.trim(),
+              ),
               aisles: selectedSchedule?.screen?.aisles.map((aisle: any) =>
                 parseInt(aisle),
               ),

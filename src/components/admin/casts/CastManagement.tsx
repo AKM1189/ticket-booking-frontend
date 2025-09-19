@@ -125,7 +125,7 @@ const CastManagement = () => {
           <div className="overflow-scroll">
             {isPending ? (
               <div className="h-full min-h-[200px] flex justify-center items-center">
-                <Loader size={"md"} />
+                <Loader type="dots" size={"md"} />
               </div>
             ) : (
               <div>
