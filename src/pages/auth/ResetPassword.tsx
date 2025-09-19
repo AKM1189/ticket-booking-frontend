@@ -1,5 +1,5 @@
 import PrimaryButton from "../../ui/button/PrimaryButton";
-import { TextInput, PasswordInput } from "@mantine/core";
+import { PasswordInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { twMerge } from "tailwind-merge";
 import { zodResolver } from "mantine-form-zod-resolver";
@@ -66,9 +66,9 @@ const ResetPassword = () => {
             <PrimaryButton className="mt-5" type="submit" value="Submit" />
           </form>
           <div className="flex justify-between">
-            <NavLink to={"/" + routes.auth.forgotPassword}>Resend OTP</NavLink>
+            <NavLink to={routes.auth.forgotPassword}>Resend OTP</NavLink>
             <NavLink
-              to={"/" + routes.auth.login}
+              to={routes.auth.login}
               className={"text-blue-500 underline"}
             >
               Go To Login

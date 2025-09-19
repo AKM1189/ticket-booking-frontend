@@ -1,17 +1,84 @@
+:root,
+[data-theme="dark"] {
+  --background: #0a1b3a; /* Lighter navy blue instead of near-black */
+  --surface: #10265a; /* Softer deep blue */
+  --primary: #2a5adf; /* Brighter blue */
+  --primary-hover: #244fcc; /* Slightly lighter hover blue */
+  --surface-hover: #2e3e75; /* More visible blue hover */
+  --surface-light: #344b94; /* Soft bluish light surface */
+  --secondary: #8c6dff; /* Lightened secondary purple */
+  --accent: #ffd54f; /* Softer warm yellow */
+  --text: #f0f4ff; /* Light bluish-white for better readability */
+  --muted: #aab4c8; /* Softer muted gray-blue */
+  --coolGray: #9aa3b8; /* Cooler light gray */
+  --notification: #12357a; /* Medium blue for notifications */
+  --lightGray: #f5f7fa; /* Almost white */
+  --darkGray: #73767e; /* Lightened dark gray */
+  --blueGray: #c2d1e8; /* Softer blue-gray */
+  --coolBlue: #1a274a; /* Medium navy blue */
+
+  --disabled: #656565;
+
+  --standard: #3f95ff;
+  --premium: #00d273;
+  --vip: #ff8f44;
+  --booked: #2a5adf;
+  --temp: #7192c3;
+
+  --notiBorder: #465893; /* Medium navy blue */
+}
+
+[data-theme="light"] {
+  --background: #ffffff; /* pure white background */
+  --surface: #f5f5f5; /* light gray surfaces/cards */
+  --primary: #1a43bf; /* keep your brand blue */
+  --primary-hover: #153cb0; /* slightly darker hover */
+  --surface-hover: #e5e5e5; /* hover on cards/buttons */
+  --surface-light: #f0f0f0; /* subtle light surface variant */
+  --secondary: #7c4dff; /* secondary color */
+  --accent: #ffc107; /* accent color */
+  --text: #5b5b5b; /* main text in dark gray/black */
+  --muted: #6b7280; /* muted text / labels */
+  --coolGray: #9ca3af; /* general gray tone */
+  --notification: #1a43bf; /* notifications using primary color */
+  --lightGray: #ededed; /* very light gray for borders or dividers */
+  --darkGray: #4b5563; /* darker gray for subtle contrast */
+  --blueGray: #56677b; /* optional blue-gray accents */
+  --coolBlue: #e5e7eb; /* very light cool tone for backgrounds if needed */
+  --disabled: #cecece;
+
+  --standard: var(--color-primary);
+  --premium: #00894b;
+  --vip: #913a00;
+  --booked: #d2d2d2;
+  --temp: #a4a4a4;
+
+  --notiBorder: rgb(119, 119, 119); /* Medium navy blue */
+}
+
 @theme {
-  --color-background: #00072d;
-  --color-surface: #051650;
-  --color-primary: #1a43bf;
-  --color-primary-hover: #153cb0;
-  --color-surface-hover: #213269;
-  --color-surface-light: #243c87;
-  --color-secondary: #7c4dff;
-  --color-accent: #ffc107;
-  --color-text: #e0e0e0;
-  --color-muted: #90a4ae;
-  --color-coolGray: #8c92ac;
-  --color-notification: #0a2472;
-  --color-lightGray: #ededed;
-  --color-darkGray: #808080;
-  --color-blueGray: #b7c9e2;
+  --color-selected-text: #e0e0e0;
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-surface-hover: var(--surface-hover);
+  --color-surface-light: var(--surface-light);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-coolGray: var(--coolGray);
+  --color-notification: var(--notification);
+  --color-lightGray: var(--lightGray);
+  --color-darkGray: var(--darkGray);
+  --color-blueGray: var(--blueGray);
+  --color-coolBlue: var(--coolBlue);
+  --color-standard: var(--standard);
+  --color-premium: var(--premium);
+  --color-vip: var(--vip);
+  --color-booked: var(--booked);
+  --color-disabled: var(--disabled);
+  --color-temp: var(--temp);
+  --color-notiBorder: var(--notiBorder);
 }

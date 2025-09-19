@@ -1,8 +1,8 @@
 import { useForm } from "@mantine/form";
 import { useVerifyOtpMutation } from "../../api/mutation/authMutation";
-import { forgotPasswordSchema, otpSchema } from "../../schema/AuthSchema";
+import { otpSchema } from "../../schema/AuthSchema";
 import { zodResolver } from "mantine-form-zod-resolver";
-import { PinInput, TextInput } from "@mantine/core";
+import { PinInput } from "@mantine/core";
 import PrimaryButton from "../../ui/button/PrimaryButton";
 import { NavLink } from "react-router";
 import { routes } from "../../routes";
@@ -58,7 +58,7 @@ const OTP = () => {
           </form>
 
           <div className="text-center text-blue-500 underline">
-            <NavLink to={"/" + routes.auth.login}>Back To Login</NavLink>
+            <NavLink to={routes.auth.login}>Back To Login</NavLink>
           </div>
         </div>
       </div>

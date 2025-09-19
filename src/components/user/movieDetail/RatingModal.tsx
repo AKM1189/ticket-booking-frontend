@@ -1,8 +1,7 @@
-import { Button, Modal, NumberInput, Textarea, TextInput } from "@mantine/core";
+import { Button, Modal, NumberInput, Textarea } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
-import { twMerge } from "tailwind-merge";
-import { RatingIcon } from "@/assets/svgs";
+import { IconStarFilled } from "@tabler/icons-react";
 
 const RatingModal = () => {
   const [opened, { open, close }] = useDisclosure(false);
@@ -30,9 +29,12 @@ const RatingModal = () => {
         title={<div className="text-xl font-semibold">Review and Rating</div>}
         centered
       >
-        <form action="">
+        <form
+          action=""
+          onSubmit={form.onSubmit((values) => console.log("review", values))}
+        >
           <NumberInput
-            label="Rating"
+            label="Rating (1-10)"
             // description="Input description"
             // placeholder="Enter Rating"
             min={1}
@@ -44,7 +46,7 @@ const RatingModal = () => {
               label: "!mb-2 !text-text",
               control: "!text-text hover:!bg-surface-hover !border-0",
             }}
-            leftSection={<RatingIcon color="var(--color-accent)" />}
+            leftSection={<IconStarFilled color="var(--color-accent)" />}
           />
 
           <Textarea

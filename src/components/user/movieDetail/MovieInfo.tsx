@@ -1,13 +1,17 @@
-import { ClockIcon, DateIcon, RatingIcon } from "@/assets/svgs";
-import SubtitleIcon from "@/assets/svgs/SubtitleIcon";
-import VideoIcon from "@/assets/svgs/VideoIcon";
 import PlayTrailer from "@/components/user/movies/PlayTrailer";
 import type { MovieDetailType } from "@/types/MovieTypes";
 import { Button } from "@mantine/core";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import RatingModal from "./RatingModal";
 import { NavLink } from "react-router";
 import { routes } from "@/routes";
+import {
+  IconBadgeCc,
+  IconBrandParsinta,
+  IconCalendar,
+  IconClock,
+  IconStarFilled,
+} from "@tabler/icons-react";
 
 interface MovieInfoType {
   movie: MovieDetailType;
@@ -35,41 +39,49 @@ const MovieInfo = ({ movie, isTicketPlan = false }: MovieInfoType) => {
                 className="absolute top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] cursor-pointer"
                 onClick={() => setShowTrailer(true)}
               >
-                <VideoIcon color="var(--color-blueGray)" size={100} />
+                <IconBrandParsinta color="var(--color-blueGray)" size={100} />
               </div>
             </div>
             <div className="ms-10">
               <div className="text-4xl font-bold mb-5">{movie.name}</div>
               <div className="text-blueGray flex flex-col gap-5">
                 <div>
-                  {movie.languages.map((item, index) => (
-                    <span key={item}>
-                      {item} {index !== movie.languages.length - 1 && ","}{" "}
-                    </span>
-                  ))}
+                  {useMemo(
+                    () =>
+                      movie.languages.map((item, index) => (
+                        <span key={item}>
+                          {item} {index !== movie.languages.length - 1 && ","}{" "}
+                        </span>
+                      )),
+                    [movie.languages],
+                  )}
                 </div>
                 <div className="flex gap-3">
-                  {movie.genres.map((item, index) => (
-                    <span
-                      key={item.id}
-                      className="px-4 py-2 border border-surface-hover rounded-full"
-                    >
-                      {item.label}
-                      {/* {index !== movie.genres.length - 1 && "|"}{" "} */}
-                    </span>
-                  ))}
+                  {useMemo(
+                    () =>
+                      movie.genres.map((item) => (
+                        <span
+                          key={item.id}
+                          className="px-4 py-2 border border-surface-hover rounded-full"
+                        >
+                          {item.label}
+                          {/* {index !== movie.genres.length - 1 && "|"}{" "} */}
+                        </span>
+                      )),
+                    [movie.genres],
+                  )}
                 </div>
                 <div className="flex gap-5 items-center">
                   <span className="flex items-center gap-2">
-                    <DateIcon color={"var(--color-blueGray)"} />
+                    <IconCalendar color={"var(--color-blueGray)"} />
                     <span className="mt-1">{movie.releaseDate}</span>
                   </span>
                   <span className="flex items-center gap-2">
-                    <ClockIcon color={"var(--color-blueGray)"} />
+                    <IconClock color={"var(--color-blueGray)"} />
                     <span className="mt-1">{movie.duration}</span>
                   </span>
                   <span className="flex items-center gap-2">
-                    <SubtitleIcon color={"var(--color-blueGray)"} />
+                    <IconBadgeCc color={"var(--color-blueGray)"} />
                     <span className="mt-1">{movie.subtitle}</span>
                   </span>
                 </div>
@@ -83,7 +95,10 @@ const MovieInfo = ({ movie, isTicketPlan = false }: MovieInfoType) => {
                 <div>
                   <span className="text-xl flex items-center gap-3">
                     {" "}
-                    <RatingIcon color={"var(--color-accent"} size={30} />{" "}
+                    <IconStarFilled
+                      color={"var(--color-accent"}
+                      size={30}
+                    />{" "}
                     {movie.rating}
                   </span>
                   <div className="mt-3 text-sm text-center">Users Rating</div>
@@ -91,7 +106,7 @@ const MovieInfo = ({ movie, isTicketPlan = false }: MovieInfoType) => {
                 <div>
                   <span className="text-xl flex items-center gap-3">
                     {" "}
-                    <RatingIcon color={"var(--color-muted"} size={30} /> {0}
+                    <IconStarFilled color={"var(--color-muted"} size={30} /> {0}
                   </span>
                   <RatingModal />
                 </div>

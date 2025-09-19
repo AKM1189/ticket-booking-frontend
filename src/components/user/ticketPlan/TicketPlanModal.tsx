@@ -1,9 +1,9 @@
-import { ClockIcon, SubtitleIcon, SeatIcon } from "@/assets/svgs";
+import { SeatIcon } from "@/assets/svgs/SeatIcon";
 import { routes } from "@/routes";
 import type { MovieDetailType } from "@/types/MovieTypes";
 import { Button, Modal } from "@mantine/core";
-import React from "react";
-import { NavLink, useNavigate } from "react-router";
+import { IconBadgeCc, IconClock } from "@tabler/icons-react";
+import { useNavigate } from "react-router";
 
 type TicketPlanModal = {
   movie: MovieDetailType;
@@ -34,11 +34,11 @@ const TicketPlanModal = ({ movie, opened, close }: TicketPlanModal) => {
             <div className="flex flex-col gap-5">
               <div className="flex gap-5 mt-5 text-sm">
                 <div className="flex gap-2 items-center">
-                  <ClockIcon color={"var(--color-blueGray)"} size={20} />2 hrs
+                  <IconClock color={"var(--color-blueGray)"} size={20} />2 hrs
                   50 min
                 </div>
                 <div className="flex gap-2 items-center">
-                  <SubtitleIcon color={"var(--color-blueGray)"} size={20} />
+                  <IconBadgeCc color={"var(--color-blueGray)"} size={20} />
                   English
                 </div>
               </div>

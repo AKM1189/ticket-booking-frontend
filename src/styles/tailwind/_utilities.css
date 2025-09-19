@@ -3,7 +3,7 @@
 }
 
 .login-input {
-  @apply w-full h-12 bg-transparent outline-0 py-2 border-b-2 border-coolGray;
+  @apply w-full h-12 bg-transparent !text-text outline-0 py-2 border-b-2 border-coolGray disabled:!text-lightGray disabled:!bg-surface-hover;
 }
 
 .primary-button {
@@ -16,4 +16,32 @@
 
 .title {
   @apply text-xl font-semibold uppercase;
+}
+
+.heading1 {
+  @apply text-7xl md:text-lg uppercase;
+}
+
+.heading2 {
+  @apply text-5xl md:text-base uppercase;
+}
+
+.paragraph {
+  @apply text-sm md:text-base;
+}
+
+.dashboard-btn {
+  @apply !text-sm !h-[38px];
+}
+
+.dashboard-bg {
+  @apply !bg-surface !border-0 !text-muted;
+}
+
+.dashboard-input {
+  @apply !bg-surface !text-text !border-surface-hover;
+}
+
+.input-control {
+  @apply !text-text hover:!bg-surface-hover !border-0;
 }

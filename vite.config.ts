@@ -1,29 +1,60 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
-// import path from "path";
 import tsConfigPaths from "vite-tsconfig-paths";
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss(), tsConfigPaths()],
   server: {
     open: true,
     port: 5178,
     cors: true,
-    proxy: {
-      "/api": {
-        target: "http://localhost:3000",
-        changeOrigin: true,
-        secure: false,
-      },
+    host: true,
+    watch: {
+      ignored: ["**/node_modules/**", "**/dist/**", "**/.git/**"],
     },
   },
-  // base: "./",
+  base: "/",
   resolve: {
     alias: {
-      "@/*": "src/*",
+      "@": "/src", // ✅ simpler alias
       "@tabler/icons-react": "@tabler/icons-react/dist/esm/icons/index.mjs",
     },
+  },
+  optimizeDeps: {
+    include: [
+      // Core
+      "react",
+      "react-dom",
+      "react-router-dom",
+
+      // UI + Styling
+      "@mantine/core",
+      "@mantine/hooks",
+      "@mantine/dates",
+      "@mantine/modals",
+      "@mantine/notifications",
+      "@mantine/form",
+      "@mantine/carousel",
+      "@emotion/react",
+      "@tabler/icons-react",
+
+      // State & Data
+      "zustand",
+      "@tanstack/react-query",
+      "axios",
+      "zod",
+
+      // Utilities
+      "dayjs",
+
+      // Charts / media
+      "recharts",
+      "react-youtube",
+      "react-icons",
+    ],
+  },
+  esbuild: {
+    sourcemap: false, // ✅ disable dev sourcemaps
   },
 });

@@ -8,7 +8,9 @@ const Home = () => {
 
   return (
     <div className="">
-      <HomeCarousel />
+      <div className="relative w-full min-h-[600px] bg-surface">
+        <HomeCarousel />
+      </div>
       <div className="sm:px-[50px] xl:px-[150px]">
         <div className="relative h-[120px] bg-background flex flex-col justify-center ">
           <MovieSearchCard

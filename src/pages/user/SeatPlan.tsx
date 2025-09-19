@@ -1,12 +1,9 @@
-import { ReverseSeatIcon } from "@/assets/svgs";
-import React, { useState } from "react";
+import { useState } from "react";
 import "@/styles/css/seatStyle.css";
-import { twMerge } from "tailwind-merge";
 import SeatLists from "@/components/user/ticketPlan/SeatList";
-import { Button, Tooltip } from "@mantine/core";
-import { NavLink, useNavigate, useParams } from "react-router";
-import dayjs from "dayjs";
-import SeatPlanHeader from "@/components/user/seatPlan/seatPlanHeader";
+import { Button } from "@mantine/core";
+import { NavLink, useParams } from "react-router";
+import SeatPlanHeader from "@/components/user/seatPlan/SeatPlanHeader";
 import { routes } from "@/routes";
 
 export interface Seat {
@@ -19,19 +16,22 @@ const SeatPlan = () => {
 
   const movie = {
     id: 1,
-    name: "ALONE",
+    title: "ALONE",
+    description: "adfasdf",
     duration: "2 hrs 50 mins",
     genres: [
       { id: 2, label: "Adventure" },
       { id: 4, label: "Action" },
     ],
-    languages: ["English", "Tamil", "Hindi"],
+    language: ["English"],
+    experience: "2d",
     subtitle: ["Myanmar"],
     releaseDate: "8 Nov, 2025",
     rating: "8.0",
     status: "Now Showing",
-    posterUrl: "/movie03.jpg",
+    poster: { id: 1, url: "/movie03.jpg" },
     trailerId: "o2T2V1jrLY0",
+    photos: [],
     casts: [
       {
         id: 1,
@@ -159,6 +159,12 @@ const SeatPlan = () => {
     }
   };
 
+  const getTotalPrice = () => {
+    return seatGrid
+      .flat()
+      .filter((seat) => selectedSeats.includes(seat.id))
+      .reduce((total, seat) => total + seat.price, 0);
+  };
   const numGroups = 3;
 
   const groupSize = Math.ceil(seatGrid.length / numGroups);
@@ -249,7 +255,9 @@ const SeatPlan = () => {
 
           <div>
             <h4 className="mb-2"> Total Price</h4>
-            <div className="text-2xl text-accent font-bold">15000 Ks</div>
+            <div className="text-2xl text-accent font-bold">
+              {getTotalPrice()} Ks
+            </div>
           </div>
 
           <div>

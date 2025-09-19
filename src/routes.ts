@@ -1,6 +1,9 @@
 export const routes = {
   admin: {
-    home: "/dashboard",
+    home: "/admin",
+    dashboard: "/admin/dashboard",
+    demo: "/admin-demo",
+    unauthorized: "/unauthorized",
   },
   user: {
     home: "/",
@@ -13,11 +16,11 @@ export const routes = {
     checkout: "checkout",
   },
   auth: {
-    login: "login",
-    signup: "signup",
-    forgotPassword: "forgot-password",
-    otp: "otp",
-    resetPassword: "reset-password",
+    login: "/login",
+    signup: "/signup",
+    forgotPassword: "/forgot-password",
+    otp: "/otp",
+    resetPassword: "/reset-password",
   },
   notFound: "/not-found",
 };

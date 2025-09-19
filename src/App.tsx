@@ -6,8 +6,11 @@ import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 import "./App.css";
 
-import { AuthRoutes, UserRoutes } from "@/routeComponents";
+import { UserRoutes, AdminRoutes } from "@/routeComponents";
 import { customMantineTheme, MantineComponentOverrides } from "@/styles";
+import AuthRoutes from "./routeComponents/AuthRoutes";
+import LoadingProvider from "./LoadingProvider";
+import ConfirmModal from "./components/admin/ConfirmModal";
 
 function App() {
   const queryClient = new QueryClient();
@@ -15,15 +18,19 @@ function App() {
     ...customMantineTheme,
     ...MantineComponentOverrides,
   });
+
   return (
     <QueryClientProvider client={queryClient}>
       <MantineProvider theme={theme}>
         <Notifications />
-        <BrowserRouter>
-          {/* <AuthRoutes /> */}
-          <UserRoutes />
-          {/* <AuthRoutes /> */}
-        </BrowserRouter>
+        <LoadingProvider>
+          <ConfirmModal />
+          <BrowserRouter>
+            <UserRoutes />
+            <AdminRoutes />
+            <AuthRoutes />
+          </BrowserRouter>
+        </LoadingProvider>
       </MantineProvider>
     </QueryClientProvider>
   );

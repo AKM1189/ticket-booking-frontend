@@ -1,10 +1,10 @@
-import {
-  FacebookIcon,
-  GoogleIcon,
-  TwitterIcon,
-  InstagramIcon,
-} from "@/assets/svgs";
 import { Button } from "@mantine/core";
+import {
+  IconBrandFacebook,
+  IconBrandGoogle,
+  IconBrandInstagram,
+  IconBrandTwitter,
+} from "@tabler/icons-react";
 
 const Footer = () => {
   return (
@@ -16,16 +16,16 @@ const Footer = () => {
         </span>
         <span className="flex gap-3">
           <span className="footer-icon">
-            <FacebookIcon color="var(--color-text)" />
+            <IconBrandFacebook color="var(--color-text)" />
           </span>
           <span className="footer-icon">
-            <TwitterIcon color="var(--color-text)" />
+            <IconBrandTwitter color="var(--color-text)" />
           </span>
           <span className="footer-icon">
-            <GoogleIcon color="var(--color-text)" />
+            <IconBrandGoogle color="var(--color-text)" />
           </span>
           <span className="footer-icon">
-            <InstagramIcon color="var(--color-text)" />
+            <IconBrandInstagram color="var(--color-text)" />
           </span>
         </span>
       </div>

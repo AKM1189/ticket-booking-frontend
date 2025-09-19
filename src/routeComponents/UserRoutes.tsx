@@ -5,10 +5,11 @@ import { Home, About, Movies } from "@/pages";
 import MovieDetail from "@/pages/user/MovieDetail";
 import TicketPlan from "@/pages/user/TicketPlan";
 import SeatPlan from "@/pages/user/SeatPlan";
-import { Login, Signup, ForgotPassword, OTP, ResetPassword } from "@/pages";
-import AuthLayout from "@/pages/auth/AuthLayout";
 import Contact from "@/pages/user/Contact";
 import Checkout from "@/pages/user/Checkout";
+import AdminAccessDemo from "@/components/AdminAccessDemo";
+import ProtectedRoute from "@/components/protectedRoutes/ProtectedRoute";
+import { Role } from "@/types/AuthType";
 
 const UserRoutes = () => {
   return (
@@ -24,19 +25,16 @@ const UserRoutes = () => {
           <Route path=":id" element={<MovieDetail />} />
         </Route>
         <Route
-          path={routes.user.ticketPlan + "/:id"}
-          element={<TicketPlan />}
-        />
-        <Route path={routes.user.seatPlan + "/:id"} element={<SeatPlan />} />
-        <Route path={routes.user.checkout + "/:id"} element={<Checkout />} />
-      </Route>
-
-      <Route path="/" element={<AuthLayout />}>
-        <Route path={routes.auth.login} element={<Login />} />
-        <Route path={routes.auth.signup} element={<Signup />} />
-        <Route path={routes.auth.forgotPassword} element={<ForgotPassword />} />
-        <Route path={routes.auth.otp} element={<OTP />} />
-        <Route path={routes.auth.resetPassword} element={<ResetPassword />} />
+          element={<ProtectedRoute allowedRoles={[Role.user, Role.admin]} />}
+        >
+          <Route
+            path={routes.user.ticketPlan + "/:id"}
+            element={<TicketPlan />}
+          />
+          <Route path={routes.user.seatPlan + "/:id"} element={<SeatPlan />} />
+          <Route path={routes.user.checkout + "/:id"} element={<Checkout />} />
+          <Route path={routes.admin.demo} element={<AdminAccessDemo />} />
+        </Route>
       </Route>
     </Routes>
   );

@@ -1,7 +1,7 @@
 import { useMovieStore } from "@/store/useMovieStore";
 import CustomTabs from "@/ui/tabs/CustomTabs";
 import { useEffect } from "react";
-import { useParams } from "react-router";
+// import { useParams } from "react-router";
 import {
   ImageCarousel,
   MovieInfo,
@@ -10,7 +10,7 @@ import {
 } from "@/components/user/movieDetail";
 
 const MovieDetail = () => {
-  const { id } = useParams();
+  // const { id } = useParams();
   const { activeTab, setActiveTab } = useMovieStore();
 
   const movie = {

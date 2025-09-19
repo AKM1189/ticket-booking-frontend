@@ -39,12 +39,19 @@
 
 /* Carousel */
 .mantine-Carousel-indicator[data-active] {
-  background-color: oklch(96.8% 0.007 247.896) !important;
+  background-color: #f1f5f9 !important;
 }
 
 /* Select Box */
 .mantine-Select-option:hover {
-  background-color: var(--color-surface-hover) !important;
+  color: var(--color-selected-text) !important;
+  background-color: var(--color-primary) !important;
+}
+.mantine-Combobox-option:hover,
+.mantine-MultiSelect-option:hover,
+.mantine-Pill-root {
+  background-color: var(--color-primary) !important;
+  color: var(--color-selected-text) !important;
 }
 
 .mantine-Popover-dropdown {
@@ -78,4 +85,71 @@
   ); /* Change background color of active item */
   --pagination-active-color: #ffffff; /* Change text color of active item */
   --pagination-control-radius: 5px; /* Optional: Rounded corners */
+}
+
+.mantine-MultiSelect-inputField.mantine-PillsInputField-field:placeholder {
+  color: red !important;
+}
+/* .mantine-MultiSelect-inputField.mantine-PillsInputField-field {
+  background-color: red !important;
+  color: white !important;
+} */
+
+.mantine-Tabs-tab {
+  color: var(--color-muted) !important;
+}
+.mantine-Tabs-tab:hover {
+  background-color: var(--color-surface) !important;
+  color: var(--color-text) !important;
+}
+
+.PhoneInputInput {
+  height: 48px;
+  font-size: 14px;
+  color: var(--color-text);
+  border-bottom: 1px solid #7b82a0;
+}
+
+.PhoneInputInput:focus {
+  outline: none;
+}
+
+.PhoneInputInput::placeholder {
+  color: #969fae;
+}
+
+.admin-phone-input .PhoneInputInput {
+  border-bottom: 1px solid var(--color-surface-hover) !important;
+}
+
+.mantine-Tabs-list:before {
+  border-color: var(--color-surface-hover);
+}
+
+.mantine-Tabs-tab:where([data-active]) {
+  background-color: var(--color-surface);
+  color: var(--color-text) !important;
+  border-color: var(--color-text);
+}
+
+.mantine-Tabs-tab:hover:where(:not([data-active])) {
+  background: transparent !important;
+  color: var(--color-text) !important;
+  border-color: var(--color-surface-hover);
+}
+
+/* .mantine-Table-thead tr {
+  background-color: var(--primary) !important;
+  border-radius: 20px !important;
+  overflow: hidden !important;
+} */
+
+.mantine-InputPlaceholder-placeholder,
+.mantine-PillsInputField-field::placeholder {
+  color: var(--muted) !important;
+}
+
+.mantine-ActionIcon-root:disabled {
+  background-color: #7d7d7d20;
+  color: var(--color-disabled);
 }
