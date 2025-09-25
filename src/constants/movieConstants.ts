@@ -6,7 +6,7 @@ export const movieType = {
   available: "Ticket Available",
 };
 
-export enum MovieType {
+export enum MovieStatus {
   showing = "Now Showing",
   coming = "Coming Soon",
   available = "Ticket Available",
@@ -17,5 +17,11 @@ export const sortList = [
   SortType.comingSoon,
   SortType.trending,
 ];
+
+export enum MovieRequestType {
+  showing = "now-showing",
+  coming = "coming-soon",
+  available = "ticket-available",
+}
 
 //////////////

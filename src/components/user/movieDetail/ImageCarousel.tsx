@@ -11,7 +11,7 @@ const ImageCarousel = ({ images }: ImageCarouselType) => {
   // Memoize slides to prevent recreation on every render
   const slides = useMemo(
     () =>
-      images.map((url) => (
+      images?.map((url) => (
         <Carousel.Slide key={url}>
           <img className="w-[400px] h-[200px] rounded-md" src={url} />
         </Carousel.Slide>

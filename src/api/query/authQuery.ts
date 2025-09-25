@@ -7,7 +7,6 @@ export const useGetUser = () => {
   return useQuery({
     queryFn: () =>
       getCurrentUser().then((data) => {
-        console.log("getting updated user data.....", data);
         setUser(data);
         return data;
       }),

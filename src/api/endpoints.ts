@@ -30,6 +30,8 @@ export const endpoints = {
   },
   user: {
     me: "/auth/user/me",
+    movies: "/user/movies",
+    theatres: "/user/theatres",
   },
 
   auth: {

@@ -1,12 +1,18 @@
 import { Carousel } from "@mantine/carousel";
 import Autoplay from "embla-carousel-autoplay";
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, useEffect } from "react";
 import { NavLink } from "react-router";
 import { routes } from "../../../routes";
 import MovieCard from "./MovieCard";
-import { SortType } from "@/types/MovieTypes";
+import {
+  SortType,
+  type HomeMoviesType,
+  type MovieType,
+} from "@/types/MovieTypes";
+import { useMovieStore } from "@/store/useMovieStore";
+import { MovieStatus } from "@/constants/movieConstants";
 
-type MoviesType = typeof movies;
+// type MoviesType = typeof movies;
 const movies = [
   {
     id: 1,
@@ -51,6 +57,7 @@ const movies = [
 ];
 
 const HomeMovies = () => {
+  const { showingMovies, comingMovies, availableMovies } = useMovieStore();
   return (
     <div className="min-h-[500px]">
       <div className="flex justify-between items-baseline">
@@ -59,12 +66,31 @@ const HomeMovies = () => {
         </div>
       </div>
       <div className="flex flex-col gap-10">
-        <MovieCarousel movies={movies} menu={SortType.showing} />
-        <MovieCarousel
-          movies={movies}
-          menu={SortType.comingSoon}
-          delay={2500}
-        />
+        {showingMovies?.length > 0 && (
+          <MovieCarousel
+            movies={showingMovies}
+            menu={SortType.showing}
+            type={MovieStatus.showing}
+          />
+        )}
+
+        {availableMovies?.length > 0 && (
+          <MovieCarousel
+            movies={availableMovies}
+            menu={"Ticket Available"}
+            delay={2500}
+            type={MovieStatus.available}
+          />
+        )}
+
+        {comingMovies?.length > 0 && (
+          <MovieCarousel
+            movies={comingMovies}
+            menu={SortType.comingSoon}
+            delay={2500}
+            type={MovieStatus.coming}
+          />
+        )}
       </div>
     </div>
   );
@@ -73,20 +99,26 @@ const HomeMovies = () => {
 export default HomeMovies;
 
 interface MovieCarouselProps {
-  movies: MoviesType;
+  movies: HomeMoviesType[];
   menu: string;
+  type: MovieStatus;
   delay?: number;
 }
-const MovieCarousel = ({ movies, menu, delay = 2000 }: MovieCarouselProps) => {
+const MovieCarousel = ({
+  movies,
+  menu,
+  type,
+  delay = 2000,
+}: MovieCarouselProps) => {
   const autoplay = useRef(Autoplay({ delay }));
   const sortBy = menu === SortType.showing ? "now-showing" : "coming-soon";
 
   // Memoize slides to prevent recreation on every render
   const slides = useMemo(
     () =>
-      movies.map((movie: any) => (
+      movies.map((movie: HomeMoviesType) => (
         <Carousel.Slide key={movie.id} className="min-h-[500px]">
-          <MovieCard movie={movie} />
+          {movie && <MovieCard movie={movie} type={type} />}
         </Carousel.Slide>
       )),
     [movies],

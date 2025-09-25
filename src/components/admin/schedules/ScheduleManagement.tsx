@@ -439,7 +439,8 @@ const ScheduleManagement = ({ openScheduleModal, setOpenScheduleModal }) => {
                                 variant="light"
                                 disabled={
                                   disableActions(schedule) ||
-                                  !hasAccess(permissionList.updateSchedule)
+                                  !hasAccess(permissionList.updateSchedule) ||
+                                  schedule.status === ScheduleStatus.completed
                                 }
                                 className=""
                                 color="orange"
@@ -452,7 +453,8 @@ const ScheduleManagement = ({ openScheduleModal, setOpenScheduleModal }) => {
                                 color="red"
                                 disabled={
                                   disableActions(schedule) ||
-                                  !hasAccess(permissionList.deleteSchedule)
+                                  !hasAccess(permissionList.deleteSchedule) ||
+                                  schedule.status === ScheduleStatus.completed
                                 }
                                 onClick={() =>
                                   openConfirm({

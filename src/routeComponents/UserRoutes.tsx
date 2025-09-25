@@ -27,10 +27,7 @@ const UserRoutes = () => {
         <Route
           element={<ProtectedRoute allowedRoles={[Role.user, Role.admin]} />}
         >
-          <Route
-            path={routes.user.ticketPlan + "/:id"}
-            element={<TicketPlan />}
-          />
+          <Route path={routes.user.ticketPlan} element={<TicketPlan />} />
           <Route path={routes.user.seatPlan + "/:id"} element={<SeatPlan />} />
           <Route path={routes.user.checkout + "/:id"} element={<Checkout />} />
           <Route path={routes.admin.demo} element={<AdminAccessDemo />} />

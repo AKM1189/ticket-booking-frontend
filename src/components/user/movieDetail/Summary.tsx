@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import type { MovieDetailType } from "@/types/MovieTypes";
 
 interface SummaryType {
-  movie: MovieDetailType;
+  movie: MovieDetailType | null;
 }
 const Summary = ({ movie }: SummaryType) => {
   return (

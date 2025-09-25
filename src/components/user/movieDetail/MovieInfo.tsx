@@ -19,6 +19,7 @@ interface MovieInfoType {
 }
 const MovieInfo = ({ movie, isTicketPlan = false }: MovieInfoType) => {
   const [showTrailer, setShowTrailer] = useState(false);
+
   if (movie)
     return (
       <div className="relative">
@@ -31,7 +32,7 @@ const MovieInfo = ({ movie, isTicketPlan = false }: MovieInfoType) => {
           <div className="absolute top-32 px-[150px] flex">
             <div className="relative rounded-md border-2 border-surface overflow-hidden">
               <img
-                src={movie?.posterUrl}
+                src={movie?.poster?.url}
                 alt=""
                 className="z-[999] w-[280px] h-[400px]"
               />
@@ -43,32 +44,32 @@ const MovieInfo = ({ movie, isTicketPlan = false }: MovieInfoType) => {
               </div>
             </div>
             <div className="ms-10">
-              <div className="text-4xl font-bold mb-5">{movie.name}</div>
+              <div className="text-4xl font-bold mb-5">{movie.title}</div>
               <div className="text-blueGray flex flex-col gap-5">
                 <div>
                   {useMemo(
                     () =>
-                      movie.languages.map((item, index) => (
+                      movie?.language?.map((item, index) => (
                         <span key={item}>
-                          {item} {index !== movie.languages.length - 1 && ","}{" "}
+                          {item} {index !== movie?.language.length - 1 && ","}{" "}
                         </span>
                       )),
-                    [movie.languages],
+                    [movie?.language],
                   )}
                 </div>
                 <div className="flex gap-3">
                   {useMemo(
                     () =>
-                      movie.genres.map((item) => (
+                      movie?.genres?.map((item) => (
                         <span
                           key={item.id}
                           className="px-4 py-2 border border-surface-hover rounded-full"
                         >
-                          {item.label}
+                          {item.name}
                           {/* {index !== movie.genres.length - 1 && "|"}{" "} */}
                         </span>
                       )),
-                    [movie.genres],
+                    [movie?.genres],
                   )}
                 </div>
                 <div className="flex gap-5 items-center">

@@ -1,9 +1,10 @@
 import { useMemo } from "react";
 import type { MovieDetailType } from "@/types/MovieTypes";
 import { Button } from "@mantine/core";
+import { IconStarFilled } from "@tabler/icons-react";
 
 interface ReviewType {
-  movie: MovieDetailType;
+  movie: MovieDetailType | null;
 }
 
 // fetch review separately

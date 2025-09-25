@@ -47,10 +47,10 @@ export type MovieInputType = {
 
 export type MovieDetailType = {
   id: number;
-  name: string;
+  title: string;
   duration: string;
-  genres: LabelType[];
-  languages: string[];
+  genres: GenreType[];
+  language: string[];
   releaseDate: string;
   rating: string;
   status: string;
@@ -93,3 +93,18 @@ export enum SortType {
   comingSoon = "Coming Soon",
   trending = "Trending",
 }
+
+export type HomeMoviesType = {
+  id: number;
+  title: string;
+  description: string;
+  duration: number | null;
+  rating: string;
+  language: string[];
+  subtitle: string[];
+  experience: string[];
+  releaseDate: string | null;
+  poster: ImageType | null;
+  trailerId: string;
+  reviews: ReviewType[];
+};
