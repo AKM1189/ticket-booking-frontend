@@ -20,6 +20,9 @@ type Action = {
   ) => void;
   setFilterList: (filterList: FilterListType) => void;
   setActiveTab: (tab: TabType) => void;
+  addFilter: (key: keyof FilterListType, value: string) => void;
+  removeFilter: (key: keyof FilterListType, value: string) => void;
+  clearFilter: () => void;
 };
 
 export const useMovieStore = create<State & Action>((set) => ({
@@ -40,4 +43,29 @@ export const useMovieStore = create<State & Action>((set) => ({
   activeTab: null,
   setFilterList: (filterList) => set({ filterList }),
   setActiveTab: (tab) => set({ activeTab: tab }),
+
+  addFilter: (key, value) =>
+    set((state) => ({
+      filterList: {
+        ...state.filterList,
+        [key]: [...state.filterList[key], value],
+      },
+    })),
+
+  removeFilter: (key, value) =>
+    set((state) => ({
+      filterList: {
+        ...state.filterList,
+        [key]: state.filterList[key].filter((v) => v !== value),
+      },
+    })),
+
+  clearFilter: () =>
+    set({
+      filterList: {
+        lang: [],
+        exp: [],
+        genre: [],
+      },
+    }),
 }));

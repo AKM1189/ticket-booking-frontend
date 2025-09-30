@@ -8,12 +8,11 @@ type ImageCarouselType = {
 const ImageCarousel = ({ images }: ImageCarouselType) => {
   const autoplay = useRef(Autoplay({ delay: 3000 }));
 
-  // Memoize slides to prevent recreation on every render
   const slides = useMemo(
     () =>
       images?.map((url) => (
         <Carousel.Slide key={url}>
-          <img className="w-[400px] h-[200px] rounded-md" src={url} />
+          <img className="w-[400px] h-[250px] rounded-md" src={url} />
         </Carousel.Slide>
       )),
     [images],
@@ -24,26 +23,14 @@ const ImageCarousel = ({ images }: ImageCarouselType) => {
       withIndicators={false}
       // height={700}
       flex={1}
-      withControls={false}
-      slideSize="33.33333%"
+      withControls={true}
+      // slideSize="33.33333%"
+      slideSize={{ sm: "100%", md: "33.33%" }}
       slideGap="md"
       emblaOptions={{
         loop: true,
       }}
       plugins={[autoplay.current]}
-      // onMouseEnter={autoplay.current.stop}
-      // onMouseLeave={() => autoplay.current.play()}
-      styles={{
-        indicator: {
-          width: "50px",
-          background: "#f1f5f9",
-        },
-        control: {
-          background: "var(--color-lightGray)",
-          color: "var(--color-muted)",
-          // fontSize: "30px",
-        },
-      }}
     >
       {slides}
     </Carousel>

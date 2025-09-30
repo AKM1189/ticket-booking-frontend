@@ -18,68 +18,6 @@ const MovieDetail = () => {
   const [movie, setMovie] = useState<MovieDetailType | null>(null);
   const { data } = useMovieDetailQuery(id ?? "");
 
-  // const movie = {
-  //   id: 1,
-  //   name: "ALONE",
-  //   duration: "2 hrs 50 mins",
-  //   genres: [
-  //     { id: 2, label: "Adventure" },
-  //     { id: 4, label: "Action" },
-  //   ],
-  //   languages: ["English", "Tamil", "Hindi"],
-  //   subtitle: ["Myanmar"],
-  //   releaseDate: "8 Nov, 2025",
-  //   rating: "8.0",
-  //   status: "Now Showing",
-  //   posterUrl: "/movie03.jpg",
-  //   trailerId: "o2T2V1jrLY0",
-  //   casts: [
-  //     {
-  //       id: 1,
-  //       name: "Aung Kaung Myat",
-  //       role: "Actor",
-  //       imageUrl: null,
-  //     },
-  //     {
-  //       id: 2,
-  //       name: "John Wick",
-  //       role: "Actor",
-  //       imageUrl: null,
-  //     },
-  //     {
-  //       id: 3,
-  //       name: "John Wick",
-  //       role: "Actor",
-  //       imageUrl: null,
-  //     },
-  //   ],
-  //   images: [
-  //     "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-1.png",
-  //     "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-2.png",
-  //     "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-3.png",
-  //     "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-4.png",
-  //     "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-5.png",
-  //   ],
-  //   reviews: [
-  //     {
-  //       id: 1,
-  //       username: "Aung Kaung Myat",
-  //       rating: "8.0",
-  //       reviewedDate: "2 days ago",
-  //       review:
-  //         "Lorem ipsum dolor sit, amet consectetur adipisicing elit. In, alias! Cum ipsam voluptate molestias aliquam quos, vitae commodi, ex facere magnam, amet nesciunt nisi accusamus libero architecto cupiditate! Culpa possimus ipsa id fugiat odio iusto ea inventore quidem, similique magnam eaque architecto, voluptas voluptatibus, nesciunt maxime molestias laborum eveniet! Quod!",
-  //     },
-  //     {
-  //       id: 2,
-  //       username: "Aung Kaung Myat",
-  //       rating: "8.9",
-  //       reviewedDate: "2 months ago",
-  //       review:
-  //         "Lorem ipsum dolor sit, amet consectetur adipisicing elit. In, alias! Cum ipsam voluptate molestias aliquam quos, vitae commodi, ex facere magnam, amet nesciunt nisi accusamus libero architecto cupiditate! Culpa possimus ipsa id fugiat odio iusto ea inventore quidem, similique magnam eaque architecto, voluptas voluptatibus, nesciunt maxime molestias laborum eveniet! Quod!",
-  //     },
-  //   ],
-  // };
-
   const tabs = [
     {
       id: 1,
@@ -95,7 +33,7 @@ const MovieDetail = () => {
 
   useEffect(() => {
     setActiveTab(tabs[0]);
-  }, []);
+  }, [movie]);
 
   useEffect(() => {
     setMovie(data?.data);
@@ -109,7 +47,7 @@ const MovieDetail = () => {
         <div className="px-[150px]">
           <div className="mt-40">
             <div className="text-4xl font-semibold mb-10">Photos</div>
-            <ImageCarousel images={movie.images} />
+            <ImageCarousel images={movie.photos?.map((p) => p?.url)} />
           </div>
           <div>
             <CustomTabs

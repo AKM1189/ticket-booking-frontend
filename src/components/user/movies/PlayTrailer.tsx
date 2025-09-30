@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import YouTube, { type YouTubeProps } from "react-youtube";
 
-import { Skeleton, Title } from "@mantine/core";
+import { Skeleton, Text, Title } from "@mantine/core";
 
 import "@/styles/css/skeletonStyle.css";
 import { IconError404, IconX } from "@tabler/icons-react";
@@ -63,9 +63,9 @@ const PlayTrailer = ({ videoId, onClose }: PlayTrailerType) => {
             />
           </Skeleton>
         ) : (
-          <div className="w-full h-[500px] bg-surface">
-            {/* <IconError404 size={100} /> */}
-            <Title>Trailer Not Available</Title>
+          <div className="w-full h-[500px] bg-surface flex flex-col justify-center items-center">
+            <IconError404 size={50} color="var(--color-muted)" />
+            <Text color="var(--color-muted)">Trailer Not Available</Text>
           </div>
         )}
       </div>

@@ -1,10 +1,25 @@
 import {
   getMovieDetail,
+  getMovieFilterList,
   getMovies,
-  searchMovie,
 } from "@/api/function/user/movieApi";
 import { MovieStatus } from "@/constants/movieConstants";
+import type { FilterListType } from "@/types/MovieTypes";
 import { useQuery } from "@tanstack/react-query";
+
+export const useMovieQuery = (
+  type: MovieStatus,
+  page?: number,
+  limit?: number,
+  filterList?: FilterListType,
+) => {
+  return useQuery({
+    queryFn: () => getMovies(type, page, limit, filterList),
+    queryKey: ["userAllMovies", type],
+    retry: 3,
+    staleTime: 0,
+  });
+};
 
 export const useShowingMovieQuery = () => {
   return useQuery({
@@ -35,6 +50,15 @@ export const useMovieDetailQuery = (movieId: string) => {
   return useQuery({
     queryFn: () => getMovieDetail(movieId),
     queryKey: ["userMovieDetail"],
+    retry: 3,
+    staleTime: 0,
+  });
+};
+
+export const useMovieFilterListQuery = () => {
+  return useQuery({
+    queryFn: () => getMovieFilterList(),
+    queryKey: ["filterList"],
     retry: 3,
     staleTime: 0,
   });

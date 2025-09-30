@@ -96,7 +96,7 @@ const MovieSearchCard = () => {
     console.log("data", data);
     if (data?.data[0]) {
       navigate(
-        `${routes.user.ticketPlan}?movieId=${data?.data[0]?.id}&showDate=${form.values.date}`,
+        `/${routes.user.ticketPlan}?movieId=${data?.data[0]?.id}&showDate=${form.values.date}`,
       );
     } else {
       showNotification({
@@ -108,7 +108,7 @@ const MovieSearchCard = () => {
   };
 
   return (
-    <div className="absolute left-[50%] translate-x-[-50%] top-[50px] sm:top-[-60%] mt-[-50px] min-h-[200px] w-full bg-surface-hover sm:rounded-lg p-8 sm:p-10">
+    <div className="absolute left-[50%] translate-x-[-50%] top-[50px] sm:top-[-60%] mt-[-50px] min-h-[200px] w-full bg-surface-hover rounded-md sm:rounded-lg p-8 px-5 sm:p-10">
       <div className="text-lg md:text-2xl mb-2 uppercase">
         Welcome to <span className="text-accent font-bold">Movie Palace</span>
       </div>
@@ -117,7 +117,7 @@ const MovieSearchCard = () => {
       </div>
 
       <form onSubmit={form.onSubmit(handleSubmit)}>
-        <div className="form flex max-lg:flex-col justify-center lg:items-end gap-5 lg:gap-10 bg-background/30 p-8 sm:p-10 rounded-lg">
+        <div className="form flex max-lg:flex-col justify-center lg:items-end gap-5 lg:gap-10 bg-background/30 p-5 sm:p-10 rounded-lg">
           <div className="flex gap-5 lg:gap-10 justify-between max-md:flex-col">
             {/* location */}
             <Select

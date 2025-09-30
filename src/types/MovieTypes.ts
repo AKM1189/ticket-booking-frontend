@@ -7,9 +7,9 @@ export type LabelType = {
 };
 
 export type FilterListType = {
-  lang: LabelType[];
-  exp: LabelType[];
-  genre: LabelType[];
+  lang: string[];
+  exp: string[];
+  genre: string[];
 };
 
 export type MovieType = {
@@ -48,6 +48,7 @@ export type MovieInputType = {
 export type MovieDetailType = {
   id: number;
   title: string;
+  description: string;
   duration: string;
   genres: GenreType[];
   language: string[];
@@ -58,7 +59,7 @@ export type MovieDetailType = {
   trailerId: string;
   subtitle: string[];
   casts: CastType[];
-  images: string[];
+  photos: ImageType[];
   reviews: ReviewType[];
 };
 
@@ -71,7 +72,7 @@ export type CastType = {
   id: number;
   name: string;
   role: string;
-  imageUrl: string | null;
+  image: ImageType;
 };
 
 export type TabType = {
@@ -98,7 +99,7 @@ export type HomeMoviesType = {
   id: number;
   title: string;
   description: string;
-  duration: number | null;
+  duration: string;
   rating: string;
   language: string[];
   subtitle: string[];
@@ -107,4 +108,6 @@ export type HomeMoviesType = {
   poster: ImageType | null;
   trailerId: string;
   reviews: ReviewType[];
+  casts: ImageType[];
+  photos: string[];
 };

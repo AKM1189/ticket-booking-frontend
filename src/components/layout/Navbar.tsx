@@ -63,7 +63,7 @@ const Navbar = () => {
   }, [location.pathname]);
 
   return (
-    <div className="relative navbar w-full h-[80px] bg-surface-hover/70 z-10 text-text flex items-center justify-between px-10">
+    <div className="relative navbar w-full h-[80px] bg-surface z-10 shadow-md text-text flex items-center justify-between px-10">
       <div className="text-base font-semibold uppercase">Logo</div>
       <ul className="max-md:hidden flex items-center justify-center gap-10 text-base font-semibold z-10">
         {navbarMenus.map((menu) => (

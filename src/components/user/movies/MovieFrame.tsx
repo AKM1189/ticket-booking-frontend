@@ -1,92 +1,74 @@
-import { sortList } from "@/constants/movieConstants";
-import { Pagination } from "@mantine/core";
+import { MovieStatus, sortList } from "@/constants/movieConstants";
+import { Button, Drawer, Pagination, Text, ThemeIcon } from "@mantine/core";
 import { twMerge } from "tailwind-merge";
 import { MovieGrid, MovieList, FilterCard } from "@/components/user/movies";
-import { SortType } from "@/types/MovieTypes";
+import type { MovieDetailType } from "@/types/MovieTypes";
 import { useMovieStore } from "@/store/useMovieStore";
 import { motion } from "motion/react";
-import { useState, useMemo } from "react";
-import { IconGridDots, IconMenu2 } from "@tabler/icons-react";
+import { useState, useMemo, useEffect } from "react";
+import {
+  IconAdjustmentsHorizontal,
+  IconAdjustmentsOff,
+  IconCross,
+  IconGridDots,
+  IconMenu2,
+} from "@tabler/icons-react";
+import {
+  useMovieFilterListQuery,
+  useMovieQuery,
+} from "@/api/query/user/movieQuery";
 
 const MovieFrame = ({ type }: { type: string | undefined }) => {
-  const langList = [
-    { id: 1, label: "English" },
-    { id: 2, label: "Tamil" },
-    { id: 3, label: "Hindi" },
-    { id: 4, label: "Telegu" },
-  ];
-
-  const expList = [
-    { id: 1, label: "2D" },
-    { id: 2, label: "3D" },
-    { id: 3, label: "IMax" },
-    { id: 4, label: "4DX" },
-  ];
-
-  const genreList = [
-    { id: 1, label: "Thriller" },
-    { id: 2, label: "Adventure" },
-    { id: 3, label: "Horror" },
-    { id: 4, label: "Action" },
-  ];
-
-  const movieList = [
-    {
-      id: 1,
-      name: "ALONE",
-      duration: "2 hrs 50 mins",
-      genres: [
-        { id: 2, label: "Adventure" },
-        { id: 4, label: "Action" },
-      ],
-      releaseDate: "8 Nov, 2025",
-      rating: "8.0",
-      status: "Now Showing",
-      posterUrl: "/movie03.jpg",
-      trailerId: "o2T2V1jrLY0",
-    },
-    {
-      id: 2,
-      name: "AKM",
-      duration: "2 hrs 50 mins",
-      genres: [
-        { id: 1, label: "Thriller" },
-        { id: 4, label: "Action" },
-      ],
-      releaseDate: "8 Nov, 2025",
-      rating: "8.0",
-      status: "Coming Soon",
-      posterUrl: "/movie03.jpg",
-      trailerId: "o2T2V1jrLY0",
-    },
-    {
-      id: 3,
-      name: "HEROS",
-      duration: "2 hrs 50 mins",
-      genres: [
-        { id: 1, label: "Thriller" },
-        { id: 4, label: "Action" },
-      ],
-      releaseDate: "8 Nov, 2025",
-      rating: "8.0",
-      status: "Now Showing",
-      posterUrl: "/movie03.jpg",
-      trailerId: "o2T2V1jrLY0",
-    },
-  ];
-
-  const { filterList, setFilterList } = useMovieStore();
-
-  const [sortBy, setSortBy] = useState<SortType>(
-    type === "now-showing" ? SortType.showing : SortType.comingSoon,
+  const [filterDataList, setFilterDataList] = useState<any>({
+    lang: [],
+    exp: [],
+    genre: [],
+  });
+  const [sortBy, setSortBy] = useState<MovieStatus>(
+    type === "now-showing" ? MovieStatus.showing : MovieStatus.coming,
   );
-  const [activeDisplay, setActiveDisplay] = useState(1);
 
   const [pagination, setPagination] = useState({
     totalPages: 10,
-    currentPage: 1,
+    page: 1,
+    total: 0,
+    limit: 10,
   });
+  const { filterList, clearFilter } = useMovieStore();
 
+  const { data, refetch } = useMovieQuery(
+    sortBy ?? MovieStatus.showing,
+    pagination?.page,
+    pagination?.limit,
+    filterList,
+  );
+  const [movies, setMovies] = useState<MovieDetailType[]>([]);
+
+  const [activeDisplay, setActiveDisplay] = useState(1);
+
+  const { data: filterData } = useMovieFilterListQuery();
+
+  const [openFilter, setOpenFilter] = useState(false);
+
+  useEffect(() => {
+    setMovies(data?.data);
+    setPagination(data?.pagination);
+  }, [data]);
+
+  useEffect(() => {
+    refetch();
+  }, [pagination, filterList]);
+
+  useEffect(() => {
+    setFilterDataList({
+      lang: filterData?.data?.languages,
+      exp: filterData?.data?.experiences,
+      genre: filterData?.data?.genres?.reduce(
+        (acc, cur) => [...acc, cur?.name],
+        [],
+      ),
+    });
+  }, [filterData]);
   // Memoize display icons to prevent recreation on every render
   const displayIcons = useMemo(
     () => [
@@ -114,48 +96,35 @@ const MovieFrame = ({ type }: { type: string | undefined }) => {
     [activeDisplay],
   );
   return (
-    <div className="w-full grid grid-cols-10">
-      <div className="col-span-2">
-        <div className="text-3xl font-bold h-[70px] mb-10 flex items-center uppercase">
+    <div className="w-full grid grid-cols-1 lg:grid-cols-10 gap-4 lg:gap-0">
+      <div className="lg:col-span-2 max-lg:hidden">
+        <div className="text-2xl sm:text-3xl font-bold h-[50px] sm:h-[70px] mb-6 lg:mb-10 flex items-center uppercase">
           Filter By
         </div>
-        <div className="flex flex-col gap-10">
-          <FilterCard
-            title="Language"
-            data={langList}
-            filterList={filterList}
-            setFilterList={setFilterList}
-            filterListByCategory={filterList?.lang}
-            type="lang"
-          />
-          <FilterCard
-            title="Experience"
-            data={expList}
-            filterList={filterList}
-            setFilterList={setFilterList}
-            filterListByCategory={filterList?.exp}
-            type="exp"
-          />
-          <FilterCard
-            title="Genre"
-            data={genreList}
-            filterList={filterList}
-            setFilterList={setFilterList}
-            filterListByCategory={filterList?.genre}
-            type="genre"
-          />
+        <div className="flex flex-col gap-4">
+          <div className="flex h-[25px] -mt-5">
+            <div
+              className="flex items-center gap-1 text-muted cursor-pointer select-none"
+              onClick={clearFilter}
+            >
+              <IconAdjustmentsOff />
+              <Text className=""> Clear Filter</Text>
+            </div>
+          </div>
+          <FilterCard title="Language" data={filterDataList.lang} type="lang" />
+          <FilterCard title="Experience" data={filterDataList.exp} type="exp" />
+          <FilterCard title="Genre" data={filterDataList.genre} type="genre" />
         </div>
       </div>
-      <div className=" col-span-8 px-10">
-        <div className="h-[70px] w-full border border-surface-hover rounded-md flex gap-5 items-center justify-between px-5 mb-10">
-          <div className="flex gap-5 items-center">
-            <div>Sort By:</div>
 
+      <div className="lg:col-span-8 lg:px-10">
+        <div className="min-h-[50px] sm:h-[70px] w-full rounded-md flex flex-col lg:flex-row gap-3 sm:gap-5 items-start lg:items-center lg:justify-between lg:p-3 lg:px-5 mb-10">
+          <div className="flex flex-wrap gap-2 sm:gap-5 items-center w-full sm:w-auto">
             {sortList?.map((item) => (
               <span
                 key={item}
                 className={twMerge(
-                  "p-5 py-2 cursor-pointer text-sm transition-300 border border-surface-hover rounded-full select-none text-nowrap",
+                  "px-3 sm:px-5 py-2 sm:py-2 cursor-pointer text-sm transition-300 border border-surface-hover rounded-full select-none text-nowrap",
                   item === sortBy
                     ? "bg-primary/100 rounded-full"
                     : "bg-primary/0",
@@ -167,10 +136,63 @@ const MovieFrame = ({ type }: { type: string | undefined }) => {
             ))}
           </div>
 
-          <div className="flex gap-5">
+          <div className="flex gap-2 sm:gap-5 self-start sm:self-auto">
+            <span className="lg:hidden">
+              <ThemeIcon
+                color="var(--color-primary)"
+                radius={"lg"}
+                size={"lg"}
+                w={50}
+                onClick={() => setOpenFilter(true)}
+              >
+                <IconAdjustmentsHorizontal />
+              </ThemeIcon>
+            </span>
+
+            <Drawer
+              opened={openFilter}
+              onClose={() => setOpenFilter(false)}
+              title="Filter By"
+              w={200}
+              classNames={{
+                root: "!text-text !bg-surface",
+                content: "!text-text !bg-surface",
+                header: "!text-text !bg-surface",
+                title: "!text-xl !font-semibold",
+                close: "!text-text hover:!bg-surface-hover",
+              }}
+            >
+              <div className="flex flex-col gap-3">
+                <div className="flex h-[25px] justify-end -mb-5 z-2">
+                  <div
+                    className="flex items-center ms-4 gap-1 text-muted cursor-pointer select-none"
+                    onClick={clearFilter}
+                  >
+                    <IconAdjustmentsOff />
+                    <Text className=""> Clear Filter</Text>
+                  </div>
+                </div>
+                <FilterCard
+                  title="Language"
+                  data={filterDataList.lang}
+                  type="lang"
+                />
+                <FilterCard
+                  title="Experience"
+                  data={filterDataList.exp}
+                  type="exp"
+                />
+                <FilterCard
+                  title="Genre"
+                  data={filterDataList.genre}
+                  type="genre"
+                />
+              </div>
+            </Drawer>
+
             {displayIcons?.map((item) => (
               <div
-                className="px-3 h-[36px] rounded-full bg-background border border-surface-hover min-w-14 flex justify-center items-center cursor-pointer select-none"
+                className="px-2 sm:px-3 h-[32px] sm:h-[36px] rounded-full bg-background border border-surface-hover min-w-14 sm:min-w-14 flex justify-center items-center cursor-pointer select-none"
                 onClick={() => setActiveDisplay(item.id)}
                 key={item.id}
               >
@@ -180,35 +202,43 @@ const MovieFrame = ({ type }: { type: string | undefined }) => {
           </div>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: activeDisplay === 1 ? 1 : 0 }}
-          transition={{ duration: 0.5 }}
-          style={{ display: activeDisplay === 1 ? "block" : "none" }}
-        >
-          <MovieList movieList={movieList} />
-        </motion.div>
+        <div className="md:pt-5 max-lg:pb-[50px]">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: activeDisplay === 1 ? 1 : 0 }}
+            transition={{ duration: 0.5 }}
+            style={{ display: activeDisplay === 1 ? "block" : "none" }}
+          >
+            <MovieList movieList={movies} type={sortBy} />
+          </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: activeDisplay === 2 ? 1 : 0 }}
-          transition={{ duration: 0.5 }}
-          style={{ display: activeDisplay === 2 ? "block" : "none" }}
-        >
-          <MovieGrid movieList={movieList} />
-        </motion.div>
-        <div className="mt-16 flex justify-center">
-          <Pagination
-            total={pagination?.totalPages}
-            value={pagination?.currentPage}
-            onChange={(page) =>
-              setPagination((prev) => ({ ...prev, currentPage: page }))
-            }
-            size="md"
-            classNames={{
-              root: "!flex gap-3 !bg-red",
-            }}
-          />
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: activeDisplay === 2 ? 1 : 0 }}
+            transition={{ duration: 0.5 }}
+            style={{ display: activeDisplay === 2 ? "block" : "none" }}
+          >
+            <MovieGrid movieList={movies} type={sortBy} />
+          </motion.div>
+          {movies?.length ? (
+            <div className="mt-16 flex justify-center">
+              <Pagination
+                total={pagination?.totalPages}
+                value={pagination?.page}
+                onChange={(page) =>
+                  setPagination((prev) => ({ ...prev, page }))
+                }
+                size="md"
+                classNames={{
+                  root: "!flex gap-3 !bg-red",
+                }}
+              />
+            </div>
+          ) : (
+            <div className="text-center mt-50 text-muted">
+              No movies available at the moment.
+            </div>
+          )}
         </div>
       </div>
     </div>

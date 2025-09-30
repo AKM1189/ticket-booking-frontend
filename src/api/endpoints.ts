@@ -32,6 +32,7 @@ export const endpoints = {
     me: "/auth/user/me",
     movies: "/user/movies",
     theatres: "/user/theatres",
+    movieFilter: "/user/movies/filter-list",
   },
 
   auth: {
