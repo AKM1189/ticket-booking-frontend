@@ -1,27 +1,280 @@
-/* seatStyles.css */
-/* .seat-grid {
-  display: grid;
-  grid-template-columns: repeat(8, 20px);
-  gap: 30px;
-  justify-content: center;
+/* Enhanced Seat Plan Styles */
+
+/* Seat animations and transitions */
+.seat-container {
+  transition: all 0.2s ease-in-out;
 }
 
-.seat {
-  padding: 10px;
-  background-color: #eee;
-  border: 1px solid #999;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
+.seat-container:hover {
+  transform: scale(1.05);
 }
 
-.seat.booked {
-  background-color: #888;
-  color: #fff;
+.seat-container.disabled {
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
-.seat.selected {
-  background-color: #4caf50;
-  color: white;
-} */
+.seat-container.booked {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.seat-container.temp-reserved {
+  animation: pulse-orange 2s infinite;
+}
+
+.seat-container.selected {
+  animation: pulse-blue 1s ease-in-out infinite alternate;
+}
+
+/* Pulse animations */
+@keyframes pulse-orange {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes pulse-blue {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.02);
+  }
+}
+
+/* Seat grid layout improvements */
+.seat-grid-container {
+  perspective: 1000px;
+}
+
+.seat-row {
+  transform-style: preserve-3d;
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.seat-row:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.seat-row:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.seat-row:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.seat-row:nth-child(4) {
+  animation-delay: 0.4s;
+}
+.seat-row:nth-child(5) {
+  animation-delay: 0.5s;
+}
+.seat-row:nth-child(6) {
+  animation-delay: 0.6s;
+}
+.seat-row:nth-child(7) {
+  animation-delay: 0.7s;
+}
+.seat-row:nth-child(8) {
+  animation-delay: 0.8s;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) rotateX(45deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotateX(0);
+  }
+}
+
+/* Screen indicator styles */
+.screen-indicator {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+  border-radius: 50px;
+  position: relative;
+  overflow: hidden;
+}
+
+.screen-indicator::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Card hover effects */
+.seat-plan-card {
+  transition: all 0.3s ease;
+  border: 1px solid #e5e7eb;
+}
+
+.seat-plan-card:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Legend item animations */
+.legend-item {
+  transition: all 0.2s ease;
+}
+
+.legend-item:hover {
+  transform: translateX(5px);
+  background-color: #f8fafc;
+}
+
+/* Statistics counter animation */
+.stat-counter {
+  animation: countUp 1s ease-out;
+}
+
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Connection status indicator */
+.connection-indicator {
+  position: relative;
+}
+
+.connection-indicator.connected::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -10px;
+  width: 6px;
+  height: 6px;
+  background: #10b981;
+  border-radius: 50%;
+  animation: pulse-green 2s infinite;
+}
+
+.connection-indicator.disconnected::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -10px;
+  width: 6px;
+  height: 6px;
+  background: #f59e0b;
+  border-radius: 50%;
+  animation: pulse-orange 2s infinite;
+}
+
+@keyframes pulse-green {
+  0%,
+  100% {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: translateY(-50%) scale(1.2);
+  }
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+  .seat-container {
+    margin: 1px;
+  }
+
+  .seat-row {
+    gap: 2px;
+  }
+
+  .screen-indicator {
+    width: 90%;
+    margin: 0 auto;
+  }
+}
+
+/* Loading skeleton styles */
+.seat-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Accessibility improvements */
+.seat-container:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.seat-container[aria-selected="true"] {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .seat-container {
+    border: 2px solid currentColor;
+  }
+
+  .seat-container.selected {
+    background: #000;
+    color: #fff;
+  }
+
+  .seat-container.booked {
+    background: #666;
+    color: #fff;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .seat-container,
+  .seat-row,
+  .legend-item,
+  .seat-plan-card {
+    animation: none;
+    transition: none;
+  }
+
+  .seat-container:hover {
+    transform: none;
+  }
+}

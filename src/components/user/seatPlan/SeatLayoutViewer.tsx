@@ -1,25 +1,20 @@
-import { Card, Text, Group, Loader } from "@mantine/core";
+import { Card, Text, Group, Badge, Alert } from "@mantine/core";
 import { type SeatLayoutType } from "@/types/AdminTypes";
 import { useCallback, useEffect, useState, type JSX } from "react";
 import { twMerge } from "tailwind-merge";
-import { useSeatTypeQuery } from "@/api/query/admin/seatTypeQuery";
-import { useScheduleByShowDetailQuery } from "@/api/query/admin/scheduleQuery";
-import dayjs from "dayjs";
-import type { SeatTypeTypes } from "@/types/SeatTypeTypes";
-import type { SelectedInfoType, SelectedSeatType } from "./BookingForm";
 import io from "socket.io-client";
 import { useAuthStore } from "@/store/authStore";
+import type { SelectedSeatType } from "@/pages/user/SeatPlan";
+import type { ScheduleWithSeatList } from "@/types/ScheduleTypes";
+import { IconInfoCircle, IconUsers, IconClock } from "@tabler/icons-react";
+import SeatLists from "./SeatList";
+import SeatLegend from "./SeatLegend";
 
 interface SeatLayoutViewerProps {
   layout: SeatLayoutType;
-  selectedInfo: SelectedInfoType;
-  updateSelectedInfo: <K extends keyof SelectedInfoType>(
-    key: K,
-    value: SelectedInfoType[K],
-  ) => void;
+  schedule: ScheduleWithSeatList;
   setSelectedSeats: (value: SelectedSeatType[]) => void;
   selectedSeats: SelectedSeatType[];
-  activeStep: number;
 }
 
 interface TempSeat {
@@ -30,41 +25,18 @@ interface TempSeat {
 export const socket = io("http://localhost:3000");
 const SeatLayoutViewer = ({
   layout,
-  selectedInfo,
-  updateSelectedInfo,
+  schedule,
   selectedSeats,
   setSelectedSeats,
-  activeStep,
 }: SeatLayoutViewerProps) => {
-  const [seatTypeList, setSeatTypeList] = useState<SeatTypeTypes[]>([]);
+  // const [socket, setSocket] = useState<any>(null);
   const [bookedSeats, setBookedSeats] = useState<string[]>([]);
   const [tempSeats, setTempSeats] = useState<any[]>([]);
   const [resetTimer, setResetTimer] = useState(200);
 
-  const { data: seatTypeData } = useSeatTypeQuery();
   const { user } = useAuthStore();
 
-  const {
-    movie,
-    theatre,
-    screen,
-    schedule,
-    seats: selectedSeatList,
-    showDate,
-    showTime,
-  } = selectedInfo;
-
-  const {
-    data: selectedSchedule,
-    isLoading,
-    refetch,
-  } = useScheduleByShowDetailQuery(
-    movie?.id.toString() || "",
-    theatre?.id.toString() || "",
-    screen?.id.toString() || "",
-    dayjs(showDate, "DD-MM-YYYY").format("YYYY-MM-DD"),
-    showTime || "",
-  );
+  const { movie, theatre, screen, seatTypeList, showDate, showTime } = schedule;
 
   const [isConnected, setIsConnected] = useState(socket.connected);
 
@@ -96,7 +68,7 @@ const SeatLayoutViewer = ({
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const newList = selectedInfo.seats?.map((seat) => {
+      const newList = selectedSeats.map((seat) => {
         // Find the corresponding temp seat for this schedule
         const temp = tempSeats?.find((s) => s.seatId === seat.label);
 
@@ -116,11 +88,11 @@ const SeatLayoutViewer = ({
       // Filter out seats whose countdown reached 0
       const filteredList = newList?.filter((seat) => seat.countDown > 0);
 
-      updateSelectedInfo("seats", filteredList);
+      setSelectedSeats(filteredList);
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [selectedInfo.seats, tempSeats]);
+  }, [selectedSeats, tempSeats]);
 
   useEffect(() => {
     if (!socket || !schedule) return;
@@ -134,7 +106,8 @@ const SeatLayoutViewer = ({
         temp.some((t) => t.userId === user?.id && t?.seatId === s?.label),
       );
       console.log("use.....temp", updateList);
-      updateSelectedInfo("seats", updateList);
+      console.log("selected seats", selectedSeats);
+      // setSelectedSeats(updateList);
       setTempSeats(temp);
     });
     socket.emit("join schedule", String(schedule?.id));
@@ -145,22 +118,8 @@ const SeatLayoutViewer = ({
     };
   }, [socket, schedule, selectedSeats]);
 
-  useEffect(() => {
-    if (selectedSchedule) {
-      updateSelectedInfo("schedule", selectedSchedule?.data);
-    }
-  }, [selectedSchedule]);
-
-  useEffect(() => {
-    refetch();
-  }, [selectedInfo.showTime]);
-
-  useEffect(() => {
-    setSeatTypeList(seatTypeData?.data);
-  }, [seatTypeData]);
-
   const addSeatsToBooking = (seatId: string, selectedType: any) => {
-    const seatExists = selectedSeatList.find((item) => item.label === seatId);
+    const seatExists = selectedSeats.find((item) => item.label === seatId);
     const typeDetail = schedule?.priceList?.find(
       (item) => item.id === selectedType?.seatType?.id,
     );
@@ -172,11 +131,11 @@ const SeatLayoutViewer = ({
     };
 
     if (seatExists) {
-      const newList = selectedSeatList.filter(
+      const newList = selectedSeats.filter(
         (seat) => seat.label !== seatExists.label,
       );
       setSelectedSeats(newList);
-      updateSelectedInfo("seats", newList);
+      setSelectedSeats(newList);
 
       socket.emit("deselect seat", {
         scheduleId: schedule?.id,
@@ -184,11 +143,10 @@ const SeatLayoutViewer = ({
         userId: user?.id,
       });
     } else {
-      if (selectedSeatList?.length <= 10) {
-        const newList = [...selectedSeatList, newSeat];
-        console.log("new list", newList);
+      if (selectedSeats?.length <= 10) {
+        const newList = [...selectedSeats, newSeat];
         setSelectedSeats(newList);
-        updateSelectedInfo("seats", newList);
+        setSelectedSeats(newList);
 
         socket.emit("select seat", {
           scheduleId: schedule?.id,
@@ -208,7 +166,6 @@ const SeatLayoutViewer = ({
       const selectedType: any = screen?.seatTypes?.find((item) => {
         return item?.seatList?.find((i) => i === rowLabel);
       });
-
       for (let seat = 1; seat <= layout.seatsPerRow; seat++) {
         const seatId = `${rowLabel}${seat}`;
         const isDisabled = layout?.disabledSeats.includes(seatId);
@@ -236,41 +193,41 @@ const SeatLayoutViewer = ({
           <div key={seatId} className="flex items-center">
             <div
               className={twMerge(
-                "w-8 h-8 text-xs font-[500] flex items-center justify-center rounded border-2  border-standard text-standard",
-                selectedSeatList?.length <= 10 &&
-                  "hover:bg-accent hover:text-black hover:border-accent cursor-pointer transition-color duration-100",
-                isDisabled &&
-                  "bg-red-300 border-red-300 text-red-600 hover:bg-red-300 hover:text-red-600 cursor-default pointer-events-none",
-                selectedType?.seatType?.name === "Premium" &&
-                  " border-premium text-premium",
-                selectedType?.seatType?.name === "VIP" && "border-vip text-vip",
-                selectedSeat && "bg-accent text-black border-accent",
-                isTemp &&
-                  "bg-temp text-text/50 hover:text-text hover:bg-darkGray cursor-default pointer-events-none",
-                isBooked &&
-                  "bg-booked border-booked text-text/50 hover:text-text hover:bg-darkGray cursor-default pointer-events-none",
+                (isDisabled || isTemp || isBooked) &&
+                  "cursor-default pointer-events-none",
               )}
               title={`Seat ${seatId} ${
                 isDisabled ? "(Disabled)" : "(Available)"
               }`}
               onClick={() => addSeatsToBooking(seatId, selectedType)}
             >
-              {seatId}
+              {/* {seatId} */}
+              <SeatLists
+                seat={{ isBooked, id: seatId, price: 0 }}
+                isSelected={selectedSeats.some((seat) => seat.label === seatId)}
+                isDisabled={isDisabled}
+                isBooked={isBooked}
+                isTemp={isTemp}
+                seatType={selectedType}
+              />
             </div>
-            {hasAisleAfter && <div className="w-4" />}
+            {hasAisleAfter && <div className="w-10" />}
           </div>,
         );
       }
 
       rows.push(
-        <div key={row} className="flex items-center gap-1 mb-1 select-none">
-          <div className="flex gap-1 ">{seats}</div>
+        <div
+          key={row}
+          className="seat-row flex items-center gap-1 mb-1 select-none"
+        >
+          <div className="flex gap-1">{seats}</div>
         </div>,
       );
     }
 
     return rows;
-  }, [layout, tempSeats, selectedSeatList, schedule]);
+  }, [layout, tempSeats, selectedSeats, schedule]);
 
   const getSeatLabel = (typeName: string): string => {
     const seatType = schedule?.priceList?.find(
@@ -282,47 +239,115 @@ const SeatLayoutViewer = ({
     return typeName;
   };
 
-  if (isLoading) {
-    return (
-      <div className="w-full h-[300px] flex items-center justify-center">
-        <Loader type="dots" size={40} />
-      </div>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <div className="w-full h-[300px] flex items-center justify-center">
+  //       <Loader type="dots" size={40} />
+  //     </div>
+  //   );
+  // }
+
+  const getSeatStats = () => {
+    const totalSeats =
+      layout.rows * layout.seatsPerRow - layout.disabledSeats.length;
+    const bookedCount =
+      (schedule?.bookedSeats?.length || 0) + bookedSeats.length;
+    const tempCount = tempSeats.length;
+    const availableCount = totalSeats - bookedCount - tempCount;
+
+    return { totalSeats, bookedCount, tempCount, availableCount };
+  };
+
+  const stats = getSeatStats();
 
   return (
-    <Card padding="lg" radius="md" withBorder className="dashboard-bg">
-      <Group justify="space-between" mb="md">
-        <Group gap="md">
-          <Group gap="xs">
-            <div className="w-4 h-4 border-2 border-standard rounded"></div>
-            <Text size="xs">{getSeatLabel("Standard")}</Text>
-          </Group>
-          <Group gap="xs">
-            <div className="w-4 h-4 border-2 border-premium rounded"></div>
-            <Text size="xs">{getSeatLabel("Premium")}</Text>
-          </Group>
-          <Group gap="xs">
-            <div className="w-4 h-4 border-2 border-vip rounded"></div>
-            <Text size="xs">{getSeatLabel("VIP")}</Text>
-          </Group>
-        </Group>
-      </Group>
+    <div className="space-y-6">
+      {/* Connection Status */}
+      {!isConnected && (
+        <Alert
+          icon={<IconInfoCircle size={16} />}
+          title="Connection Status"
+          color="orange"
+          className="!bg-surface !border-surface-hover !text-text"
+        >
+          Reconnecting to live seat updates...
+        </Alert>
+      )}
 
-      <div className="bg-surface-hover p-4 rounded-lg">
-        <div className="text-center mb-4 w-full">
-          <div className="font-semibold text-text w-full h-[30px] rounded-lg inline-block select-none">
-            <div className="mt-1">SCREEN</div>
+      {/* Seat Statistics */}
+      {/* <Card className="!bg-surface !border-surface-hover !text-text">
+        <Group justify="space-between" className="mb-4">
+          <Text size="lg" fw={600} className="!text-text">
+            Seat Availability
+          </Text>
+          <Badge
+            color={isConnected ? "green" : "orange"}
+            variant="light"
+            leftSection={<IconUsers size={14} />}
+            className="!bg-surface-hover !text-text"
+          >
+            {isConnected ? "Live Updates" : "Reconnecting"}
+          </Badge>
+        </Group>
+
+        <Group gap="xl">
+          <div className="text-center">
+            <Text size="xl" fw={700} className="text-green-400">
+              {stats.availableCount}
+            </Text>
+            <Text size="sm" className="text-muted">
+              Available
+            </Text>
           </div>
+          <div className="text-center">
+            <Text size="xl" fw={700} className="text-red-400">
+              {stats.bookedCount}
+            </Text>
+            <Text size="sm" className="text-muted">
+              Booked
+            </Text>
+          </div>
+          <div className="text-center">
+            <Text size="xl" fw={700} className="text-orange-400">
+              {stats.tempCount}
+            </Text>
+            <Text size="sm" className="text-muted">
+              Reserved
+            </Text>
+          </div>
+          <div className="text-center">
+            <Text size="xl" fw={700} className="text-blue-400">
+              {selectedSeats.length}
+            </Text>
+            <Text size="sm" className="text-muted">
+              Selected
+            </Text>
+          </div>
+        </Group>
+      </Card> */}
+
+      {/* Seat Legend */}
+      <SeatLegend priceList={schedule?.priceList} />
+
+      {/* Seat Grid */}
+      <Card padding="xl" className="!bg-surface !text-text">
+        <div className="text-center mb-8">
+          <Text size="lg" fw={600} className="!text-text mb-2">
+            Select Your Seats
+          </Text>
+          <Text size="sm" className="text-muted">
+            Maximum 10 seats can be selected. Click on available seats to
+            select/deselect.
+          </Text>
         </div>
 
-        <div className="max-w-[400px] mx-auto overflow-x-auto p-2">
-          <div className="inline-flex min-w-full flex-col items-center justify-center">
+        <div className="flex justify-center">
+          <div className="seat-grid-container inline-flex flex-col items-center justify-center space-y-2">
             {generateSeatGrid()}
           </div>
         </div>
-      </div>
-    </Card>
+      </Card>
+    </div>
   );
 };
 

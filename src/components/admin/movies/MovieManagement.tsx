@@ -252,7 +252,7 @@ const MovieManagement = ({
           id: cast?.id,
           name: cast?.name,
           role: cast?.role,
-          imageUrl: cast?.imageUrl,
+          imageUrl: cast?.image.url,
         })),
       );
     }
@@ -392,7 +392,7 @@ const MovieManagement = ({
       >
         <Group mb="md">
           <TextInput
-            placeholder="Search movies..."
+            placeholder="Search movies by name"
             leftSection={<IconSearch size={16} />}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -633,6 +633,7 @@ const MovieManagement = ({
                 value={selectedLanguages}
                 setValue={setSelectedLanguages}
                 dataList={languages}
+                placeholder="Select Languages"
               />
               {form.errors.language && (
                 <p className="text-[12px] mt-1 text-red-400">
@@ -648,6 +649,7 @@ const MovieManagement = ({
                 value={selectedSubtitles}
                 setValue={setSelectedSubtitles}
                 dataList={subtitles}
+                placeholder="Select Subtitles"
               />
               {form.errors.subtitle && (
                 <p className="text-[12px] mt-1 text-red-400">
@@ -687,7 +689,7 @@ const MovieManagement = ({
                 label="Poster"
                 classNames={{
                   input: "dashboard-input",
-                  placeholder: "!text-muted",
+                  placeholder: "!text-muted !text-sm",
                 }}
                 // required
                 accept="image/*"
@@ -721,7 +723,7 @@ const MovieManagement = ({
                 onChange={handleImageUpload}
                 classNames={{
                   input: "dashboard-input",
-                  placeholder: "!text-muted",
+                  placeholder: "!text-muted !text-sm",
                 }}
                 description="Upload multiple images for the movie (posters, stills, behind-the-scenes)"
               />

@@ -245,7 +245,7 @@ const UserManagement = () => {
                         <Table.Th>Email</Table.Th>
                         <Table.Th>Phone No</Table.Th>
                         {activeTab === Role.staff && (
-                          <Table.Th miw={150}>Theatre</Table.Th>
+                          <Table.Th miw={150}>Branch</Table.Th>
                         )}
                         <Table.Th>Status</Table.Th>
                         <Table.Th>Actions</Table.Th>
@@ -441,13 +441,13 @@ const UserManagement = () => {
 
             {form.values.role === Role.staff && (
               <Select
-                label="Theatre"
+                label="Branch"
                 data={theatres?.data?.map((theatre) => ({
                   label: theatre?.name,
                   value: theatre?.id?.toString(),
                 }))}
                 classNames={inputStyle}
-                placeholder="Select Theatre"
+                placeholder="Select Branch"
                 {...form.getInputProps("theatreId")}
               />
             )}

@@ -5,7 +5,7 @@ import ScheduleList from "@/components/user/ticketPlan/ScheduleList";
 import type { MovieDetailType } from "@/types/MovieTypes";
 import type { ScheduleType } from "@/types/ScheduleTypes";
 import { minsToHMin } from "@/utils/timeFormatter";
-import { Badge, Image, TextInput } from "@mantine/core";
+import { Badge, Image, Skeleton, TextInput } from "@mantine/core";
 import { IconCalendar, IconClock, IconSearch } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
@@ -38,7 +38,7 @@ const TicketPlan = () => {
   const [movie, setMovie] = useState<MovieDetailType | null>(null);
   const [schedules, setSchedules] = useState<ShowDetailType[]>([]);
 
-  const { data } = useMovieDetailQuery(movieId ?? "");
+  const { data, isLoading } = useMovieDetailQuery(movieId ?? "");
   const { data: scheduleData, refetch } = useSchedulesQuery(
     movieId ?? "",
     selectedDate,
@@ -50,8 +50,6 @@ const TicketPlan = () => {
 
   useEffect(() => {
     refetch();
-
-    console.log("selected Date", selectedDate, movieId);
   }, [selectedDate]);
 
   useEffect(() => {
@@ -74,103 +72,110 @@ const TicketPlan = () => {
         showDates.push(s?.showDate);
       }
     });
-    setDateList(showDates);
+    const sortedDates = showDates.sort(
+      (a, b) => new Date(a).getTime() - new Date(b).getTime(),
+    );
+    setDateList(sortedDates);
+    setSelectedDate(sortedDates[0]);
   }, [data]);
 
   return (
     <div className="min-h-screen bg-background">
-      {movie && (
-        <div>
-          {/* Movie Header */}
-          <div className="relative pt-14 pb-8">
-            <div className="max-w-4xl mx-auto px-6 text-center">
-              {/* Centered Movie Poster */}
-              <div className="flex justify-center mb-6">
-                <Image
-                  src={movie?.poster?.url}
-                  className="!rounded-xl shadow-2xl"
-                  h={400}
-                  w={300}
-                />
-              </div>
+      <Skeleton visible={isLoading} height={"100%"}>
+        {movie && (
+          <div>
+            {/* Movie Header */}
+            <div className="relative pt-14 pb-8">
+              <div className="max-w-4xl mx-auto px-6 text-center">
+                {/* Centered Movie Poster */}
+                <div className="flex justify-center mb-6">
+                  <Image
+                    src={movie?.poster?.url}
+                    className="!rounded-xl shadow-2xl"
+                    h={400}
+                    w={300}
+                  />
+                </div>
 
-              {/* Essential Movie Info */}
-              <div className="space-y-4">
-                <h1 className="text-3xl font-bold text-text">{movie.title}</h1>
+                {/* Essential Movie Info */}
+                <div className="space-y-4">
+                  <h1 className="text-3xl font-bold text-text">
+                    {movie.title}
+                  </h1>
 
-                <div className="flex flex-wrap items-center justify-center gap-6 text-blueGray">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted">Duration:</span>
-                    <span>{minsToHMin(parseInt(movie.duration))}</span>
-                  </div>
+                  <div className="flex flex-wrap items-center justify-center gap-6 text-blueGray">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-muted">Duration:</span>
+                      <span>{minsToHMin(parseInt(movie.duration))}</span>
+                    </div>
 
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted">Languages:</span>
-                    <span>
-                      {movie.language?.map((item, index) => (
-                        <span key={item}>
-                          {item}
-                          {index !== movie.language.length - 1 && ", "}
-                        </span>
-                      ))}
-                    </span>
-                  </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-muted">Languages:</span>
+                      <span>
+                        {movie.language?.map((item, index) => (
+                          <span key={item}>
+                            {item}
+                            {index !== movie.language.length - 1 && ", "}
+                          </span>
+                        ))}
+                      </span>
+                    </div>
 
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted">Subtitles:</span>
-                    <span>
-                      {movie.subtitle?.map(
-                        (item, index) =>
-                          `${item}${
-                            index !== movie.subtitle.length - 1 ? ", " : ""
-                          }`,
-                      )}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-muted">Subtitles:</span>
+                      <span>
+                        {movie.subtitle?.map(
+                          (item, index) =>
+                            `${item}${
+                              index !== movie.subtitle.length - 1 ? ", " : ""
+                            }`,
+                        )}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Date Selection */}
-          <div className="bg-surface py-8">
-            <div className="max-w-7xl mx-auto px-6">
-              <div className="flex items-center gap-3 mb-6">
-                <IconCalendar size={24} color={"var(--color-accent)"} />
-                <h2 className="text-2xl font-semibold text-text">
-                  Select Date
-                </h2>
-              </div>
-              <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
-                {dateList?.map((item) => (
-                  <button
-                    className={twMerge(
-                      "px-6 py-3 rounded-lg cursor-pointer bg-surface-hover text-text font-medium transition-all duration-200 hover:bg-surface-light hover:scale-105 shadow-sm",
-                      selectedDate === item &&
-                        "bg-primary text-white hover:!bg-primary hover:!scale-105",
-                    )}
-                    key={item}
-                    onClick={() => setSelectedDate(item)}
-                  >
-                    {dayjs(item).format("MMM DD")}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Showtimes Section */}
-          <div className="py-12">
-            <div className="max-w-7xl mx-auto px-6">
-              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8">
-                <div className="flex items-center gap-3">
-                  <SeatIcon />
+            {/* Date Selection */}
+            <div className="bg-surface py-8">
+              <div className="max-w-7xl mx-auto px-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <IconCalendar size={24} color={"var(--color-accent)"} />
                   <h2 className="text-2xl font-semibold text-text">
-                    Available Showtimes
+                    Select Date
                   </h2>
                 </div>
+                <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
+                  {dateList?.map((item) => (
+                    <button
+                      className={twMerge(
+                        "px-6 py-3 rounded-lg cursor-pointer bg-surface-hover text-text font-medium transition-all duration-200 hover:bg-surface-light hover:scale-105 shadow-sm",
+                        selectedDate === item &&
+                          "bg-primary text-white hover:!bg-primary hover:!scale-105",
+                      )}
+                      key={item}
+                      onClick={() => setSelectedDate(item)}
+                    >
+                      {dayjs(item).format("MMM DD")}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
 
-                <TextInput
+            {/* Showtimes Section */}
+            <div className="py-12">
+              <div className="max-w-7xl mx-auto px-6">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8">
+                  <div className="flex items-center gap-3">
+                    <SeatIcon />
+                    <h2 className="text-2xl font-semibold text-text">
+                      Available Showtimes
+                    </h2>
+                  </div>
+
+                  {/* <TextInput
                   placeholder="Search by location..."
                   classNames={{
                     root: "!w-full lg:!w-[350px]",
@@ -181,41 +186,42 @@ const TicketPlan = () => {
                   leftSection={
                     <IconSearch size={20} color={"var(--color-accent)"} />
                   }
-                />
-              </div>
+                /> */}
+                </div>
 
-              <div className="min-h-[400px]">
-                {schedules?.length > 0 ? (
-                  <div className="space-y-4">
-                    {schedules?.map((item) => (
-                      <div
-                        key={item?.theatre?.location}
-                        className="bg-surface rounded-xl p-6 shadow-sm border border-surface-hover"
-                      >
-                        <ScheduleList
-                          schedule={item}
-                          movie={movie}
-                          selectedDate={selectedDate}
-                        />
+                <div className="min-h-[400px]">
+                  {schedules?.length > 0 ? (
+                    <div className="bg-surface rounded-xl shadow-sm border border-surface-hover">
+                      {schedules?.map((item) => (
+                        <div
+                          key={item?.theatre?.location}
+                          // className="bg-surface rounded-xl p-6 shadow-sm border border-surface-hover"
+                        >
+                          <ScheduleList
+                            schedule={item}
+                            movie={movie}
+                            selectedDate={selectedDate}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center py-16 text-center">
+                      <SeatIcon />
+                      <div className="text-xl text-muted">
+                        No showtimes available for this date
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center py-16 text-center">
-                    <SeatIcon />
-                    <div className="text-xl text-muted">
-                      No showtimes available for this date
+                      <div className="text-sm text-muted mt-2">
+                        Please select a different date
+                      </div>
                     </div>
-                    <div className="text-sm text-muted mt-2">
-                      Please select a different date
-                    </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </Skeleton>
     </div>
   );
 };

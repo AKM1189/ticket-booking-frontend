@@ -298,7 +298,7 @@ const ScreenManagement = () => {
       >
         <Group mb="md">
           <TextInput
-            placeholder="Search screens by name, theatre, type..."
+            placeholder="Search screens by name, branch, and type"
             leftSection={<IconSearch size={16} />}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -329,7 +329,7 @@ const ScreenManagement = () => {
                   <Table.Tr>
                     <Table.Th className="min-w-[130px]">Screen Name</Table.Th>
                     <Table.Th className="!min-w-[200px] w-[250px]">
-                      Theatre
+                      Branch
                     </Table.Th>
                     <Table.Th>Type</Table.Th>
                     <Table.Th>Capacity</Table.Th>
@@ -518,8 +518,8 @@ const ScreenManagement = () => {
             </Grid.Col>
             <Grid.Col>
               <Select
-                label="Theatre"
-                placeholder="Select theatre"
+                label="Branch"
+                placeholder="Select branch"
                 data={theatres?.map((theatre) => ({
                   value: String(theatre?.id),
                   label: `${theatre?.name} (${theatre?.location})`,

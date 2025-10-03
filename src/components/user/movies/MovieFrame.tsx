@@ -1,5 +1,5 @@
 import { MovieStatus, sortList } from "@/constants/movieConstants";
-import { Button, Drawer, Pagination, Text, ThemeIcon } from "@mantine/core";
+import { Drawer, Pagination, Text, ThemeIcon } from "@mantine/core";
 import { twMerge } from "tailwind-merge";
 import { MovieGrid, MovieList, FilterCard } from "@/components/user/movies";
 import type { MovieDetailType } from "@/types/MovieTypes";
@@ -9,7 +9,6 @@ import { useState, useMemo, useEffect } from "react";
 import {
   IconAdjustmentsHorizontal,
   IconAdjustmentsOff,
-  IconCross,
   IconGridDots,
   IconMenu2,
 } from "@tabler/icons-react";
@@ -64,8 +63,8 @@ const MovieFrame = ({ type }: { type: string | undefined }) => {
       lang: filterData?.data?.languages,
       exp: filterData?.data?.experiences,
       genre: filterData?.data?.genres?.reduce(
-        (acc, cur) => [...acc, cur?.name],
-        [],
+        (acc: string[], cur: any) => [...acc, cur?.name],
+        [] as string[],
       ),
     });
   }, [filterData]);

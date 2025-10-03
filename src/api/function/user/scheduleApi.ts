@@ -10,3 +10,8 @@ export const getSchedules = async (movieId: string, showDate: string) => {
   });
   return response.data;
 };
+
+export const getScheduleDetail = async (scheduleId: number) => {
+  const response = await api.get(`${endpoints.user.schedules}/${scheduleId}`);
+  return response.data;
+};
