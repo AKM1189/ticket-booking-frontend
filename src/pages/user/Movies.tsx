@@ -1,10 +1,8 @@
 import MovieSearchCard from "@/components/user/home/MovieSearchCard";
 import { MovieFrame } from "@/components/user/movies";
-import { useState } from "react";
 import { useParams } from "react-router";
 
 const Movies = () => {
-  const [selectedMovie, setSelectedMovie] = useState<string | undefined>();
   const { type } = useParams();
 
   return (
@@ -21,14 +19,11 @@ const Movies = () => {
             </div>
           </div>
         </div>
-        <div className="relative sm:px-[50px] xl:px-[150px]">
+        <div className="relative  max-sm:px-3  max-sm:top-3 max-md:top-20 sm:px-[50px] xl:px-[150px]">
           <div className="relative h-[120px] bg-background flex flex-col justify-center ">
-            <MovieSearchCard
-              selectedMovie={selectedMovie}
-              setSelectedMovie={setSelectedMovie}
-            />
+            <MovieSearchCard />
           </div>
-          <div className="mt-[300px]">
+          <div className="mt-[500px] sm:mt-[400px] md:mt-[200px]">
             <MovieFrame type={type} />
           </div>
         </div>

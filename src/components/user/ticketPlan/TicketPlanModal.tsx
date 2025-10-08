@@ -1,22 +1,35 @@
 import { SeatIcon } from "@/assets/svgs/SeatIcon";
+import type { ShowDetailType } from "@/pages/user/TicketPlan";
 import { routes } from "@/routes";
 import type { MovieDetailType } from "@/types/MovieTypes";
-import { Button, Modal } from "@mantine/core";
+import { minsToHMin } from "@/utils/timeFormatter";
+import { Badge, Button, Grid, Group, Image, Modal } from "@mantine/core";
 import { IconBadgeCc, IconClock } from "@tabler/icons-react";
+import dayjs from "dayjs";
 import { useNavigate } from "react-router";
 
 type TicketPlanModal = {
-  movie: MovieDetailType;
+  movie: MovieDetailType | null;
+  schedule: ShowDetailType;
   opened: boolean;
+  showDate: string;
+  showTime: string;
   close: () => void;
 };
-const TicketPlanModal = ({ movie, opened, close }: TicketPlanModal) => {
+const TicketPlanModal = ({
+  movie,
+  schedule,
+  opened,
+  showDate,
+  showTime,
+  close,
+}: TicketPlanModal) => {
   const navigate = useNavigate();
   return (
     <Modal
       opened={opened}
       onClose={close}
-      // title="Confirm Movie"
+      title="Show Details"
       centered
       classNames={{
         content: "!bg-surface !min-w-[650px] pb-10",
@@ -26,62 +39,77 @@ const TicketPlanModal = ({ movie, opened, close }: TicketPlanModal) => {
       }}
     >
       {/* Modal content */}
-      <div className="text-text flex gap-15 p-5">
-        <img src="/movie03.jpg" className="rounded-md w-[250px]" />
-        <div className="flex flex-col justify-between">
-          <div>
-            <div className="text-3xl font-semibold">ALONE</div>
-            <div className="flex flex-col gap-5">
-              <div className="flex gap-5 mt-5 text-sm">
-                <div className="flex gap-2 items-center">
-                  <IconClock color={"var(--color-blueGray)"} size={20} />2 hrs
-                  50 min
+      {movie && (
+        <div className="text-text flex gap-15 p-5">
+          <Image
+            src={movie?.poster?.url}
+            className="!rounded-lg"
+            h={400}
+            w={250}
+          />
+          <div className="flex flex-col justify-between min-w-[280px]">
+            <div>
+              <Group>
+                <div className="text-3xl font-semibold">{movie.title}</div>
+                <Badge size="lg" variant="light">
+                  <div className="flex gap-2 items-center">
+                    <IconClock color={"var(--color-primary)"} size={20} />
+                    {minsToHMin(parseInt(movie.duration))}
+                  </div>
+                </Badge>
+              </Group>
+              <div className="flex flex-col gap-5 mt-5">
+                <Grid w={"100%"}>
+                  <Grid.Col span={7}>
+                    <div className="">
+                      <span className="text-sm text-muted">Language</span>
+                      <div className="mt-1 text-sm">{schedule?.language}</div>
+                    </div>
+                    <div className="mt-4">
+                      <span className="text-sm text-muted">Show Date</span>
+                      <div className="mt-1 text-sm">
+                        {dayjs(showDate).format("DD-MM-YYYY")}
+                      </div>
+                    </div>
+                  </Grid.Col>
+                  <Grid.Col span={5}>
+                    <div>
+                      <span className="text-sm text-muted">Subtitle</span>
+                      <div className="mt-1 text-sm">{schedule?.subtitle}</div>
+                    </div>
+                    <div className="mt-4">
+                      <span className="text-sm text-muted">Show Time</span>
+                      <div className="mt-1 text-sm">
+                        {dayjs(`${showDate} ${showTime}`).format("hh:mm A")}
+                      </div>
+                    </div>
+                  </Grid.Col>
+                </Grid>
+
+                <div>
+                  <span className="text-sm text-muted">Location</span>
+                  <div className="mt-1 text-sm">
+                    Movie Palace ({schedule?.theatre?.location})
+                  </div>
                 </div>
-                <div className="flex gap-2 items-center">
-                  <IconBadgeCc color={"var(--color-blueGray)"} size={20} />
-                  English
-                </div>
-              </div>
-              <div className="flex gap-16 mt-3 text-sm">
-                <div className="flex flex-col gap-5">
-                  <div className="">
-                    <span className="text-xs text-muted">Cinema</span>
-                    <div className="mt-1">Kantharyar</div>
-                  </div>
-                  <div className="">
-                    <span className="text-xs text-muted">Date</span>
-                    <div className="mt-1">26/6/2025</div>
-                  </div>
-                </div>
-                <div className="flex flex-col gap-5">
-                  <div>
-                    <span className="text-xs text-muted">Theatre</span>
-                    <div className="mt-1">Theatre 1</div>
-                  </div>
-                  <div>
-                    <span className="text-xs text-muted">Time</span>
-                    <div className="mt-1">10:00 AM</div>
-                  </div>
+                <div className="">
+                  <span className="text-sm text-muted">Screen</span>
+                  <div className="mt-1 text-sm">{schedule?.screen?.name}</div>
                 </div>
               </div>
             </div>
+            <Button
+              leftSection={<SeatIcon color="white" />}
+              onClick={() => {
+                close();
+                navigate(`/${routes.user.seatPlan}/${schedule.id}`);
+              }}
+            >
+              Select Seats
+            </Button>
           </div>
-          {/* <NavLink
-            to={"/" + routes.user.seatPlan + "/" + movie.id}
-            className="text-center"
-          > */}
-          <Button
-            leftSection={<SeatIcon color="white" />}
-            onClick={() => {
-              close();
-              navigate(`/${routes.user.seatPlan}/${movie.id}`);
-            }}
-          >
-            Select Seats
-          </Button>
-          {/* </NavLink> */}
         </div>
-      </div>
+      )}
     </Modal>
   );
 };

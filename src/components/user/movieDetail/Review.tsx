@@ -1,9 +1,11 @@
 import { useMemo } from "react";
 import type { MovieDetailType } from "@/types/MovieTypes";
 import { Button } from "@mantine/core";
+import { IconStarFilled } from "@tabler/icons-react";
+import RatingModal from "./RatingModal";
 
 interface ReviewType {
-  movie: MovieDetailType;
+  movie: MovieDetailType | null;
 }
 
 // fetch review separately
@@ -47,6 +49,7 @@ const Review = ({ movie }: ReviewType) => {
         <Button variant="outline" className="!rounded-full !h-[50px] !px-8">
           Load More
         </Button>
+        <RatingModal />
       </div>
     </div>
   );

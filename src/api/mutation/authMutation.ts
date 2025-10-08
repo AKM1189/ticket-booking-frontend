@@ -124,7 +124,7 @@ export const useLogoutMutation = () => {
       queryClient.removeQueries({ queryKey: ["currentUser"] });
       queryClient.clear();
       navigate(routes.auth.login);
-      // window.location.href = routes.auth.login;
+      window.location.href = routes.auth.login;
       // queryClient.invalidateQueries({ queryKey: ["currentUser"] });
     },
     onError: (error) => {

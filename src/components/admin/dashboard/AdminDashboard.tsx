@@ -26,7 +26,7 @@ import {
 } from "@/api/query/admin/dashboardQuery";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
-import { MovieType } from "@/constants/movieConstants";
+import { MovieStatus } from "@/constants/movieConstants";
 import { AdminTabType } from "@/types/AdminTypes";
 import type { StatusType } from "@/types/NotificationType";
 import { getScheduleStatusColor } from "../schedules/ScheduleManagement";
@@ -66,7 +66,7 @@ type RevenueChartType = {
 };
 
 type BookingChartType = {
-  activeChart: MovieType;
+  activeChart: MovieStatus;
   showingMovieBookings: BookingCount[];
   availableMovieBookings: BookingCount[];
 };
@@ -133,7 +133,7 @@ const AdminDashboard = ({
   });
 
   const [bookingChart, setBookingChart] = useState<BookingChartType>({
-    activeChart: MovieType.showing,
+    activeChart: MovieStatus.showing,
     showingMovieBookings: [],
     availableMovieBookings: [],
   });
@@ -194,7 +194,7 @@ const AdminDashboard = ({
       });
 
       setBookingChart({
-        activeChart: MovieType.showing,
+        activeChart: MovieStatus.showing,
         showingMovieBookings,
         availableMovieBookings,
       });
@@ -361,21 +361,21 @@ const AdminDashboard = ({
                 <Select
                   size="xs"
                   placeholder="Select Chart Type"
-                  defaultValue={MovieType.showing}
+                  defaultValue={MovieStatus.showing}
                   data={[
-                    { label: "Now Showing", value: MovieType.showing },
+                    { label: "Now Showing", value: MovieStatus.showing },
                     {
                       label: "Ticket Available",
-                      value: MovieType.available,
+                      value: MovieStatus.available,
                     },
                   ]}
                   onChange={(value) =>
                     setBookingChart((prev) => ({
                       ...prev,
                       activeChart:
-                        value == MovieType.showing
-                          ? MovieType.showing
-                          : MovieType.available,
+                        value == MovieStatus.showing
+                          ? MovieStatus.showing
+                          : MovieStatus.available,
                     }))
                   }
                   color={"var(--color-primary)"}
@@ -385,7 +385,7 @@ const AdminDashboard = ({
               <BarChart
                 h={300}
                 data={
-                  bookingChart.activeChart === MovieType.showing
+                  bookingChart.activeChart === MovieStatus.showing
                     ? bookingChart.showingMovieBookings
                     : bookingChart.availableMovieBookings
                 }

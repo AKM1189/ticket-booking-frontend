@@ -1,4 +1,4 @@
-import { Button, Modal, NumberInput, Textarea } from "@mantine/core";
+import { Button, Modal, NumberInput, Text, Textarea } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { IconStarFilled } from "@tabler/icons-react";
@@ -82,13 +82,9 @@ const RatingModal = () => {
           </div>
         </form>
       </Modal>
-
-      <div
-        className="mt-3 text-sm text-center text-accent cursor-pointer"
-        onClick={open}
-      >
-        Rate it
-      </div>
+      <Text className="cursor-pointer !text-accent" onClick={open}>
+        Write a review
+      </Text>
     </>
   );
 };

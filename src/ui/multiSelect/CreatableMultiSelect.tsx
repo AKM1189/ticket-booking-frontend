@@ -13,10 +13,12 @@ function CreatableMultiSelect({
   dataList,
   value,
   setValue,
+  placeholder,
 }: {
   dataList: string[];
   value: string[];
   setValue: (value) => void;
+  placeholder: string;
 }) {
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption(),
@@ -85,7 +87,7 @@ function CreatableMultiSelect({
                 onFocus={() => combobox.openDropdown()}
                 onBlur={() => combobox.closeDropdown()}
                 value={search}
-                placeholder="Search"
+                placeholder={placeholder}
                 onChange={(event) => {
                   combobox.updateSelectedOptionIndex();
                   setSearch(event.currentTarget.value);

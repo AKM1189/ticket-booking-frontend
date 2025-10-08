@@ -325,7 +325,7 @@ const ScheduleManagement = ({ openScheduleModal, setOpenScheduleModal }) => {
       >
         <Group mb="md">
           <TextInput
-            placeholder="Search schedules by movie, theatre, screen, show time, status"
+            placeholder="Search schedules by movie, branch, screen, show time, and status"
             leftSection={<IconSearch size={16} />}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -353,7 +353,7 @@ const ScheduleManagement = ({ openScheduleModal, setOpenScheduleModal }) => {
                 <Table.Thead>
                   <Table.Tr>
                     <Table.Th>Movie</Table.Th>
-                    <Table.Th>Theater</Table.Th>
+                    <Table.Th>Branch</Table.Th>
                     <Table.Th>Screen</Table.Th>
                     <Table.Th>Show Date</Table.Th>
                     <Table.Th>Show Time</Table.Th>
@@ -440,7 +440,8 @@ const ScheduleManagement = ({ openScheduleModal, setOpenScheduleModal }) => {
                                 variant="light"
                                 disabled={
                                   disableActions(schedule) ||
-                                  !hasAccess(permissionList.updateSchedule)
+                                  !hasAccess(permissionList.updateSchedule) ||
+                                  schedule.status === ScheduleStatus.completed
                                 }
                                 className=""
                                 color="orange"
@@ -453,7 +454,8 @@ const ScheduleManagement = ({ openScheduleModal, setOpenScheduleModal }) => {
                                 color="red"
                                 disabled={
                                   disableActions(schedule) ||
-                                  !hasAccess(permissionList.deleteSchedule)
+                                  !hasAccess(permissionList.deleteSchedule) ||
+                                  schedule.status === ScheduleStatus.completed
                                 }
                                 onClick={() =>
                                   openConfirm({
@@ -526,8 +528,8 @@ const ScheduleManagement = ({ openScheduleModal, setOpenScheduleModal }) => {
             </Grid.Col>
             <Grid.Col span={12}>
               <Select
-                label="Theater"
-                placeholder="Select a theater"
+                label="Branch"
+                placeholder="Select a branch"
                 data={theatres?.map((theatre) => ({
                   value: theatre.id.toString(),
                   label: `${theatre.name} (${theatre.location})`,

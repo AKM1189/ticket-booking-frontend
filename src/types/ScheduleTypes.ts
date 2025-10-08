@@ -1,5 +1,6 @@
 import type { MovieType } from "./MovieTypes";
 import type { ScreenType } from "./ScreenTypes";
+import type { SeatTypeTypes } from "./SeatTypeTypes";
 import type { TheatreType } from "./TheatreTypes";
 
 export type ScheduleType = {
@@ -42,4 +43,11 @@ export type ScheduleInputType = {
   availableSeats: number;
   totalSeats: number;
   isActive: boolean;
+};
+export type ScheduleWithSeatList = ScheduleType & ScheduleSeatType;
+
+export type ScheduleDetailType = {};
+
+export type ScheduleSeatType = {
+  seatTypeList: SeatTypeTypes[];
 };

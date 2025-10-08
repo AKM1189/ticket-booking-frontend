@@ -135,7 +135,7 @@ const BookingForm = ({
     },
     validate: {
       movieId: (value) => (!value ? "Please select a movie" : null),
-      theatreId: (value) => (!value ? "Please select a theatre" : null),
+      theatreId: (value) => (!value ? "Please select a branch" : null),
       screenId: (value) => (!value ? "Please select a screen" : null),
       showDate: (value) => (!value ? "Please select a show date" : null),
       showTime: (value) => (!value ? "Please select a show time" : null),
@@ -241,7 +241,6 @@ const BookingForm = ({
       }
       if (showTime) {
         updateSelectedInfo("showTime", showTime);
-        console.log("updated info", selectedInfo);
       }
     };
     updateFormData();
@@ -363,8 +362,8 @@ const BookingForm = ({
 
                   {user?.role === Role.admin && (
                     <Select
-                      label="Theatre"
-                      placeholder="Select a theatre"
+                      label="Branch"
+                      placeholder="Select a branch"
                       data={theatres?.map((theatre) => ({
                         value: theatre.id.toString(),
                         label: theatre.name,

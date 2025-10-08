@@ -42,12 +42,12 @@ interface AdminLayoutProps {
 const adminNavigationItems = [
   { icon: IconDashboard, label: "Dashboard", value: AdminTabType.DASHBOARD },
   { icon: IconTicket, label: "Bookings", value: AdminTabType.BOOKINGS },
+  { icon: IconCalendar, label: "Schedules", value: AdminTabType.SCHEDULES },
   { icon: IconMovie, label: "Movies", value: AdminTabType.MOVIES },
   { icon: IconTags, label: "Genres", value: AdminTabType.GENRES },
   { icon: IconUserStar, label: "Casts", value: AdminTabType.CASTS },
-  { icon: IconCalendar, label: "Schedules", value: AdminTabType.SCHEDULES },
   { icon: IconDeviceTv, label: "Screens", value: AdminTabType.SCREENS },
-  { icon: IconBuilding, label: "Theaters", value: AdminTabType.THEATERS },
+  { icon: IconBuilding, label: "Branches", value: AdminTabType.THEATERS },
   { icon: IconUsers, label: "Users", value: AdminTabType.USERS },
 ];
 

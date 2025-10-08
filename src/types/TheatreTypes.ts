@@ -10,7 +10,6 @@ export type TheatreType = {
 };
 
 export type TheatreInputType = {
-  name: string;
   location: string;
   region: string;
   city: string;

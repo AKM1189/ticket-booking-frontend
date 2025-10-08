@@ -1,17 +1,17 @@
 import PlayTrailer from "@/components/user/movies/PlayTrailer";
 import type { MovieDetailType } from "@/types/MovieTypes";
-import { Button } from "@mantine/core";
+import { Badge, Button, Image } from "@mantine/core";
 import { useState, useMemo } from "react";
-import RatingModal from "./RatingModal";
 import { NavLink } from "react-router";
 import { routes } from "@/routes";
 import {
-  IconBadgeCc,
   IconBrandParsinta,
   IconCalendar,
   IconClock,
   IconStarFilled,
 } from "@tabler/icons-react";
+import dayjs from "dayjs";
+import { minsToHMin } from "@/utils/timeFormatter";
 
 interface MovieInfoType {
   movie: MovieDetailType;
@@ -19,111 +19,144 @@ interface MovieInfoType {
 }
 const MovieInfo = ({ movie, isTicketPlan = false }: MovieInfoType) => {
   const [showTrailer, setShowTrailer] = useState(false);
+
   if (movie)
     return (
       <div className="relative">
-        <div
-          className={`relative w-full h-[500px] bg-[url("/detail-bg-2.png")] bg-no-repeat bg-cover`}
-        >
-          <div className="relative w-full h-full bg-background/70 flex flex-col gap-5 justify-center items-center">
-            <div className="absolute bottom-0 left-0 ps-[475px] w-full h-[150px] bg-surface/70"></div>
-          </div>
-          <div className="absolute top-32 px-[150px] flex">
-            <div className="relative rounded-md border-2 border-surface overflow-hidden">
-              <img
-                src={movie?.posterUrl}
-                alt=""
-                className="z-[999] w-[280px] h-[400px]"
-              />
-              <div
-                className="absolute top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] cursor-pointer"
-                onClick={() => setShowTrailer(true)}
-              >
-                <IconBrandParsinta color="var(--color-blueGray)" size={100} />
-              </div>
-            </div>
-            <div className="ms-10">
-              <div className="text-4xl font-bold mb-5">{movie.name}</div>
-              <div className="text-blueGray flex flex-col gap-5">
-                <div>
-                  {useMemo(
-                    () =>
-                      movie.languages.map((item, index) => (
-                        <span key={item}>
-                          {item} {index !== movie.languages.length - 1 && ","}{" "}
-                        </span>
-                      )),
-                    [movie.languages],
-                  )}
+        <div className="relative bg-[url(/movie_detail_bg_2.jpg)] bg-cover bg-center bg-no-repeat">
+          <div className="absolute inset-0 bg-black/70"></div>
+
+          <div className="relative z-10 container mx-auto px-6 py-16">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
+              {/* Movie Poster */}
+              <div className="lg:col-span-1 flex justify-center">
+                <div className="relative group">
+                  <div className="relative rounded-2xl overflow-hidden shadow-2xl w-[280px] h-[400px]">
+                    <Image
+                      src={movie?.poster?.url}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-300"></div>
+                    <div
+                      className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer opacity-80 hover:opacity-100 transition-opacity duration-300"
+                      onClick={() => setShowTrailer(true)}
+                    >
+                      <IconBrandParsinta
+                        color="var(--color-blueGray)"
+                        size={80}
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div className="flex gap-3">
+              </div>
+
+              {/* Movie Details */}
+              <div className="lg:col-span-2 space-y-8">
+                {/* Title */}
+                <div>
+                  <h1 className="text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight">
+                    {movie.title}
+                  </h1>
+                </div>
+
+                {/* Genres */}
+                <div className="flex flex-wrap gap-3">
                   {useMemo(
                     () =>
-                      movie.genres.map((item) => (
-                        <span
+                      movie?.genres?.map((item) => (
+                        <Badge
                           key={item.id}
-                          className="px-4 py-2 border border-surface-hover rounded-full"
+                          color={item.color}
+                          size="lg"
+                          className="px-4 py-2"
                         >
-                          {item.label}
-                          {/* {index !== movie.genres.length - 1 && "|"}{" "} */}
-                        </span>
+                          {item.name}
+                        </Badge>
                       )),
-                    [movie.genres],
+                    [movie?.genres],
                   )}
                 </div>
-                <div className="flex gap-5 items-center">
-                  <span className="flex items-center gap-2">
-                    <IconCalendar color={"var(--color-blueGray)"} />
-                    <span className="mt-1">{movie.releaseDate}</span>
-                  </span>
-                  <span className="flex items-center gap-2">
-                    <IconClock color={"var(--color-blueGray)"} />
-                    <span className="mt-1">{movie.duration}</span>
-                  </span>
-                  <span className="flex items-center gap-2">
-                    <IconBadgeCc color={"var(--color-blueGray)"} />
-                    <span className="mt-1">{movie.subtitle}</span>
-                  </span>
+
+                {/* Movie Info Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-blueGray">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <IconClock color="var(--color-blueGray)" size={20} />
+                      <span className="text-lg">
+                        {minsToHMin(parseInt(movie.duration))}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <IconCalendar color="var(--color-blueGray)" size={20} />
+                      <span className="text-lg">
+                        {dayjs(movie.releaseDate).format("DD-MM-YYYY")}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <IconStarFilled color="var(--color-accent)" size={20} />
+                      <span className="text-lg font-semibold">
+                        {movie.rating.slice(0, 3)} / 10
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div>
+                      <span className="text-white font-semibold block mb-2">
+                        Language:
+                      </span>
+                      <span className="text-lg">
+                        {useMemo(
+                          () =>
+                            movie?.language?.map((item, index) => (
+                              <span key={item}>
+                                {item}{" "}
+                                {index !== movie?.language.length - 1 && ","}{" "}
+                              </span>
+                            )),
+                          [movie?.language],
+                        )}
+                      </span>
+                    </div>
+
+                    <div>
+                      <span className="text-white font-semibold block mb-2">
+                        Subtitle:
+                      </span>
+                      <span className="text-lg">
+                        {movie.subtitle?.map(
+                          (s, index) =>
+                            `${s} ${
+                              movie.subtitle.length - 1 !== index ? ", " : ""
+                            }`,
+                        )}
+                      </span>
+                    </div>
+                  </div>
                 </div>
+
+                {/* Book Ticket Button */}
+                {!isTicketPlan && (
+                  <div className="pt-6">
+                    <NavLink
+                      to={`/${routes.user.ticketPlan}?movieId=${movie.id}`}
+                    >
+                      <Button
+                        size="lg"
+                        className="!rounded-full !px-8 !py-0 !text-lg !font-semibold !shadow-lg hover:!shadow-xl !transition-all !duration-300"
+                      >
+                        Book Ticket
+                      </Button>
+                    </NavLink>
+                  </div>
+                )}
               </div>
-              {/* <div></div> */}
             </div>
-          </div>
-          <div className="absolute bottom-[40px] left-[475px] flex items-center w-[900px] justify-between">
-            <div>
-              <div className="flex gap-16 items-baseline-last">
-                <div>
-                  <span className="text-xl flex items-center gap-3">
-                    {" "}
-                    <IconStarFilled
-                      color={"var(--color-accent"}
-                      size={30}
-                    />{" "}
-                    {movie.rating}
-                  </span>
-                  <div className="mt-3 text-sm text-center">Users Rating</div>
-                </div>
-                <div>
-                  <span className="text-xl flex items-center gap-3">
-                    {" "}
-                    <IconStarFilled color={"var(--color-muted"} size={30} /> {0}
-                  </span>
-                  <RatingModal />
-                </div>
-              </div>
-              {/* <div className="mt-3">User Rating</div> */}
-            </div>
-            {!isTicketPlan && (
-              <div>
-                <NavLink to={"/" + routes.user.ticketPlan + "/" + movie.id}>
-                  <Button className="!rounded-full !w-[150px] !h-[50px]">
-                    Book Ticket
-                  </Button>
-                </NavLink>
-              </div>
-            )}
           </div>
         </div>
+
         {showTrailer && (
           <PlayTrailer
             videoId={movie.trailerId}

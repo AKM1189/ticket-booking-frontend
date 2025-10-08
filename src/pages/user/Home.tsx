@@ -1,10 +1,35 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import HomeCarousel from "@/components/user/home/HomeCarousel";
 import HomeMovies from "@/components/user/home/HomeMovies";
 import MovieSearchCard from "@/components/user/home/MovieSearchCard";
+import { useMovieStore } from "@/store/useMovieStore";
+import {
+  useAvailableMovieQuery,
+  useComingMovieQuery,
+  useShowingMovieQuery,
+} from "@/api/query/user/movieQuery";
+import { useShowingTheatresQuery } from "@/api/query/user/theatreQuery";
 
 const Home = () => {
-  const [selectedMovie, setSelectedMovie] = useState<string | undefined>();
+  const { setMovies } = useMovieStore();
+
+  const { data: showingMovies } = useShowingMovieQuery();
+  const { data: availableMovies } = useAvailableMovieQuery();
+  const { data: comingMovies } = useComingMovieQuery();
+
+  const { data: theatres } = useShowingTheatresQuery();
+
+  useEffect(() => {
+    setMovies(showingMovies?.data, "showing");
+  }, [showingMovies]);
+
+  useEffect(() => {
+    setMovies(availableMovies?.data, "available");
+  }, [availableMovies]);
+
+  useEffect(() => {
+    setMovies(comingMovies?.data, "coming");
+  }, [comingMovies]);
 
   return (
     <div className="">
@@ -13,10 +38,7 @@ const Home = () => {
       </div>
       <div className="sm:px-[50px] xl:px-[150px]">
         <div className="relative h-[120px] bg-background flex flex-col justify-center ">
-          <MovieSearchCard
-            selectedMovie={selectedMovie}
-            setSelectedMovie={setSelectedMovie}
-          />
+          <MovieSearchCard />
         </div>
         <div className="my-[200px] max-md:mt-[600px] mt-[200px] max-sm:px-5">
           <HomeMovies />

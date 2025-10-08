@@ -56,7 +56,7 @@
 
 .mantine-Popover-dropdown {
   padding: 3px 0 3px 3px !important;
-  border-color: var(--color-surface-hover) !important;
+  border-color: var(--color-notiBorder) !important;
   border-radius: 7px !important;
   background-color: var(--color-surface-hover) !important;
   color: var(--color-text) !important;

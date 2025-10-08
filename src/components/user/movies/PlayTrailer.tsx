@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import YouTube, { type YouTubeProps } from "react-youtube";
 
-import { Skeleton } from "@mantine/core";
+import { Skeleton, Text, Title } from "@mantine/core";
 
 import "@/styles/css/skeletonStyle.css";
-import { IconX } from "@tabler/icons-react";
+import { IconError404, IconX } from "@tabler/icons-react";
 
 interface PlayTrailerType {
   videoId: string;
@@ -53,14 +53,21 @@ const PlayTrailer = ({ videoId, onClose }: PlayTrailerType) => {
         >
           <IconX size={40} />
         </div>
-        <Skeleton visible={loading}>
-          <YouTube
-            videoId={videoId}
-            opts={opts}
-            onReady={onPlayerReady}
-            className="w-full h-full"
-          />
-        </Skeleton>
+        {videoId ? (
+          <Skeleton visible={loading}>
+            <YouTube
+              videoId={videoId}
+              opts={opts}
+              onReady={onPlayerReady}
+              className="w-full h-full"
+            />
+          </Skeleton>
+        ) : (
+          <div className="w-full h-[500px] bg-surface flex flex-col justify-center items-center">
+            <IconError404 size={50} color="var(--color-muted)" />
+            <Text color="var(--color-muted)">Trailer Not Available</Text>
+          </div>
+        )}
       </div>
     </div>
   );

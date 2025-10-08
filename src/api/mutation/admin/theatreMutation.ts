@@ -12,11 +12,11 @@ export const useAddTheatreMutation = () => {
   return useMutation({
     mutationFn: ({ data }: { data: TheatreInputType }) => addTheatre(data),
     onSuccess: (data) => {
-      getSuccessNoti("Add Theatre", data, "Theatre successfully added");
+      getSuccessNoti("Add Branch", data, "Branch successfully added");
       queryClient.invalidateQueries({ queryKey: ["theatres"] });
     },
     onError: (error) => {
-      getErrorNoti("Add Theatre", error, "Theatre adding failed");
+      getErrorNoti("Add Branch", error, "Branch adding failed");
     },
   });
 };
@@ -28,11 +28,11 @@ export const useUpdateTheatreMutation = () => {
     mutationFn: ({ data, id }: { data: TheatreInputType; id: number }) =>
       updateTheatre(data, id),
     onSuccess: (data) => {
-      getSuccessNoti("Update Theatre", data, "Theatre successfully updated");
+      getSuccessNoti("Update Branch", data, "Branch successfully updated");
       queryClient.invalidateQueries({ queryKey: ["theatres"] });
     },
     onError: (error) => {
-      getErrorNoti("Update Theatre", error, "Theatre updating failed");
+      getErrorNoti("Update Branch", error, "Branch updating failed");
     },
   });
 };
@@ -43,11 +43,11 @@ export const useDeleteTheatreMutation = () => {
   return useMutation({
     mutationFn: ({ id }: { id: number }) => deleteTheatre(id),
     onSuccess: (data) => {
-      getSuccessNoti("Delete Theatre", data, "Theatre successfully deleted");
+      getSuccessNoti("Delete Branch", data, "Branch successfully deleted");
       queryClient.invalidateQueries({ queryKey: ["theatres"] });
     },
     onError: (error) => {
-      getErrorNoti("Delete Theatre", error, "Theatre deleting failed");
+      getErrorNoti("Delete Branch", error, "Branch deleting failed");
     },
   });
 };

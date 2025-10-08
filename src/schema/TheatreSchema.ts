@@ -1,7 +1,6 @@
 import { z } from "zod";
 
 export const theatreSchema = z.object({
-  name: z.string().min(3, { message: "Name is required." }),
   location: z.string().min(1, { message: "Location is required" }),
   region: z.string().min(1, { message: "Region is required" }),
   city: z.string().min(1, { message: "City is required" }),

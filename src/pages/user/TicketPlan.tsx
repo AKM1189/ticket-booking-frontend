@@ -1,290 +1,227 @@
+import { useMovieDetailQuery } from "@/api/query/user/movieQuery";
+import { useSchedulesQuery } from "@/api/query/user/scheduleQuery";
 import { SeatIcon } from "@/assets/svgs/SeatIcon";
 import ScheduleList from "@/components/user/ticketPlan/ScheduleList";
-import { routes } from "@/routes";
-import { Button, Modal, TextInput } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-import {
-  IconBadgeCc,
-  IconCalendar,
-  IconClock,
-  IconSearch,
-} from "@tabler/icons-react";
+import type { MovieDetailType } from "@/types/MovieTypes";
+import type { ScheduleType } from "@/types/ScheduleTypes";
+import { minsToHMin } from "@/utils/timeFormatter";
+import { Badge, Image, Skeleton, TextInput } from "@mantine/core";
+import { IconCalendar, IconClock, IconSearch } from "@tabler/icons-react";
+import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-import { NavLink, useParams } from "react-router";
+import { useSearchParams } from "react-router";
 import { twMerge } from "tailwind-merge";
-
-const TicketPlan = () => {
-  const [selectedDate, setSelectedDate] = useState<string>("All");
-  const [dateList, setDateList] = useState<string[] | null>(null);
-  const { id } = useParams();
-  const movie = {
-    id: 1,
-    name: "ALONE",
-    duration: "2 hrs 50 mins",
-    genres: [
-      { id: 2, label: "Adventure" },
-      { id: 4, label: "Action" },
-    ],
-    languages: ["English", "Tamil", "Hindi"],
-    subtitle: ["Myanmar"],
-    releaseDate: "8 Nov, 2025",
-    rating: "8.0",
-    status: "Now Showing",
-    poster: { id: 1, url: "/movie03.jpg" },
-    trailerId: "o2T2V1jrLY0",
-    casts: [
-      {
-        id: 1,
-        name: "Aung Kaung Myat",
-        role: "Actor",
-        imageUrl: null,
-      },
-      {
-        id: 2,
-        name: "John Wick",
-        role: "Actor",
-        imageUrl: null,
-      },
-      {
-        id: 2,
-        name: "John Wick",
-        role: "Actor",
-        imageUrl: null,
-      },
-    ],
-    images: [
-      "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-1.png",
-      "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-2.png",
-      "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-3.png",
-      "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-4.png",
-      "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-5.png",
-    ],
-    reviews: [
-      {
-        id: 1,
-        username: "Aung Kaung Myat",
-        rating: "8.0",
-        reviewedDate: "2 days ago",
-        review:
-          "Lorem ipsum dolor sit, amet consectetur adipisicing elit. In, alias! Cum ipsam voluptate molestias aliquam quos, vitae commodi, ex facere magnam, amet nesciunt nisi accusamus libero architecto cupiditate! Culpa possimus ipsa id fugiat odio iusto ea inventore quidem, similique magnam eaque architecto, voluptas voluptatibus, nesciunt maxime molestias laborum eveniet! Quod!",
-      },
-      {
-        id: 2,
-        username: "Aung Kaung Myat",
-        rating: "8.9",
-        reviewedDate: "2 months ago",
-        review:
-          "Lorem ipsum dolor sit, amet consectetur adipisicing elit. In, alias! Cum ipsam voluptate molestias aliquam quos, vitae commodi, ex facere magnam, amet nesciunt nisi accusamus libero architecto cupiditate! Culpa possimus ipsa id fugiat odio iusto ea inventore quidem, similique magnam eaque architecto, voluptas voluptatibus, nesciunt maxime molestias laborum eveniet! Quod!",
-      },
-    ],
+export type ShowDetailType = {
+  id: number;
+  theatre: {
+    id: number;
+    location: string;
   };
+  screen: {
+    id: number;
+    name: string;
+  };
+  showTime: string;
+  language: string;
+  subtitle: string;
+};
+const TicketPlan = () => {
+  const [selectedDate, setSelectedDate] = useState<string>(
+    dayjs().format("YYYY-MM-DD"),
+  );
+  const [dateList, setDateList] = useState<string[] | null>(null);
+  const [searchParams] = useSearchParams();
 
-  const schedules = [
-    {
-      id: 1,
-      location: "Kantharyar",
-      schedules: ["7:00 AM", "10:30 AM", "01:30 PM", "07:30 PM"],
-      movie,
-    },
-    {
-      id: 2,
-      location: "Kantharyar",
-      schedules: ["7:00 AM", "10:30 AM", "01:30 PM", "07:30 PM"],
-      movie,
-    },
-    {
-      id: 3,
-      location: "Kantharyar",
-      schedules: ["7:00 AM", "10:30 AM", "01:30 PM", "07:30 PM"],
-      movie,
-    },
-  ];
+  const movieId = searchParams.get("movieId");
+  const showDate = searchParams.get("showDate");
 
-  const [opened, { close }] = useDisclosure(false);
+  const [movie, setMovie] = useState<MovieDetailType | null>(null);
+  const [schedules, setSchedules] = useState<ShowDetailType[]>([]);
+
+  const { data, isLoading } = useMovieDetailQuery(movieId ?? "");
+  const { data: scheduleData, refetch } = useSchedulesQuery(
+    movieId ?? "",
+    selectedDate,
+  );
 
   useEffect(() => {
-    const days = ["All"];
-    for (let i = 0; i < 4; i++) {
-      const date = new Date();
-      date.setDate(date.getDate() + i);
-      days.push(date.toISOString().split("T")[0]);
-    }
-    setDateList(days);
+    setSchedules(scheduleData?.data);
+  }, [scheduleData, selectedDate]);
+
+  useEffect(() => {
+    refetch();
+  }, [selectedDate]);
+
+  useEffect(() => {
+    // const days: string[] = [];
+    // for (let i = 0; i <= 4; i++) {
+    //   const date = new Date();
+    //   date.setDate(date.getDate() + i);
+    //   days.push(date.toISOString().split("T")[0]);
+    // }
+
+    setSelectedDate(showDate ?? dayjs().format("YYYY-MM-DD"));
   }, []);
 
+  useEffect(() => {
+    setMovie(data?.data);
+    const showDates: string[] = [];
+
+    data?.data?.schedules?.map((s: ScheduleType) => {
+      if (!showDates.includes(s?.showDate)) {
+        showDates.push(s?.showDate);
+      }
+    });
+    const sortedDates = showDates.sort(
+      (a, b) => new Date(a).getTime() - new Date(b).getTime(),
+    );
+    setDateList(sortedDates);
+    setSelectedDate(sortedDates[0]);
+  }, [data]);
+
   return (
-    <div className="relative">
-      <div
-        className={`relative w-full h-[600px] bg-[url("/movie-bg-6.jpg")] bg-no-repeat bg-cover`}
-      >
-        <div className="relative w-full h-full bg-background/90 flex flex-col gap-5 justify-center">
-          <div className="flex items-center gap-10 relative bottom-20 translate-x-[25%]">
-            <img src="/movie03.jpg" className="rounded-md w-[250px]" />
-            <div className="ms-10">
-              <div className="text-4xl font-bold mb-5">
-                {movie.name} {id}
-              </div>
-              <div className="text-blueGray flex flex-col gap-5">
-                <div>
-                  {movie.languages.map((item, index) => (
-                    <span key={item}>
-                      {item} {index !== movie.languages.length - 1 && ","}{" "}
-                    </span>
-                  ))}
+    <div className="min-h-screen bg-background">
+      <Skeleton visible={isLoading} height={"100%"}>
+        {movie && (
+          <div>
+            {/* Movie Header */}
+            <div className="relative pt-14 pb-8">
+              <div className="max-w-4xl mx-auto px-6 text-center">
+                {/* Centered Movie Poster */}
+                <div className="flex justify-center mb-6">
+                  <Image
+                    src={movie?.poster?.url}
+                    className="!rounded-xl shadow-2xl"
+                    h={400}
+                    w={300}
+                  />
                 </div>
-                <div className="flex gap-3">
-                  {movie.genres.map((item) => (
-                    <span
-                      key={item.id}
-                      className="px-4 py-2 border border-surface-hover rounded-full"
+
+                {/* Essential Movie Info */}
+                <div className="space-y-4">
+                  <h1 className="text-3xl font-bold text-text">
+                    {movie.title}
+                  </h1>
+
+                  <div className="flex flex-wrap items-center justify-center gap-6 text-blueGray">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-muted">Duration:</span>
+                      <span>{minsToHMin(parseInt(movie.duration))}</span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-muted">Languages:</span>
+                      <span>
+                        {movie.language?.map((item, index) => (
+                          <span key={item}>
+                            {item}
+                            {index !== movie.language.length - 1 && ", "}
+                          </span>
+                        ))}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-muted">Subtitles:</span>
+                      <span>
+                        {movie.subtitle?.map(
+                          (item, index) =>
+                            `${item}${
+                              index !== movie.subtitle.length - 1 ? ", " : ""
+                            }`,
+                        )}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Date Selection */}
+            <div className="bg-surface py-8">
+              <div className="max-w-7xl mx-auto px-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <IconCalendar size={24} color={"var(--color-accent)"} />
+                  <h2 className="text-2xl font-semibold text-text">
+                    Select Date
+                  </h2>
+                </div>
+                <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
+                  {dateList?.map((item) => (
+                    <button
+                      className={twMerge(
+                        "px-6 py-3 rounded-lg cursor-pointer bg-surface-hover text-text font-medium transition-all duration-200 hover:bg-surface-light hover:scale-105 shadow-sm",
+                        selectedDate === item &&
+                          "bg-primary text-white hover:!bg-primary hover:!scale-105",
+                      )}
+                      key={item}
+                      onClick={() => setSelectedDate(item)}
                     >
-                      {item.label}
-                    </span>
+                      {dayjs(item).format("MMM DD")}
+                    </button>
                   ))}
                 </div>
-                <div className="flex gap-5 items-center max-md:flex-col">
-                  <span className="flex items-center gap-2">
-                    <IconCalendar color={"var(--color-blueGray)"} />
-                    <span className="mt-1">{movie.releaseDate}</span>
-                  </span>
-                  <span className="flex items-center gap-2">
-                    <IconClock color={"var(--color-blueGray)"} />
-                    <span className="mt-1">{movie.duration}</span>
-                  </span>
-                  <span className="flex items-center gap-2">
-                    <IconBadgeCc color={"var(--color-blueGray)"} />
-                    <span className="mt-1">{movie.subtitle}</span>
-                  </span>
+              </div>
+            </div>
+
+            {/* Showtimes Section */}
+            <div className="py-12">
+              <div className="max-w-7xl mx-auto px-6">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8">
+                  <div className="flex items-center gap-3">
+                    <SeatIcon />
+                    <h2 className="text-2xl font-semibold text-text">
+                      Available Showtimes
+                    </h2>
+                  </div>
+
+                  {/* <TextInput
+                  placeholder="Search by location..."
+                  classNames={{
+                    root: "!w-full lg:!w-[350px]",
+                    input: twMerge(
+                      "!text-text !bg-surface !border !border-surface-hover !rounded-lg !h-[48px] !text-base !pl-12 focus:!border-accent",
+                    ),
+                  }}
+                  leftSection={
+                    <IconSearch size={20} color={"var(--color-accent)"} />
+                  }
+                /> */}
+                </div>
+
+                <div className="min-h-[400px]">
+                  {schedules?.length > 0 ? (
+                    <div className="bg-surface rounded-xl shadow-sm border border-surface-hover">
+                      {schedules?.map((item) => (
+                        <div
+                          key={item?.theatre?.location}
+                          // className="bg-surface rounded-xl p-6 shadow-sm border border-surface-hover"
+                        >
+                          <ScheduleList
+                            schedule={item}
+                            movie={movie}
+                            selectedDate={selectedDate}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center py-16 text-center">
+                      <SeatIcon />
+                      <div className="text-xl text-muted">
+                        No showtimes available for this date
+                      </div>
+                      <div className="text-sm text-muted mt-2">
+                        Please select a different date
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
           </div>
-
-          <div className="absolute bottom-0 left-0 w-full px-[300px] h-[150px] flex items-center justify-between bg-surface/90">
-            {/* <div
-              className="w-[150px] h-[50px] bg-surface-hover rounded-md flex justify-center items-center cursor-pointer hover:bg-primary transition-300 select-none shadow-md"
-              onClick={}
-            >
-              All
-            </div> */}
-            {dateList?.map((item) => (
-              <div
-                className={twMerge(
-                  "w-[150px] h-[50px] rounded-md bg-surface-hover flex justify-center items-center cursor-pointer hover:bg-primary transition-300 select-none shadow-md",
-                  selectedDate === item && "bg-primary",
-                )}
-                key={item}
-                onClick={() => setSelectedDate(item)}
-              >
-                {item}
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-      {/* <MovieInfo movie={movie} isTicketPlan={true} /> */}
-
-      <div className="px-[300px] mt-20">
-        <div className="mb-10 flex items-center justify-between">
-          <div className="max-w-[300px]">
-            {/* <Select
-              placeholder="Select Experience"
-              size="md"
-              data={["All", "2D", "3D", "4DX", "IMAX"]}
-              styles={selectBoxStyle}
-              className="max-sm:!w-full"
-            /> */}
-          </div>
-
-          <TextInput
-            placeholder="Search Location"
-            classNames={{
-              root: "!w-[300px]",
-              label: "text-[16px]",
-              input: twMerge(
-                "login-input !text-text !border-0 !border-b !border-surface-hover !w-full !h-[42px] mt-[2px] !text-base !ps-10",
-              ),
-              error: "text-red-500",
-            }}
-            leftSection={<IconSearch color={"var(--color-accent)"} />}
-          />
-        </div>
-        <div className="bg-surface mt-10 rounded-md overflow-hidden">
-          {schedules?.map((item) => (
-            <div key={item.id}>
-              <ScheduleList
-                location={item.location}
-                schedules={item.schedules}
-                movie={item.movie}
-              />
-            </div>
-          ))}
-        </div>
-
-        <Modal
-          opened={opened}
-          onClose={close}
-          // title="Confirm Movie"
-          centered
-          classNames={{
-            content: "!bg-surface !min-w-[650px] pb-10",
-            header: "!bg-surface !text-text",
-            title: "!text-xl !font-semibold",
-            close: "!text-blueGray hover:!bg-surface-hover",
-          }}
-        >
-          {/* Modal content */}
-          <div className="text-text flex gap-15 p-5">
-            <img src="/movie03.jpg" className="rounded-md w-[250px]" />
-            <div className="flex flex-col justify-between">
-              <div>
-                <div className="text-3xl font-semibold">ALONE</div>
-                <div className="flex flex-col gap-5">
-                  <div className="flex gap-5 mt-5 text-sm">
-                    <div className="flex gap-2 items-center">
-                      <IconClock color={"var(--color-blueGray)"} size={20} />2
-                      hrs 50 min
-                    </div>
-                    <div className="flex gap-2 items-center">
-                      <IconBadgeCc color={"var(--color-blueGray)"} size={20} />
-                      English
-                    </div>
-                  </div>
-                  <div className="flex gap-16 mt-3 text-sm">
-                    <div className="flex flex-col gap-5">
-                      <div className="">
-                        <span className="text-xs text-muted">Cinema</span>
-                        <div className="mt-1">Kantharyar</div>
-                      </div>
-                      <div className="">
-                        <span className="text-xs text-muted">Date</span>
-                        <div className="mt-1">26/6/2025</div>
-                      </div>
-                    </div>
-                    <div className="flex flex-col gap-5">
-                      <div>
-                        <span className="text-xs text-muted">Theatre</span>
-                        <div className="mt-1">Theatre 1</div>
-                      </div>
-                      <div>
-                        <span className="text-xs text-muted">Time</span>
-                        <div className="mt-1">10:00 AM</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <NavLink to={routes.user.seatPlan + "/" + movie.id}>
-                <Button
-                  leftSection={<SeatIcon color="var(--color-blueGray)" />}
-                >
-                  Select Seats
-                </Button>
-              </NavLink>
-            </div>
-          </div>
-        </Modal>
-      </div>
+        )}
+      </Skeleton>
     </div>
   );
 };

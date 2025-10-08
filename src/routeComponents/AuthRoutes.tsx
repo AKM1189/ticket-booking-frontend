@@ -31,7 +31,7 @@ export default AuthRoutes;
 
 const PublicRoute = () => {
   const { data: user, isLoading } = useGetUser();
-
+  console.log("user", user);
   if (isLoading)
     return (
       <div>

@@ -330,7 +330,7 @@ const BookingManagement = ({
       >
         <Group mb="md">
           <TextInput
-            placeholder="Search bookings by ID, movie, theatre, screen, customer"
+            placeholder="Search bookings by ID, movie, branch, screen, and customer"
             leftSection={<IconSearch size={16} />}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -368,7 +368,7 @@ const BookingManagement = ({
                     <Table.Th>Booking ID</Table.Th>
 
                     <Table.Th>Movie</Table.Th>
-                    <Table.Th>Theatre</Table.Th>
+                    <Table.Th>Branch</Table.Th>
                     <Table.Th>Show Details</Table.Th>
                     <Table.Th>Seats</Table.Th>
                     <Table.Th>Amount</Table.Th>

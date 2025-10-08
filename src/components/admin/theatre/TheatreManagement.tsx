@@ -72,7 +72,6 @@ const TheatreManagement = () => {
 
   const form = useForm({
     initialValues: {
-      name: "",
       location: "",
       region: "",
       city: "",
@@ -99,7 +98,6 @@ const TheatreManagement = () => {
   const handleEditTheatre = (theatre: TheatreType) => {
     setEditingTheatre(theatre);
     form.setValues({
-      name: theatre.name,
       location: theatre.location,
       region: theatre.region,
       city: theatre.city,
@@ -144,7 +142,7 @@ const TheatreManagement = () => {
   return (
     <div className="space-y-6">
       <Group justify="space-between">
-        <Title order={2}>Theatre Management</Title>
+        <Title order={2}>Branch Management</Title>
         {hasAccess(permissionList.createTheatre) && (
           <Button
             leftSection={<IconPlus size={16} />}
@@ -165,7 +163,7 @@ const TheatreManagement = () => {
       >
         <Group justify="space-between">
           <TextInput
-            placeholder="Search theatres..."
+            placeholder="Search branches by location, region, and city"
             leftSection={<IconSearch size={16} />}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.currentTarget.value)}
@@ -192,7 +190,6 @@ const TheatreManagement = () => {
               <Table striped highlightOnHover mt={"md"}>
                 <Table.Thead>
                   <Table.Tr>
-                    <Table.Th>Name</Table.Th>
                     <Table.Th>Location</Table.Th>
                     <Table.Th>Region</Table.Th>
                     <Table.Th>City</Table.Th>
@@ -205,9 +202,6 @@ const TheatreManagement = () => {
                 <Table.Tbody>
                   {theatres?.map((theatre) => (
                     <Table.Tr key={theatre.id}>
-                      <Table.Td className="min-w-[150px]">
-                        {theatre.name}
-                      </Table.Td>
                       <Table.Td className="min-w-[150px]">
                         {theatre.location}
                       </Table.Td>
@@ -296,7 +290,7 @@ const TheatreManagement = () => {
       <Modal
         opened={opened}
         onClose={close}
-        title={editingTheatre ? "Edit Theatre" : "Add New Theatre"}
+        title={editingTheatre ? "Edit Branch" : "Add New Branch"}
         size="md"
         classNames={{
           header: "dashboard-bg",
@@ -307,20 +301,14 @@ const TheatreManagement = () => {
         <form onSubmit={form.onSubmit(handleSubmit)}>
           <div className="space-y-4">
             <TextInput
-              label="Theatre Name"
-              placeholder="Enter theatre name"
-              {...form.getInputProps("name")}
-              classNames={inputStyle}
-            />
-            <TextInput
               label="Location"
-              placeholder="Enter theatre location"
+              placeholder="Enter branch location"
               {...form.getInputProps("location")}
               classNames={inputStyle}
             />
             <TextInput
               label="Region"
-              placeholder="Enter theatre region"
+              placeholder="Enter branch region"
               {...form.getInputProps("region")}
               classNames={inputStyle}
             />
