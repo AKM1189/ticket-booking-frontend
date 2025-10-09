@@ -57,7 +57,7 @@ const OTP = () => {
             <PrimaryButton className="mt-5" type="submit" value="Verify OTP" />
           </form>
 
-          <div className="text-center text-blue-500 underline">
+          <div className="text-center text-sm text-blue-500 underline">
             <NavLink to={routes.auth.login}>Back To Login</NavLink>
           </div>
         </div>

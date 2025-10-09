@@ -175,7 +175,7 @@ const UserManagement = () => {
   return (
     <div className="space-y-6">
       <Group justify="space-between">
-        <Title order={2}>Genre Management</Title>
+        <Title order={2}>User Management</Title>
         {hasAccess(permissionList.createUser) && (
           <Button
             className="dashboard-btn"
@@ -214,19 +214,19 @@ const UserManagement = () => {
             <Tabs.Tab value="user">
               <Group gap={5} align="center">
                 <IconUser size={18} />
-                User
+                Customers
               </Group>
             </Tabs.Tab>
             <Tabs.Tab value="admin">
               <Group gap={5} align="center">
                 <IconUserCog size={18} />
-                Admin
+                Admins
               </Group>
             </Tabs.Tab>
             <Tabs.Tab value="staff">
               <Group gap={5} align="center">
                 <IconUserDollar size={18} />
-                Staff
+                Staffs
               </Group>
             </Tabs.Tab>
           </Tabs.List>
@@ -241,7 +241,7 @@ const UserManagement = () => {
                   <Table striped highlightOnHover>
                     <Table.Thead>
                       <Table.Tr>
-                        <Table.Th>No</Table.Th>
+                        <Table.Th>ID</Table.Th>
                         <Table.Th className="min-w-[150px]">Name</Table.Th>
                         <Table.Th>Email</Table.Th>
                         <Table.Th>Phone No</Table.Th>
@@ -256,14 +256,7 @@ const UserManagement = () => {
                       {users &&
                         users?.map((user, index) => (
                           <Table.Tr key={user.id}>
-                            <Table.Td>
-                              {data?.pagination?.page > 1
-                                ? index +
-                                  1 +
-                                  (data?.pagination?.page - 1) *
-                                    data?.pagination?.limit
-                                : index + 1}
-                            </Table.Td>
+                            <Table.Td>{user.id}</Table.Td>
                             <Table.Td>
                               {user.name +
                                 (user.email === currentUser?.email
@@ -380,7 +373,17 @@ const UserManagement = () => {
           form.reset();
           close();
         }}
-        title={editingUser ? "Edit Admin" : "Add New Admin"}
+        title={
+          editingUser
+            ? `Edit ${
+                editingUser.role === Role.staff
+                  ? "Staff"
+                  : editingUser.role === Role.admin
+                  ? "Admin"
+                  : "Customer"
+              }`
+            : `Add New ${form.values.role === Role.staff ? "Staff" : "Admin"}`
+        }
         size="md"
         classNames={{
           header: "dashboard-bg",
@@ -392,13 +395,13 @@ const UserManagement = () => {
           <div className="space-y-4">
             <TextInput
               label="Name"
-              placeholder="Enter admin name"
+              placeholder="Enter name"
               {...form.getInputProps("name")}
               classNames={inputStyle}
             />
             <TextInput
               label="Email"
-              placeholder="Enter admin email"
+              placeholder="Enter email"
               {...form.getInputProps("email")}
               classNames={inputStyle}
             />
@@ -452,7 +455,7 @@ const UserManagement = () => {
               className="dashboard-btn"
             >
               {editingUser ? "Update" : "Add"}{" "}
-              {editingUser?.role === Role.admin ? "Admin" : "User"}
+              {form.values.role === Role.staff ? "Staff" : "Admin"}
             </Button>
           </Group>
         </form>

@@ -29,7 +29,7 @@ const SeatLists = ({
         available: { fill: "var(--color-user-vip)", stroke: "#fbbf24" }, // Deep purple with gold border
         selected: { fill: "#fbbf24", stroke: "#f59e0b" },
         disabled: { fill: "#374151", stroke: "#6b7280" },
-        booked: { fill: "#1f2937", stroke: "#4b5563" },
+        booked: { fill: "var(--color-surface-light", stroke: "#4b5563" },
         temp: { fill: "#991b1b", stroke: "#f87171" },
       },
       Premium: {
@@ -38,7 +38,7 @@ const SeatLists = ({
         selected: { fill: "#fbbf24", stroke: "#f59e0b" },
 
         disabled: { fill: "#374151", stroke: "#6b7280" },
-        booked: { fill: "#1f2937", stroke: "#4b5563" },
+        booked: { fill: "var(--color-surface-light", stroke: "#4b5563" },
         temp: { fill: "#991b1b", stroke: "#f87171" },
       },
       Standard: {
@@ -47,7 +47,7 @@ const SeatLists = ({
         selected: { fill: "#fbbf24", stroke: "#f59e0b" },
 
         disabled: { fill: "#374151", stroke: "#6b7280" },
-        booked: { fill: "#1f2937", stroke: "#4b5563" },
+        booked: { fill: "var(--color-surface-light", stroke: "#4b5563" },
         temp: { fill: "#991b1b", stroke: "#f87171" },
       },
     };
@@ -100,7 +100,7 @@ const SeatLists = ({
       {/* Status indicators */}
       {isBooked && (
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
+          <div className="w-6 h-6 rounded-full flex items-center justify-center">
             <span className="text-white text-xs font-bold">✕</span>
           </div>
         </div>

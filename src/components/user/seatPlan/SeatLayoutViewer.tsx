@@ -274,58 +274,6 @@ const SeatLayoutViewer = ({
         </Alert>
       )}
 
-      {/* Seat Statistics */}
-      {/* <Card className="!bg-surface !border-surface-hover !text-text">
-        <Group justify="space-between" className="mb-4">
-          <Text size="lg" fw={600} className="!text-text">
-            Seat Availability
-          </Text>
-          <Badge
-            color={isConnected ? "green" : "orange"}
-            variant="light"
-            leftSection={<IconUsers size={14} />}
-            className="!bg-surface-hover !text-text"
-          >
-            {isConnected ? "Live Updates" : "Reconnecting"}
-          </Badge>
-        </Group>
-
-        <Group gap="xl">
-          <div className="text-center">
-            <Text size="xl" fw={700} className="text-green-400">
-              {stats.availableCount}
-            </Text>
-            <Text size="sm" className="text-muted">
-              Available
-            </Text>
-          </div>
-          <div className="text-center">
-            <Text size="xl" fw={700} className="text-red-400">
-              {stats.bookedCount}
-            </Text>
-            <Text size="sm" className="text-muted">
-              Booked
-            </Text>
-          </div>
-          <div className="text-center">
-            <Text size="xl" fw={700} className="text-orange-400">
-              {stats.tempCount}
-            </Text>
-            <Text size="sm" className="text-muted">
-              Reserved
-            </Text>
-          </div>
-          <div className="text-center">
-            <Text size="xl" fw={700} className="text-blue-400">
-              {selectedSeats.length}
-            </Text>
-            <Text size="sm" className="text-muted">
-              Selected
-            </Text>
-          </div>
-        </Group>
-      </Card> */}
-
       {/* Seat Legend */}
       <SeatLegend priceList={schedule?.priceList} />
 

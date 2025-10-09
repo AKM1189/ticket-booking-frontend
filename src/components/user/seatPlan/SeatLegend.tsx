@@ -56,7 +56,11 @@ const SeatLegend = ({ priceList = [] }: SeatLegendProps) => {
       label: "Booked",
       icon: (
         <div className="relative">
-          <ReverseSeatIcon color="#4b5563" fill="#1f2937" size="24" />
+          <ReverseSeatIcon
+            color="#4b5563"
+            fill="var(--color-surface-light)"
+            size="24"
+          />
           <div className="absolute inset-0 flex items-center justify-center">
             <span className="text-white text-xs font-bold">✕</span>
           </div>
