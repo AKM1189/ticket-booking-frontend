@@ -252,7 +252,7 @@ const SeatLayoutViewer = ({
       layout.rows * layout.seatsPerRow - layout.disabledSeats.length;
     const bookedCount =
       (schedule?.bookedSeats?.length || 0) + bookedSeats.length;
-    const tempCount = tempSeats.length;
+    const tempCount = tempSeats?.length;
     const availableCount = totalSeats - bookedCount - tempCount;
 
     return { totalSeats, bookedCount, tempCount, availableCount };

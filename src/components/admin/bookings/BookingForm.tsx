@@ -272,7 +272,6 @@ const BookingForm = ({
       {
         onSuccess: (data) => {
           showLoading(false);
-          console.log("booking success", data);
           setCurrentBooking(data?.data);
           setCurrentComp(BookingCompType.ticket);
         },
