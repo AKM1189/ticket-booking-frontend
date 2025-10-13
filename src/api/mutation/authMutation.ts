@@ -120,7 +120,7 @@ export const useLogoutMutation = () => {
     onSuccess: (data) => {
       removeUser();
       Cookies.remove("accessToken");
-      getSuccessNoti("Logout", data, "You have logout successfully");
+      // getSuccessNoti("Logout", data, "You have logout successfully");
       queryClient.removeQueries({ queryKey: ["currentUser"] });
       queryClient.clear();
       navigate(routes.auth.login);

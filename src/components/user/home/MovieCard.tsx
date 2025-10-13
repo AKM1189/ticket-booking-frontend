@@ -26,7 +26,7 @@ const MovieCard = ({
 
   return (
     <div
-      className={`bg-surface group rounded-t-lg overflow-hidden ${
+      className={`bg-surface group rounded-t-lg overflow-hidden max-w-[300px] ${
         isMovieList ? "w-full" : "w-[300px]"
       }`}
     >

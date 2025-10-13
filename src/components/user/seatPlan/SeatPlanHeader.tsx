@@ -47,7 +47,7 @@ const SeatPlanHeader = ({ schedule, onTimeExpired }: SeatPlanHeaderProps) => {
     <div className="relative w-full h-[400px] bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-[url('/movie_detail_bg.jpg')] bg-cover bg-center opacity-20"></div>
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent"></div>
 
       {/* Content */}
       <div className="relative h-full flex flex-col justify-between p-8">
@@ -62,11 +62,10 @@ const SeatPlanHeader = ({ schedule, onTimeExpired }: SeatPlanHeaderProps) => {
               <Badge
                 size="lg"
                 variant="light"
-                color="blue"
-                leftSection={<IconMapPin size={16} />}
+                color="purple"
                 className="!text-white !bg-white/20 !border-white/30"
               >
-                {theatre?.location}
+                {screen?.type}
               </Badge>
 
               <Badge
@@ -83,10 +82,11 @@ const SeatPlanHeader = ({ schedule, onTimeExpired }: SeatPlanHeaderProps) => {
               <Badge
                 size="lg"
                 variant="light"
-                color="purple"
+                color="blue"
+                leftSection={<IconMapPin size={16} />}
                 className="!text-white !bg-white/20 !border-white/30"
               >
-                {screen?.type}
+                {theatre?.location}
               </Badge>
             </div>
 
@@ -97,7 +97,7 @@ const SeatPlanHeader = ({ schedule, onTimeExpired }: SeatPlanHeaderProps) => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="bg-black/10 backdrop-blur-sm rounded-xl p-4 border border-white/10">
+        <div className="bg-surface-light/10 backdrop-blur-sm rounded-xl p-4 border border-white/10">
           <div className="flex items-center justify-between">
             <Button
               leftSection={<IconArrowLeft size={18} />}
@@ -107,7 +107,7 @@ const SeatPlanHeader = ({ schedule, onTimeExpired }: SeatPlanHeaderProps) => {
               onClick={() =>
                 navigate(`/${routes.user.ticketPlan}?movieId=${movie.id}`)
               }
-              className="!bg-white/10 !text-white !border-white/20 hover:!bg-white/20"
+              className="!bg-white/10 !text-white !border-white/20 hover:!bg-white/20 max-w-[230px]"
             >
               Back to Showtimes
             </Button>
@@ -132,7 +132,7 @@ const SeatPlanHeader = ({ schedule, onTimeExpired }: SeatPlanHeaderProps) => {
               </div>
             </Group>
 
-            <div className="text-center">
+            <div className="flex flex-col items-center w-[230px]">
               <div className="flex items-center gap-2 mb-1">
                 <IconClock size={16} className="text-orange-400" />
                 <Text size="sm" className="text-orange-200">

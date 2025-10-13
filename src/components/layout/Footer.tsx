@@ -8,9 +8,9 @@ import {
 
 const Footer = () => {
   return (
-    <div className="w-full footer mt-[300px] relative min-h-[300px] px-[20px] md:px-[50px] lg:px-[150px]  bg-surface">
-      <SubscribeCard />
-      <div className="pt-[200px] pb-[30px] border-b border-coolGray flex justify-between">
+    <div className="w-full bottom-0 footer mt-[150px] relative min-h-[100px] px-[20px] md:px-[50px] lg:px-[150px]  bg-surface">
+      {/* <SubscribeCard /> */}
+      <div className="pt-[50px] pb-[30px] border-b border-coolGray flex justify-between">
         <span className="text-lg text-accent uppercase font-semibold">
           Movie Palace
         </span>
@@ -29,7 +29,7 @@ const Footer = () => {
           </span>
         </span>
       </div>
-      <div className="flex max-sm:flex-col gap-5 max-sm:items-center justify-between py-8 text-text text-sm max-sm:text-xs">
+      <div className="flex max-sm:flex-col pb-10 gap-5 max-sm:items-center justify-between py-8 text-text text-sm max-sm:text-xs">
         <ul className="flex gap-5 text-muted">
           <li>About</li>
           <li>Terms of Use</li>

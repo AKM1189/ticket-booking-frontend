@@ -1,3 +1,5 @@
+import type { SelectedSeatType } from "@/pages/user/SeatPlan";
+
 export interface CustomerInfo {
   firstName: string;
   lastName: string;
@@ -25,13 +27,8 @@ export interface BookingSummary {
   selectedSeats: string[];
   totalAmount: number;
   taxes: number;
-  convenienceFee: number;
   grandTotal: number;
-  seatDetails: {
-    seatNumber: string;
-    seatType: string;
-    price: number;
-  }[];
+  seatDetails: SelectedSeatType[];
 }
 
 export interface BookingRequest {

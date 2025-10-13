@@ -94,21 +94,27 @@ const MovieFrame = ({ type }: { type: string | undefined }) => {
     ],
     [activeDisplay],
   );
+
+  const isFilterEmpty = Object.values(filterList).every(
+    (arr) => Array.isArray(arr) && arr.length === 0,
+  );
   return (
     <div className="w-full grid grid-cols-1 lg:grid-cols-10 gap-4 lg:gap-0">
       <div className="lg:col-span-2 max-lg:hidden">
-        <div className="text-2xl sm:text-3xl font-bold h-[50px] sm:h-[70px] mb-6 lg:mb-10 flex items-center uppercase">
+        <div className="text-2xl sm:text-3xl font-bold h-[50px] sm:h-[70px] mb-6 lg:mb-9 flex items-center uppercase">
           Filter By
         </div>
         <div className="flex flex-col gap-4">
           <div className="flex h-[25px] -mt-5">
-            <div
-              className="flex items-center gap-1 text-muted cursor-pointer select-none"
-              onClick={clearFilter}
-            >
-              <IconAdjustmentsOff />
-              <Text className=""> Clear Filter</Text>
-            </div>
+            {!isFilterEmpty && (
+              <div
+                className="flex items-center gap-1 text-muted cursor-pointer select-none"
+                onClick={clearFilter}
+              >
+                <IconAdjustmentsOff />
+                <Text className=""> Clear Filter</Text>
+              </div>
+            )}
           </div>
           <FilterCard title="Language" data={filterDataList.lang} type="lang" />
           <FilterCard title="Experience" data={filterDataList.exp} type="exp" />
@@ -163,13 +169,15 @@ const MovieFrame = ({ type }: { type: string | undefined }) => {
             >
               <div className="flex flex-col gap-3">
                 <div className="flex h-[25px] justify-end -mb-5 z-2">
-                  <div
-                    className="flex items-center ms-4 gap-1 text-muted cursor-pointer select-none"
-                    onClick={clearFilter}
-                  >
-                    <IconAdjustmentsOff />
-                    <Text className=""> Clear Filter</Text>
-                  </div>
+                  {!isFilterEmpty && (
+                    <div
+                      className="flex items-center ms-4 gap-1 text-muted cursor-pointer select-none"
+                      onClick={clearFilter}
+                    >
+                      <IconAdjustmentsOff />
+                      <Text className=""> Clear Filter</Text>
+                    </div>
+                  )}
                 </div>
                 <FilterCard
                   title="Language"

@@ -1,6 +1,3 @@
-import { getScheduleDetail } from "@/api/function/user/scheduleApi";
-import SeatPlanHeader from "@/components/user/seatPlan/SeatPlanHeader";
-import type { ScheduleWithSeatList } from "@/types/ScheduleTypes";
 import type { BookingSummary } from "@/types/BookingTypes";
 import {
   Button,
@@ -11,12 +8,11 @@ import {
   Stack,
   Divider,
   Badge,
-  LoadingOverlay,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { useEffect, useState } from "react";
-import { useParams, useSearchParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { twMerge } from "tailwind-merge";
 import { z } from "zod";
 import {
@@ -26,13 +22,19 @@ import {
   IconTicket,
 } from "@tabler/icons-react";
 import dayjs from "dayjs";
+import { useAuthStore } from "@/store/authStore";
+import { useUserBookingStore } from "@/store/userBookingStore";
+import { useAddBookingMutation } from "@/api/mutation/admin/bookingMutation";
+import { useBookingStore } from "@/store/bookingStore";
+import { routes } from "@/routes";
+import { useLoadingStore } from "@/store/useLoading";
 
 // Combined validation schema
 const checkoutSchema = z.object({
   // Customer Information
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
-  phone: z.string().min(10, "Phone number must be at least 10 digits"),
+  phone: z.string(),
 
   // Payment Information
   cardNumber: z
@@ -51,16 +53,43 @@ const checkoutSchema = z.object({
 
 type CheckoutFormData = z.infer<typeof checkoutSchema>;
 
-const Checkout = () => {
+const ConfirmBooking = () => {
   const { id } = useParams();
-  const [searchParams] = useSearchParams();
-  const [schedule, setSchedule] = useState<ScheduleWithSeatList | null>(null);
-  const [isLoading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
   const [isProcessing, setIsProcessing] = useState(false);
+  const { user } = useAuthStore();
+  const { schedule, selectedSeats, setBookingId } = useUserBookingStore();
+
+  const { mutate: addBookingMutation } = useAddBookingMutation();
+  const { setCurrentBooking } = useBookingStore();
+
+  const [bookingSummary, setBookingSummary] = useState<BookingSummary | null>(
+    null,
+  );
+
+  const { showLoading } = useLoadingStore();
+
+  const getTotal = () => {
+    let total = 0;
+    selectedSeats?.map((seat) => (total += parseFloat(seat.price)));
+    return total;
+  };
+
+  const subTotal = getTotal();
+
+  useEffect(() => {
+    setBookingSummary({
+      scheduleId: parseInt(id || "0"),
+      selectedSeats: selectedSeats?.map((seat) => seat.label),
+      totalAmount: subTotal,
+      taxes: subTotal * 0.1,
+      grandTotal: subTotal + subTotal * 0.1,
+      seatDetails: selectedSeats,
+    });
+  }, [schedule]);
 
   // Get selected seats from URL params (normally from seat selection page)
-  const selectedSeats = searchParams.get("seats")?.split(",") || ["A1", "A2"]; // Mock data
-  const totalAmount = parseFloat(searchParams.get("total") || "25.00"); // Mock data
 
   const form = useForm<CheckoutFormData>({
     mode: "uncontrolled",
@@ -76,80 +105,36 @@ const Checkout = () => {
     validate: zodResolver(checkoutSchema),
   });
 
-  useEffect(() => {
-    const getSchedule = async () => {
-      if (id) {
-        const data = await getScheduleDetail(parseInt(id));
-        setSchedule(data?.data);
-        setLoading(false);
-      }
-    };
-    getSchedule();
-  }, [id]);
-
-  // Mock booking summary calculation
-  const bookingSummary: BookingSummary = {
-    scheduleId: parseInt(id || "0"),
-    selectedSeats,
-    totalAmount,
-    taxes: totalAmount * 0.1,
-    convenienceFee: 2.5,
-    grandTotal: totalAmount + totalAmount * 0.1 + 2.5,
-    seatDetails: selectedSeats.map((seat, index) => ({
-      seatNumber: seat,
-      seatType: index % 2 === 0 ? "Premium" : "Standard",
-      price: index % 2 === 0 ? 15.0 : 10.0,
-    })),
-  };
-
   const handleSubmit = async (values: CheckoutFormData) => {
     setIsProcessing(true);
+    showLoading(true);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    if (bookingSummary) {
+      const data = {
+        customerName: values.name,
+        customerEmail: values.email,
+        customerPhone: values.phone,
+        scheduleId: bookingSummary.scheduleId.toString(),
+        userId: user?.id.toString() || "",
+        selectedSeats: selectedSeats?.map((seat) => seat.label),
+        totalAmount: bookingSummary?.grandTotal?.toString(),
+      };
 
-    // const bookingRequest = {
-    //   customerInfo: {
-    //     firstName: values.firstName,
-    //     lastName: values.lastName,
-    //     email: values.email,
-    //     phone: values.phone,
-    //   },
-    //   paymentInfo: {
-    //     cardNumber: values.cardNumber,
-    //     expiryDate: values.expiryDate,
-    //     cvv: values.cvv,
-    //     cardHolderName: values.cardHolderName,
-    //   },
-    //   bookingSummary,
-    // };
-
-    // const data = {
-    //   customerName: values.name,
-    //   customerEmail: values.email,
-    //   customerPhone: values.phone,
-    //   scheduleId: id,
-    //   note: values.notes,
-    //   userId: user?.id.toString() || "",
-    //   selectedSeats: selectedInfo.seats?.map((seat) => seat.label),
-    //   totalAmount: calculateTotal().toString(),
-    // };
-    // addBookingMutation(
-    //   { data },
-    //   {
-    //     onSuccess: (data) => {
-    //       showLoading(false);
-    //       setCurrentBooking(data?.data);
-    //       setCurrentComp(BookingCompType.ticket);
-    //     },
-    //     onError: () => showLoading(false),
-    //   },
-    // );
+      addBookingMutation(
+        { data },
+        {
+          onSuccess: (data) => {
+            setBookingId(data?.data);
+            setCurrentBooking(data?.data);
+            showLoading(false);
+            navigate(`/${routes.user.ticket}`);
+          },
+          onError: () => showLoading(false),
+        },
+      );
+    }
 
     setIsProcessing(false);
-
-    // Show success message or redirect
-    alert("Booking confirmed successfully!");
   };
 
   const formatCardNumber = (value: string) => {
@@ -167,18 +152,12 @@ const Checkout = () => {
     }
   };
 
-  if (isLoading) {
-    return <LoadingOverlay visible />;
-  }
-
   if (!schedule) {
     return <div>Schedule not found</div>;
   }
 
   return (
     <div>
-      <SeatPlanHeader schedule={schedule} />
-
       <div className="px-4 md:px-20 lg:px-52 mt-10">
         <div className="grid grid-cols-1 lg:grid-cols-8 gap-10">
           {/* Main Form */}
@@ -195,39 +174,21 @@ const Checkout = () => {
                     Customer Information
                   </Text>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <TextInput
-                      label="First Name"
-                      placeholder="Enter your first name"
-                      key={form.key("firstName")}
-                      classNames={{
-                        root: "mt-5",
-                        label: "text-[16px] text-text",
-                        input: twMerge(
-                          "login-input",
-                          form.errors.firstName && "border-red-500",
-                        ),
-                        error: "text-red-500",
-                      }}
-                      {...form.getInputProps("firstName")}
-                    />
-
-                    <TextInput
-                      label="Last Name"
-                      placeholder="Enter your last name"
-                      key={form.key("lastName")}
-                      classNames={{
-                        root: "mt-5",
-                        label: "text-[16px] text-text",
-                        input: twMerge(
-                          "login-input",
-                          form.errors.lastName && "border-red-500",
-                        ),
-                        error: "text-red-500",
-                      }}
-                      {...form.getInputProps("lastName")}
-                    />
-                  </div>
+                  <TextInput
+                    label="Name"
+                    placeholder="Enter your first name"
+                    key={form.key("firstName")}
+                    classNames={{
+                      root: "mt-5",
+                      label: "text-[16px] text-text",
+                      input: twMerge(
+                        "login-input",
+                        form.errors.name && "border-red-500",
+                      ),
+                      error: "text-red-500",
+                    }}
+                    {...form.getInputProps("name")}
+                  />
 
                   <TextInput
                     label="Email Address"
@@ -303,6 +264,7 @@ const Checkout = () => {
                       );
                       form.setFieldValue("cardNumber", formatted);
                     }}
+                    autoFocus
                     value={form.getValues().cardNumber}
                   />
 
@@ -358,7 +320,7 @@ const Checkout = () => {
           {/* Booking Summary Sidebar */}
           <div className="lg:col-span-3">
             <Card
-              className="!bg-surface !p-6 !sticky !top-4 !text-text"
+              className="!bg-surface !p-6 !sticky !top-[85px] !text-text"
               radius="lg"
             >
               <Text
@@ -431,14 +393,14 @@ const Checkout = () => {
                     Selected Seats
                   </Text>
                   <Group gap="xs">
-                    {bookingSummary.seatDetails.map((seat) => (
+                    {bookingSummary?.seatDetails.map((seat) => (
                       <Badge
-                        key={seat.seatNumber}
+                        key={seat.label}
                         variant="light"
                         color="blue"
                         size="lg"
                       >
-                        {seat.seatNumber}
+                        {seat.label}
                       </Badge>
                     ))}
                   </Group>
@@ -452,17 +414,13 @@ const Checkout = () => {
                     Price Details
                   </Text>
 
-                  {bookingSummary.seatDetails.map((seat) => (
-                    <Group
-                      justify="space-between"
-                      key={seat.seatNumber}
-                      mb="xs"
-                    >
+                  {bookingSummary?.seatDetails.map((seat) => (
+                    <Group justify="space-between" key={seat.label} mb="xs">
                       <Text size="sm" className="text-muted">
-                        {seat.seatNumber} ({seat.seatType})
+                        {seat.label} ({seat.type})
                       </Text>
                       <Text size="sm" className="text-text">
-                        ${seat.price.toFixed(2)}
+                        ${parseFloat(seat.price).toFixed(2)}
                       </Text>
                     </Group>
                   ))}
@@ -472,7 +430,7 @@ const Checkout = () => {
                       Subtotal
                     </Text>
                     <Text size="sm" className="text-text">
-                      ${bookingSummary.totalAmount.toFixed(2)}
+                      ${bookingSummary?.totalAmount.toFixed(2)}
                     </Text>
                   </Group>
 
@@ -481,16 +439,7 @@ const Checkout = () => {
                       Taxes & Fees
                     </Text>
                     <Text size="sm" className="text-text">
-                      ${bookingSummary.taxes.toFixed(2)}
-                    </Text>
-                  </Group>
-
-                  <Group justify="space-between" mb="xs">
-                    <Text size="sm" className="text-muted">
-                      Convenience Fee
-                    </Text>
-                    <Text size="sm" className="text-text">
-                      ${bookingSummary.convenienceFee.toFixed(2)}
+                      ${bookingSummary?.taxes.toFixed(2)}
                     </Text>
                   </Group>
 
@@ -501,7 +450,7 @@ const Checkout = () => {
                       Total Amount
                     </Text>
                     <Text fw={700} size="lg" className="text-primary">
-                      ${bookingSummary.grandTotal.toFixed(2)}
+                      ${bookingSummary?.grandTotal.toFixed(2)}
                     </Text>
                   </Group>
                 </div>
@@ -514,4 +463,4 @@ const Checkout = () => {
   );
 };
 
-export default Checkout;
+export default ConfirmBooking;

@@ -12,6 +12,7 @@ import {
 } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { minsToHMin } from "@/utils/timeFormatter";
+import { MovieStatus } from "@/constants/movieConstants";
 
 interface MovieInfoType {
   movie: MovieDetailType;
@@ -22,12 +23,14 @@ const MovieInfo = ({ movie, isTicketPlan = false }: MovieInfoType) => {
 
   if (movie)
     return (
-      <div className="relative">
-        <div className="relative bg-[url(/movie_detail_bg_2.jpg)] bg-cover bg-center bg-no-repeat">
-          <div className="absolute inset-0 bg-black/70"></div>
+      <div className="relative w-full h-[510px] bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 overflow-hidden">
+        <div className="relative">
+          {/* <div className="absolute inset-0 bg-black/70"></div> */}
+          <div className="absolute inset-0 bg-[url('/movie_detail_bg.jpg')] bg-cover bg-center opacity-20"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent"></div>
 
-          <div className="relative z-10 container mx-auto px-6 py-16">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
+          <div className="relative flex justify-center z-10 container mx-auto px-6 py-16">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-20 items-start">
               {/* Movie Poster */}
               <div className="lg:col-span-1 flex justify-center">
                 <div className="relative group">
@@ -87,12 +90,14 @@ const MovieInfo = ({ movie, isTicketPlan = false }: MovieInfoType) => {
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                      <IconCalendar color="var(--color-blueGray)" size={20} />
-                      <span className="text-lg">
-                        {dayjs(movie.releaseDate).format("DD-MM-YYYY")}
-                      </span>
-                    </div>
+                    {movie.releaseDate && (
+                      <div className="flex items-center gap-3">
+                        <IconCalendar color="var(--color-blueGray)" size={20} />
+                        <span className="text-lg">
+                          {dayjs(movie.releaseDate).format("DD-MM-YYYY")}
+                        </span>
+                      </div>
+                    )}
 
                     <div className="flex items-center gap-3">
                       <IconStarFilled color="var(--color-accent)" size={20} />
@@ -138,20 +143,22 @@ const MovieInfo = ({ movie, isTicketPlan = false }: MovieInfoType) => {
                 </div>
 
                 {/* Book Ticket Button */}
-                {!isTicketPlan && (
-                  <div className="pt-6">
-                    <NavLink
-                      to={`/${routes.user.ticketPlan}?movieId=${movie.id}`}
-                    >
-                      <Button
-                        size="lg"
-                        className="!rounded-full !px-8 !py-0 !text-lg !font-semibold !shadow-lg hover:!shadow-xl !transition-all !duration-300"
+                {!isTicketPlan &&
+                  (movie.status === MovieStatus.showing ||
+                    movie.status === MovieStatus.available) && (
+                    <div className="pt-6 flex">
+                      <NavLink
+                        to={`/${routes.user.ticketPlan}?movieId=${movie.id}`}
                       >
-                        Book Ticket
-                      </Button>
-                    </NavLink>
-                  </div>
-                )}
+                        <Button
+                          size="lg"
+                          className="!rounded-full !px-8 !py-0 !text-lg !font-semibold !shadow-lg hover:!shadow-xl !transition-all !duration-300"
+                        >
+                          Book Ticket
+                        </Button>
+                      </NavLink>
+                    </div>
+                  )}
               </div>
             </div>
           </div>

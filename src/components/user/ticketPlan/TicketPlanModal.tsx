@@ -1,6 +1,8 @@
 import { SeatIcon } from "@/assets/svgs/SeatIcon";
+import { BookingStage } from "@/constants/bookingConstants";
 import type { ShowDetailType } from "@/pages/user/TicketPlan";
 import { routes } from "@/routes";
+import { useUserBookingStore } from "@/store/userBookingStore";
 import type { MovieDetailType } from "@/types/MovieTypes";
 import { minsToHMin } from "@/utils/timeFormatter";
 import { Badge, Button, Grid, Group, Image, Modal } from "@mantine/core";
@@ -25,6 +27,7 @@ const TicketPlanModal = ({
   close,
 }: TicketPlanModal) => {
   const navigate = useNavigate();
+  const { setActiveStage } = useUserBookingStore();
   return (
     <Modal
       opened={opened}
@@ -102,7 +105,8 @@ const TicketPlanModal = ({
               leftSection={<SeatIcon color="white" />}
               onClick={() => {
                 close();
-                navigate(`/${routes.user.seatPlan}/${schedule.id}`);
+                setActiveStage(BookingStage.seatPlan);
+                navigate(`/${routes.user.booking}/${schedule.id}`);
               }}
             >
               Select Seats

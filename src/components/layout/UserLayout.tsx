@@ -39,7 +39,7 @@ const UserLayout = () => {
         <Navbar />
       </div>
       <div className="pt-[80px]">
-        <div className="text-text max-w-screen">
+        <div className="text-text max-w-screen min-h-svh">
           <Outlet />
         </div>
         <Footer />

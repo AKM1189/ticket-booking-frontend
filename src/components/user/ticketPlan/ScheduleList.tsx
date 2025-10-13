@@ -43,7 +43,7 @@ const ScheduleList = ({ schedule, movie, selectedDate }: ScheduleListType) => {
       <div className="group w-full h-[100px] flex items-center border-b border-surface-hover">
         <div className="w-[400px] h-full border-r border-surface-hover flex items-center justify-between px-10">
           <div>{schedule?.theatre?.location}</div>
-          <div className="bg-surface-hover transition-colors duration-200 group-hover:bg-primary rounded-full p-2">
+          <div className="bg-surface-hover transition-colors duration-200 rounded-full p-2">
             <IconMapPinFilled color="var(--color-blueGray)" />
           </div>
         </div>

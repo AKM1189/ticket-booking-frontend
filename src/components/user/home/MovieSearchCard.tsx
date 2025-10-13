@@ -7,6 +7,7 @@ import { showNotification } from "@/utils/showNotification";
 import { Button, Select } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { IconCalendar, IconMapPin, IconMovie } from "@tabler/icons-react";
+import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { twMerge } from "tailwind-merge";
@@ -47,6 +48,14 @@ type FilterDataType = {
   movies: MovieType[];
   showDates: string[];
 };
+
+const getShowDates = () => {
+  let dateList: string[] = [];
+  for (let i = 0; i <= 4; i++) {
+    dateList.push(dayjs().add(i, "day").format("DD-MM-YYYY"));
+  }
+  return dateList;
+};
 const MovieSearchCard = () => {
   const navigate = useNavigate();
   const [filterData, setFilterData] = useState<FilterDataType>({
@@ -71,29 +80,18 @@ const MovieSearchCard = () => {
   useEffect(() => {
     const getFilters = async () => {
       const data = await getSearchFilters();
-      setFilterData(data?.data);
+      setFilterData({ ...data?.data, showDates: getShowDates() });
     };
     getFilters();
   }, []);
 
-  // useEffect(() => {
-  //   const getFilters = async () => {
-  //     const data = await getSearchFilters(
-  //       form.values.theatreId,
-  //       form.values.date,
-  //       form.values.movieId,
-  //     );
-
-  //     setFilterData(data?.data);
-  //     console.log("filters", data);
-  //   };
-  //   getFilters();
-  // }, [form.values]);
-
   const handleSubmit = async (values: any) => {
     const { theatreId, date, movieId } = values;
-    const data = await searchMovie(theatreId, date, movieId);
-    console.log("data", data);
+    const data = await searchMovie(
+      theatreId,
+      dayjs(date).format("YYYY-MM-DD"),
+      movieId,
+    );
     if (data?.data[0]) {
       navigate(
         `/${routes.user.ticketPlan}?movieId=${data?.data[0]?.id}&showDate=${form.values.date}`,
@@ -101,7 +99,7 @@ const MovieSearchCard = () => {
     } else {
       showNotification({
         title: "No Schedule",
-        message: "Not movie show time available!",
+        message: "No movie showing in this date and location!",
         type: StatusType.error,
       });
     }

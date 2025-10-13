@@ -1,5 +1,6 @@
 import type React from "react";
 import type { GenreType } from "./GenreTypes";
+import type { UserType } from "./UserType";
 
 export type LabelType = {
   id: number;
@@ -78,15 +79,22 @@ export type CastType = {
 export type TabType = {
   id: number;
   label: string;
-  component: React.ReactNode;
+  // component: React.ReactNode;
 };
 
 export type ReviewType = {
   id: number;
   username: string;
   rating: string;
-  review: string;
+  description: string;
   reviewedDate: string;
+  user: UserType;
+};
+
+export type ReviewInputType = {
+  movieId: number;
+  rating: string;
+  description: string;
 };
 
 export enum SortType {

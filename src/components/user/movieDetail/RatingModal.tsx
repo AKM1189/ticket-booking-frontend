@@ -1,20 +1,95 @@
-import { Button, Modal, NumberInput, Text, Textarea } from "@mantine/core";
+import {
+  useAddReviewMutation,
+  useUpdateReviewMutation,
+} from "@/api/mutation/user/reviewMutation";
+import { useLoadingStore } from "@/store/useLoading";
+import {
+  Button,
+  Modal,
+  NumberInput,
+  Rating,
+  Text,
+  Textarea,
+} from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { useDisclosure } from "@mantine/hooks";
-import { IconStarFilled } from "@tabler/icons-react";
+import type { ReviewData } from "./Review";
+import { useEffect } from "react";
+import { useMovieStore } from "@/store/useMovieStore";
 
-const RatingModal = () => {
-  const [opened, { open, close }] = useDisclosure(false);
+interface RatingModal {
+  movieId: number;
+  refetchMovies: () => void;
+  opened: boolean;
+  close: () => void;
+  reviewData: ReviewData;
+  isEditing: boolean;
+}
+
+const RatingModal = ({
+  movieId,
+  refetchMovies,
+  opened,
+  close,
+  reviewData,
+  isEditing,
+}: RatingModal) => {
+  const { mutate: addReview } = useAddReviewMutation();
+  const { mutate: updateReview } = useUpdateReviewMutation();
+  const { showLoading } = useLoadingStore();
+  const { setActiveTab } = useMovieStore();
 
   const form = useForm({
     mode: "uncontrolled",
     initialValues: {
-      email: "",
-      password: "",
+      rating: "",
+      review: "",
     },
-    //   validate: zodResolver(loginSchema),
+    validate: {
+      rating: (value) => (!value ? "Rating is required!" : null),
+      review: (value) => (!value ? "Description is required!" : null),
+    },
   });
 
+  useEffect(() => {
+    form.setValues({ rating: reviewData.rating, review: reviewData.review });
+  }, [reviewData]);
+
+  const handlePost = (values: typeof form.values) => {
+    showLoading(true);
+    const data = {
+      rating: values.rating,
+      description: values.review,
+    };
+    if (isEditing) {
+      updateReview(
+        { data: { movieId, ...data }, id: reviewData.id ?? 0 },
+        {
+          onSuccess: () => {
+            refetchMovies();
+            close();
+            showLoading(false);
+          },
+          onError: () => {
+            showLoading(false);
+          },
+        },
+      );
+    } else {
+      addReview(
+        { data: { movieId, ...data } },
+        {
+          onSuccess: () => {
+            refetchMovies();
+            close();
+            showLoading(false);
+          },
+          onError: () => {
+            showLoading(false);
+          },
+        },
+      );
+    }
+  };
   return (
     <>
       <Modal
@@ -29,33 +104,20 @@ const RatingModal = () => {
         title={<div className="text-xl font-semibold">Review and Rating</div>}
         centered
       >
-        <form
-          action=""
-          onSubmit={form.onSubmit((values) => console.log("review", values))}
-        >
-          <NumberInput
-            label="Rating (1-10)"
-            // description="Input description"
-            // placeholder="Enter Rating"
-            min={1}
-            defaultValue={1}
-            max={10}
-            classNames={{
-              input:
-                "!bg-transparent !text-text !border-surface-hover focus:!border-primary !px-10 !h-[45px]",
-              label: "!mb-2 !text-text",
-              control: "!text-text hover:!bg-surface-hover !border-0",
-            }}
-            leftSection={<IconStarFilled color="var(--color-accent)" />}
-          />
+        <form action="" onSubmit={form.onSubmit(handlePost)}>
+          <div className="mt-3">
+            <label className="text-base">Rating</label>
+            <Rating
+              defaultValue={2}
+              size={30}
+              mt={10}
+              {...form.getInputProps("rating")}
+            />
+          </div>
 
           <Textarea
-            label={
-              <div>
-                Review <span className="text-muted">(Optional)</span>
-              </div>
-            }
-            className="mt-5"
+            label={<div>Description</div>}
+            className="mt-8"
             placeholder="Write a review"
             minRows={8}
             autosize
@@ -65,6 +127,7 @@ const RatingModal = () => {
                 "!bg-transparent !text-text !border-surface-hover focus:!border-primary !p-3",
               label: "!mb-2 !text-text",
             }}
+            {...form.getInputProps("review")}
           />
 
           <div className="mt-10 flex justify-between">
@@ -76,15 +139,12 @@ const RatingModal = () => {
             >
               Cancel
             </Button>
-            <Button size="sm" className="!text-sm !h-[40px]">
+            <Button type="submit" size="sm" className="!text-sm !h-[40px]">
               Post
             </Button>
           </div>
         </form>
       </Modal>
-      <Text className="cursor-pointer !text-accent" onClick={open}>
-        Write a review
-      </Text>
     </>
   );
 };

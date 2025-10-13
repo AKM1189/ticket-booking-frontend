@@ -1,4 +1,5 @@
 import type { Role } from "./AuthType";
+import type { ImageType } from "./MovieTypes";
 import type { TheatreType } from "./TheatreTypes";
 
 export type UserType = {
@@ -9,6 +10,7 @@ export type UserType = {
   phoneNo: string;
   role: Role;
   theatre: TheatreType;
+  image: ImageType;
   active: boolean;
 };
 

@@ -12,8 +12,8 @@ export const routes = {
     contact: "contact",
     order: "order",
     ticketPlan: "ticket-plan",
-    seatPlan: "seat-plan",
-    checkout: "checkout",
+    booking: "booking",
+    ticket: "ticket",
   },
   auth: {
     login: "/login",

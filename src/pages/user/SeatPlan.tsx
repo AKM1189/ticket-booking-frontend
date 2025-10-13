@@ -22,6 +22,8 @@ import {
   IconInfoCircle,
   IconAlertTriangle,
 } from "@tabler/icons-react";
+import { useUserBookingStore } from "@/store/userBookingStore";
+import { BookingStage } from "@/constants/bookingConstants";
 
 export interface Seat {
   id: string;
@@ -37,24 +39,13 @@ export type SelectedSeatType = {
 };
 
 const SeatPlan = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const [schedule, setSchedule] = useState<ScheduleWithSeatList | null>(null);
-  const [isLoading, setLoading] = useState(true);
+  const {
+    schedule,
+    setActiveStage,
+    setSelectedSeats: setTotalSeats,
+  } = useUserBookingStore();
+  // const [schedule, setSchedule] = useState<ScheduleWithSeatList | null>(null);
   const [selectedSeats, setSelectedSeats] = useState<SelectedSeatType[]>([]);
-  const [showTimeExpiredModal, setShowTimeExpiredModal] = useState(false);
-
-  useEffect(() => {
-    // setLoading(true);
-    const getSchedule = async () => {
-      if (id) {
-        const data = await getScheduleDetail(parseInt(id));
-        setSchedule(data?.data);
-        setLoading(false);
-      }
-    };
-    getSchedule();
-  }, []);
 
   const getTotalPrice = () => {
     return selectedSeats.reduce((total, seat) => {
@@ -66,28 +57,11 @@ const SeatPlan = () => {
     return new Intl.NumberFormat("en-US").format(price);
   };
 
-  const handleTimeExpired = () => {
-    setShowTimeExpiredModal(true);
-    // Clear any selected seats when time expires
-    setSelectedSeats([]);
-  };
-
-  const handleBackToShowtimes = () => {
-    navigate(`/${routes.user.ticketPlan}?movieId=${schedule?.movie?.id}`);
-  };
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <Loader size="xl" className="mb-4" />
-          <Text size="lg" className="text-gray-600">
-            Loading seat plan...
-          </Text>
-        </div>
-      </div>
-    );
-  }
+  // const handleTimeExpired = () => {
+  //   setShowTimeExpiredModal(true);
+  //   // Clear any selected seats when time expires
+  //   setSelectedSeats([]);
+  // };
 
   if (!schedule) {
     return (
@@ -107,7 +81,7 @@ const SeatPlan = () => {
 
   return (
     <div className="relative min-h-screen bg-background">
-      <SeatPlanHeader schedule={schedule} onTimeExpired={handleTimeExpired} />
+      {/* <SeatPlanHeader schedule={schedule} onTimeExpired={handleTimeExpired} /> */}
 
       <div className="container mx-auto px-4 py-8 mt-10">
         {/* Screen Indicator */}
@@ -221,15 +195,17 @@ const SeatPlan = () => {
             {/* Action Button */}
             <div className="text-center md:text-right">
               {selectedSeats.length > 0 ? (
-                <NavLink to={`/${routes.user.checkout}/${id}`}>
-                  <Button
-                    size="lg"
-                    className="!bg-accent hover:!bg-accent/90 !text-black !rounded-xl px-8"
-                    leftSection={<IconTicket size={20} />}
-                  >
-                    Proceed to Checkout
-                  </Button>
-                </NavLink>
+                <Button
+                  size="lg"
+                  className="!bg-accent hover:!bg-accent/90 !text-black !rounded-xl px-8"
+                  leftSection={<IconTicket size={20} />}
+                  onClick={() => {
+                    setTotalSeats(selectedSeats);
+                    setActiveStage(BookingStage.confirmBooking);
+                  }}
+                >
+                  Proceed to Checkout
+                </Button>
               ) : (
                 <Button
                   size="lg"
@@ -264,69 +240,6 @@ const SeatPlan = () => {
       </div>
 
       {/* Time Expired Modal */}
-      <Modal
-        opened={showTimeExpiredModal}
-        onClose={() => {}} // No close function - user must click button
-        withCloseButton={false}
-        centered
-        size="md"
-        overlayProps={{
-          backgroundOpacity: 0.8,
-          blur: 3,
-        }}
-        classNames={{
-          content: "!bg-surface !border-surface-hover",
-          body: "!p-8",
-        }}
-      >
-        <div className="text-center">
-          <div className="mb-6">
-            <div className="mx-auto w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mb-4">
-              <IconAlertTriangle size={32} className="text-red-400" />
-            </div>
-            <Text size="xl" fw={700} className="!text-text mb-2">
-              Time Expired!
-            </Text>
-            <Text size="md" className="!text-muted !text-sm">
-              Your seat selection time has expired. Please return to showtimes
-              to select a new session.
-            </Text>
-          </div>
-
-          <div className="space-y-4">
-            <Alert
-              icon={<IconInfoCircle size={16} />}
-              color="orange"
-              className="!bg-surface-hover !border-surface-hover !text-text"
-              classNames={{
-                title: "!text-orange-400",
-                message: "!text-muted",
-              }}
-            >
-              <div>
-                <Text size="sm" fw={600} className="!text-orange-400 mb-1">
-                  What happened?
-                </Text>
-                <Text size="sm" className="!text-muted">
-                  To ensure fair access to seats, we limit selection time to 5
-                  minutes. Your selected seats have been released for other
-                  customers.
-                </Text>
-              </div>
-            </Alert>
-
-            <Button
-              size="lg"
-              fullWidth
-              onClick={handleBackToShowtimes}
-              className="!bg-primary hover:!bg-primary/90 !text-text !rounded-xl"
-              leftSection={<IconClock size={20} />}
-            >
-              Back to Showtimes
-            </Button>
-          </div>
-        </div>
-      </Modal>
     </div>
   );
 };

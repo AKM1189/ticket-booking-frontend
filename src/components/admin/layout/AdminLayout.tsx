@@ -123,7 +123,7 @@ const AdminLayout = ({
     >
       <AppShell.Header className="!bg-background !text-text !min-w-[400px]">
         <Group h="100%" px="md" justify="space-between">
-          <Group>
+          <Group gap={5}>
             <Burger
               opened={opened}
               onClick={toggle}
@@ -142,7 +142,7 @@ const AdminLayout = ({
                     ? "/src/assets/movie-logo-dark.png"
                     : "/src/assets/movie-logo-light.png"
                 }
-                className="!h-[50px]"
+                className="!h-[50px] max-sm:!h-[40px]"
               />
             </div>
           </Group>

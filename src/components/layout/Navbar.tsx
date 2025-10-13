@@ -21,6 +21,7 @@ import { useForm } from "@mantine/form";
 import { profileSchema } from "@/schema/AuthSchema";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { useConfirmModalStore } from "@/store/useConfirmModalStore";
+import Profile from "../admin/profile/Profile";
 
 const Navbar = () => {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
@@ -80,7 +81,8 @@ const Navbar = () => {
         ))}
       </ul>
       <div className="max-md:hidden">
-        <Logout user={user} />
+        {/* <Logout user={user} /> */}
+        <Profile role={Role.user} />
       </div>
 
       <div

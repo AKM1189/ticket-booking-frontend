@@ -34,6 +34,7 @@ export const endpoints = {
     theatres: "/user/theatres",
     schedules: "/user/schedules",
     movieFilter: "/user/movies/filter-list",
+    reviews: "user/reviews",
   },
 
   auth: {

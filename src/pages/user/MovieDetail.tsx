@@ -1,6 +1,4 @@
-import { useMovieStore } from "@/store/useMovieStore";
-import CustomTabs from "@/ui/tabs/CustomTabs";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 // import { useParams } from "react-router";
 import {
   ImageCarousel,
@@ -10,34 +8,67 @@ import {
 } from "@/components/user/movieDetail";
 import { useMovieDetailQuery } from "@/api/query/user/movieQuery";
 import { useParams } from "react-router";
-import type { MovieDetailType } from "@/types/MovieTypes";
+import type { MovieDetailType, TabType } from "@/types/MovieTypes";
+import { twMerge } from "tailwind-merge";
+
+type UnderlineStyleType = {
+  left: number | undefined;
+  width: number | undefined;
+};
 
 const MovieDetail = () => {
   const { id } = useParams();
-  const { activeTab, setActiveTab } = useMovieStore();
+  const [activeTab, setActiveTab] = useState<null | TabType>(null);
   const [movie, setMovie] = useState<MovieDetailType | null>(null);
-  const { data } = useMovieDetailQuery(id ?? "");
+  const { data, refetch: refetchMovies } = useMovieDetailQuery(id ?? "");
+
+  const [underlineStyle, setUnderlineStyle] = useState<UnderlineStyleType>({
+    left: undefined,
+    width: undefined,
+  });
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   const tabs = [
     {
       id: 1,
       label: "Summary",
-      component: <Summary movie={movie} />,
     },
     {
       id: 2,
       label: "User Review",
-      component: <Review movie={movie} />,
     },
   ];
 
+  const renderTabContent = () => {
+    switch (activeTab?.id) {
+      case 1:
+        return <Summary movie={movie} />;
+      case 2:
+        return <Review movie={movie} refetchMovies={refetchMovies} />;
+      default:
+        return null;
+    }
+  };
+
+  useEffect(() => {
+    const activeEl = containerRef.current?.querySelector(
+      `[data-id="${activeTab?.id}"]`,
+    );
+    if (activeEl) {
+      const el = activeEl as HTMLElement;
+      setUnderlineStyle({
+        left: el.offsetLeft,
+        width: el.offsetWidth,
+      });
+    }
+  }, [activeTab, tabs]);
+
   useEffect(() => {
     setActiveTab(tabs[0]);
-  }, [movie]);
+  }, []);
 
   useEffect(() => {
     setMovie(data?.data);
-    console.log("data", data);
   }, [data]);
 
   if (movie)
@@ -50,11 +81,32 @@ const MovieDetail = () => {
             <ImageCarousel images={movie.photos?.map((p) => p?.url)} />
           </div>
           <div>
-            <CustomTabs
-              tabs={tabs}
-              activeTab={activeTab}
-              setActiveTab={setActiveTab}
-            />
+            <div className="mt-10 min-h-[500px]" ref={containerRef}>
+              <div className="relative flex gap-10 items-center">
+                {tabs.map((item: TabType) => (
+                  <div
+                    key={item.id}
+                    data-id={item.id}
+                    className={twMerge(
+                      "py-2 cursor-pointer font-semibold",
+                      activeTab?.id === item.id && "text-accent",
+                    )}
+                    onClick={() => setActiveTab(item)}
+                  >
+                    {item.label}
+                  </div>
+                ))}
+                <span
+                  className="absolute bottom-0 h-[2px] bg-accent transition-all duration-300"
+                  style={{
+                    left: underlineStyle?.left,
+                    width: underlineStyle?.width,
+                  }}
+                />
+              </div>
+
+              <div className="mt-10">{renderTabContent()}</div>
+            </div>
           </div>
         </div>
       </div>

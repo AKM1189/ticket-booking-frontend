@@ -4,7 +4,7 @@ export type BookingInputType = {
   customerName: string;
   customerEmail: string;
   customerPhone: string;
-  note: string;
+  note?: string;
   userId: string;
   totalAmount: string;
 };

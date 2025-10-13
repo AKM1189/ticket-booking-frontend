@@ -49,7 +49,10 @@ api.interceptors.response.use(
         window.location.href = routes.auth.login;
         return Promise.reject(error);
       }
+    } else {
+      Cookies.remove("accessToken");
+      Cookies.remove("refreshToken");
+      return Promise.reject(error);
     }
-    return Promise.reject(error);
   },
 );

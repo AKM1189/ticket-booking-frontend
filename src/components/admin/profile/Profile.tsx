@@ -25,12 +25,25 @@ import {
   useUpdateProfileMutation,
 } from "@/api/mutation/admin/profileMutation";
 import { useLoadingStore } from "@/store/useLoading";
+import { useConfirmModalStore } from "@/store/useConfirmModalStore";
+import { useLogoutMutation } from "@/api/mutation/authMutation";
 
-const Profile = () => {
+const Profile = ({ role }: { role?: Role }) => {
   const { user } = useAuthStore();
   const [openProfileModal, setOpenProfileModal] = useState(false);
   const [openPasswordModal, setOpenPasswordModal] = useState(false);
+  const { open: logoutConfirm } = useConfirmModalStore();
+  const { mutate: logout } = useLogoutMutation();
 
+  const isUser = role === Role.user;
+
+  const handleLogout = () => {
+    logoutConfirm({
+      title: "Logout",
+      message: "Are you sure you want to log out?",
+      onConfirm: logout,
+    });
+  };
   return (
     <div>
       <Menu width={180} position="bottom-start">
@@ -38,11 +51,15 @@ const Profile = () => {
           <Group gap={"xs"} className="cursor-pointer">
             <Avatar
               radius="xl"
-              size={28}
+              size={isUser ? 40 : 30}
               src={user?.image?.url}
               color="var(--color-blueGray)"
             />
-            <Text color="var(--color-blueGray)" size="sm">
+            <Text
+              color="var(--color-blueGray)"
+              className="max-sm:!hidden"
+              size={isUser ? "md" : "sm"}
+            >
               {user?.name}
             </Text>
           </Group>
@@ -55,7 +72,7 @@ const Profile = () => {
           }}
         >
           <Menu.Item
-            className="!text-sm !text-text hover:!bg-surface-hover"
+            className="!text-sm !text-text hover:!bg-surface-hover max-sm:!text-xs"
             onClick={() => {
               setOpenProfileModal(true);
             }}
@@ -63,11 +80,19 @@ const Profile = () => {
             Profile
           </Menu.Item>
           <Menu.Item
-            className="!text-sm !text-text hover:!bg-surface-hover"
+            className="!text-sm !text-text hover:!bg-surface-hover max-sm:!text-xs"
             onClick={() => setOpenPasswordModal(true)}
           >
             Change Password
           </Menu.Item>
+          {isUser && (
+            <Menu.Item
+              className="!text-sm !text-text hover:!bg-surface-hover max-sm:!text-xs"
+              onClick={() => handleLogout()}
+            >
+              Logout
+            </Menu.Item>
+          )}
         </Menu.Dropdown>
       </Menu>
 
@@ -166,12 +191,16 @@ const UpdateProfile = ({ openProfileModal, setOpenProfileModal }) => {
       );
     }
   };
+
+  const isUser = user?.role === Role.user;
+  const isAdmin = user?.role === Role.admin;
+
   return (
     <div>
       <Modal
         opened={openProfileModal}
         onClose={() => setOpenProfileModal(false)}
-        title="Admin Profile"
+        title={`${isUser ? "User" : isAdmin ? "Admin" : "Staff"} Profile`}
         centered
         classNames={modalStyle}
       >
@@ -235,14 +264,16 @@ const UpdateProfile = ({ openProfileModal, setOpenProfileModal }) => {
                 </p>
               </div>
             </Grid.Col>
-            <Grid.Col>
-              <TextInput
-                label="Role"
-                disabled
-                classNames={inputStyle}
-                {...form.getInputProps("role")}
-              />
-            </Grid.Col>
+            {!isUser && (
+              <Grid.Col>
+                <TextInput
+                  label="Role"
+                  disabled
+                  classNames={inputStyle}
+                  {...form.getInputProps("role")}
+                />
+              </Grid.Col>
+            )}
 
             {user?.role === Role.staff && (
               <Grid.Col>
