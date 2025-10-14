@@ -1,10 +1,16 @@
-import { Button } from "@mantine/core";
+import { Button, ThemeIcon } from "@mantine/core";
+import { Link } from "react-router-dom";
 import {
   IconBrandFacebook,
+  IconBrandFacebookFilled,
   IconBrandGoogle,
+  IconBrandGoogleFilled,
   IconBrandInstagram,
+  IconBrandInstagramFilled,
   IconBrandTwitter,
+  IconBrandTwitterFilled,
 } from "@tabler/icons-react";
+import { routes } from "@/routes";
 
 const Footer = () => {
   return (
@@ -15,26 +21,42 @@ const Footer = () => {
           Movie Palace
         </span>
         <span className="flex gap-3">
-          <span className="footer-icon">
-            <IconBrandFacebook color="var(--color-text)" />
-          </span>
-          <span className="footer-icon">
-            <IconBrandTwitter color="var(--color-text)" />
-          </span>
-          <span className="footer-icon">
-            <IconBrandGoogle color="var(--color-text)" />
-          </span>
-          <span className="footer-icon">
-            <IconBrandInstagram color="var(--color-text)" />
-          </span>
+          <ThemeIcon radius={100} color={'var(--primary)'} size={32} className="!cursor-pointer">
+            <IconBrandFacebookFilled size={20} />
+          </ThemeIcon>
+          <ThemeIcon radius={100} color={'var(--primary)'} size={32} className="!cursor-pointer">
+            <IconBrandTwitterFilled size={20} />
+          </ThemeIcon>
+          <ThemeIcon radius={100} color={'var(--primary)'} size={32} className="!cursor-pointer">
+            <IconBrandGoogleFilled size={20} />
+          </ThemeIcon>
+          <ThemeIcon radius={100} color={'var(--primary)'} size={32} className="!cursor-pointer">
+            <IconBrandInstagramFilled size={20} />
+          </ThemeIcon>
         </span>
       </div>
       <div className="flex max-sm:flex-col pb-10 gap-5 max-sm:items-center justify-between py-8 text-text text-sm max-sm:text-xs">
         <ul className="flex gap-5 text-muted">
-          <li>About</li>
-          <li>Terms of Use</li>
-          <li>Privacy Policy</li>
-          <li>FAQ</li>
+          <li>
+            <Link to={routes.user.about} className="hover:text-accent transition-colors">
+              About
+            </Link>
+          </li>
+          <li>
+            <Link to={routes.user.termsOfUse} className="hover:text-accent transition-colors">
+              Terms of Use
+            </Link>
+          </li>
+          <li>
+            <Link to={routes.user.privacyPolicy} className="hover:text-accent transition-colors">
+              Privacy Policy
+            </Link>
+          </li>
+          <li>
+            <Link to={routes.user.faq} className="hover:text-accent transition-colors">
+              FAQ
+            </Link>
+          </li>
         </ul>
         <div className="text-muted">
           Copyright © 2025. All Rights Reserved By{" "}

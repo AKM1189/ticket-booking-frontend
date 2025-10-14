@@ -37,7 +37,7 @@ import type { PaginationType } from "@/types/PagintationType";
 
 const Notifications = () => {
   const [opened, setOpened] = useState(false);
-  const [activeTab, setActiveTab] = useState<string>("new");
+  const [activeTab, setActiveTab] = useState<string>("");
   const [notifications, setNotifications] = useState<any[]>([]);
   const [newCount, setNewCount] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -62,8 +62,12 @@ const Notifications = () => {
   const { mutate: readAllNotiMutation } = useReadAllNotiMutation();
 
   useEffect(() => {
-    refetch();
-  }, [activeTab, pagination]);
+    setActiveTab('new')
+  }, [])
+
+  // useEffect(() => {
+  //   refetch();
+  // }, [activeTab, pagination]);
 
   const readAllNoti = () => {
     readAllNotiMutation();

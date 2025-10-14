@@ -168,7 +168,7 @@ const SeatLayoutViewer = ({
       label: seatId,
       type: selectedType?.seatType?.name,
       price: typeDetail?.price || "",
-      countDown: 30,
+      countDown: 300,
     };
 
     if (seatExists) {
@@ -236,23 +236,23 @@ const SeatLayoutViewer = ({
           <div key={seatId} className="flex items-center">
             <div
               className={twMerge(
-                "w-8 h-8 text-xs font-[500] flex items-center justify-center rounded border-2  border-standard text-standard",
+                "w-9 h-9 text-xs font-[400] flex items-center justify-center rounded-[5px] border  border-standard text-text/80",
                 selectedSeatList?.length <= 10 &&
-                  "hover:bg-accent hover:text-black hover:border-accent cursor-pointer transition-color duration-100",
+                "hover:bg-accent hover:text-black hover:border-accent cursor-pointer transition-color duration-100",
                 isDisabled &&
-                  "bg-red-300 border-red-300 text-red-600 hover:bg-red-300 hover:text-red-600 cursor-default pointer-events-none",
+                "bg-disabled border-0 text-text/30 cursor-default pointer-events-none",
                 selectedType?.seatType?.name === "Premium" &&
-                  " border-premium text-premium",
+                " border-premium text-premium",
                 selectedType?.seatType?.name === "VIP" && "border-vip text-vip",
+                selectedType?.seatType?.name === "Standard" && "border-standard text-standard",
                 selectedSeat && "bg-accent text-black border-accent",
                 isTemp &&
-                  "bg-temp text-text/50 hover:text-text hover:bg-darkGray cursor-default pointer-events-none",
-                isBooked &&
-                  "bg-booked border-booked text-text/50 hover:text-text hover:bg-darkGray cursor-default pointer-events-none",
+                "bg-temp border-0 hover:text-text hover:bg-darkGray cursor-default pointer-events-none",
+                (isBooked || isDisabled) &&
+                "bg-booked border-0 border-surface-light text-text/50 hover:bg-darkGray cursor-default pointer-events-none",
               )}
-              title={`Seat ${seatId} ${
-                isDisabled ? "(Disabled)" : "(Available)"
-              }`}
+              title={`Seat ${seatId} ${isDisabled ? "(Disabled)" : "(Available)"
+                }`}
               onClick={() => addSeatsToBooking(seatId, selectedType)}
             >
               {seatId}
@@ -263,8 +263,8 @@ const SeatLayoutViewer = ({
       }
 
       rows.push(
-        <div key={row} className="flex items-center gap-1 mb-1 select-none">
-          <div className="flex gap-1 ">{seats}</div>
+        <div key={row} className="flex items-center gap-1 mb-2 select-none">
+          <div className="flex gap-2 ">{seats}</div>
         </div>,
       );
     }
@@ -291,7 +291,7 @@ const SeatLayoutViewer = ({
   }
 
   return (
-    <Card padding="lg" radius="md" withBorder className="dashboard-bg">
+    <Card padding="lg" radius="md" shadow="0" withBorder className="dashboard-bg">
       <Group justify="space-between" mb="md">
         <Group gap="md">
           <Group gap="xs">
@@ -309,14 +309,14 @@ const SeatLayoutViewer = ({
         </Group>
       </Group>
 
-      <div className="bg-surface-hover p-4 rounded-lg">
+      <div className="bg-surface p-4 border border-surface-light rounded-lg">
         <div className="text-center mb-4 w-full">
           <div className="font-semibold text-text w-full h-[30px] rounded-lg inline-block select-none">
             <div className="mt-1">SCREEN</div>
           </div>
         </div>
 
-        <div className="max-w-[400px] mx-auto overflow-x-auto p-2">
+        <div className="max-sm:max-w-[400px] max-w-[600px] mx-auto overflow-x-auto p-2">
           <div className="inline-flex min-w-full flex-col items-center justify-center">
             {generateSeatGrid()}
           </div>

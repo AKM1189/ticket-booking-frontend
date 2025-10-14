@@ -5,7 +5,6 @@ interface SummaryType {
   movie: MovieDetailType | null;
 }
 const Summary = ({ movie }: SummaryType) => {
-  console.log("summary", movie);
   return (
     <div className="flex flex-col gap-10">
       <div>

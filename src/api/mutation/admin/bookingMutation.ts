@@ -21,7 +21,7 @@ export const useCancelBookingMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id }: { id: number }) => cancelBooking(id),
+    mutationFn: ({ id, data }: { id: number, data: { reason: string } }) => cancelBooking(id, data),
     onSuccess: (data) => {
       getSuccessNoti("Cancel Booking", data, "Booking successfully cancelled");
       queryClient.invalidateQueries({ queryKey: ["bookings"] });

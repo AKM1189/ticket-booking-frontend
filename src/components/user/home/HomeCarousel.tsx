@@ -43,7 +43,7 @@ function HomeCarousel() {
       plugins={[autoplay.current]}
       classNames={{
         container: "!max-h-[600px]",
-        control: "!bg-surface !text-white !border-surface",
+        control: "!bg-surface !text-text !border-surface",
       }}
       styles={{
         indicator: {

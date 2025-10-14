@@ -13,7 +13,11 @@ export const routes = {
     order: "order",
     ticketPlan: "ticket-plan",
     booking: "booking",
+    bookingHistory: "booking-history",
     ticket: "ticket",
+    termsOfUse: "terms-of-use",
+    privacyPolicy: "privacy-policy",
+    faq: "faq",
   },
   auth: {
     login: "/login",

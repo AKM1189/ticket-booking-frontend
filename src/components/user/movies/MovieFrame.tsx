@@ -129,9 +129,9 @@ const MovieFrame = ({ type }: { type: string | undefined }) => {
               <span
                 key={item}
                 className={twMerge(
-                  "px-3 sm:px-5 py-2 sm:py-2 cursor-pointer text-sm transition-300 border border-surface-hover rounded-full select-none text-nowrap",
+                  "px-3 sm:px-5 py-2 sm:py-2 cursor-pointer text-sm transition-300 border border-surface-border rounded-full select-none text-nowrap",
                   item === sortBy
-                    ? "bg-primary/100 rounded-full"
+                    ? "bg-primary/100 rounded-full !text-white"
                     : "bg-primary/0",
                 )}
                 onClick={() => setSortBy(item)}
@@ -199,7 +199,7 @@ const MovieFrame = ({ type }: { type: string | undefined }) => {
 
             {displayIcons?.map((item) => (
               <div
-                className="px-2 sm:px-3 h-[32px] sm:h-[36px] rounded-full bg-background border border-surface-hover min-w-14 sm:min-w-14 flex justify-center items-center cursor-pointer select-none"
+                className="px-2 sm:px-3 h-[32px] sm:h-[36px] rounded-full bg-background border border-surface-border min-w-14 sm:min-w-14 flex justify-center items-center cursor-pointer select-none"
                 onClick={() => setActiveDisplay(item.id)}
                 key={item.id}
               >

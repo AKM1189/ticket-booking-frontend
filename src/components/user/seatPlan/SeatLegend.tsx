@@ -14,8 +14,8 @@ const SeatLegend = ({ priceList = [] }: SeatLegendProps) => {
     {
       type: "Standard",
       color: {
-        fill: "var(--color-user-standard)",
-        stroke: "var(--color-surface-hover)",
+        fill: "var(--search-bg)",
+        stroke: "var(--standard)",
       },
       description: "Regular seating",
       price: priceList.find((p) => p.name === "Standard")?.price || 5000,
@@ -23,8 +23,8 @@ const SeatLegend = ({ priceList = [] }: SeatLegendProps) => {
     {
       type: "Premium",
       color: {
-        fill: "var(--color-user-premium)",
-        stroke: "var(--color-surface-hover)",
+        fill: "var(--search-bg)",
+        stroke: "var(--premium)",
       },
       description: "Enhanced comfort",
       price: priceList.find((p) => p.name === "Premium")?.price || 7000,
@@ -32,8 +32,8 @@ const SeatLegend = ({ priceList = [] }: SeatLegendProps) => {
     {
       type: "VIP",
       color: {
-        fill: "var(--color-user-vip)",
-        stroke: "var(--color-surface-hover)",
+        fill: "var(--search-bg)",
+        stroke: "var(--vip)",
       },
       description: "Luxury experience",
       price: priceList.find((p) => p.name === "VIP")?.price || 10000,
@@ -57,8 +57,8 @@ const SeatLegend = ({ priceList = [] }: SeatLegendProps) => {
       icon: (
         <div className="relative">
           <ReverseSeatIcon
-            color="#4b5563"
-            fill="var(--color-surface-light)"
+            color="var(--search-bg)"
+            fill="var(--booked)"
             size="24"
           />
           <div className="absolute inset-0 flex items-center justify-center">
@@ -74,7 +74,7 @@ const SeatLegend = ({ priceList = [] }: SeatLegendProps) => {
         <div className="relative">
           <ReverseSeatIcon
             color="var(--color-surface)"
-            fill="#991b1b"
+            fill="var(--temp)"
             size="24"
           />
           <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
@@ -111,7 +111,7 @@ const SeatLegend = ({ priceList = [] }: SeatLegendProps) => {
             {legendItems.map((item) => (
               <div
                 key={item.type}
-                className="flex items-center gap-3 p-3 bg-surface-hover rounded-lg"
+                className="flex items-center gap-3 p-3 bg-search-bg rounded-lg"
               >
                 <ReverseSeatIcon
                   color={item.color.stroke}
@@ -132,7 +132,7 @@ const SeatLegend = ({ priceList = [] }: SeatLegendProps) => {
                       size="lg"
                       variant="light"
                       color="blue"
-                      className="!bg-surface-hover !text-accent"
+                      className="!bg-bg-search-bg  !text-accent"
                     >
                       ${" "}
                       {new Intl.NumberFormat("en-US").format(

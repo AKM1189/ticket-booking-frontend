@@ -54,7 +54,7 @@ export const ReverseSeatIcon = ({
         rx="8"
         fill={fill}
         stroke={color}
-        strokeWidth="1.5"
+        strokeWidth="1"
       />
 
       <rect
@@ -65,7 +65,7 @@ export const ReverseSeatIcon = ({
         rx="5"
         fill={fill}
         stroke={color}
-        strokeWidth="1.5"
+        strokeWidth="1"
       />
 
       <rect
@@ -76,7 +76,7 @@ export const ReverseSeatIcon = ({
         rx="5"
         fill={fill}
         stroke={color}
-        strokeWidth="1.5"
+        strokeWidth="1"
       />
 
       <rect
@@ -87,7 +87,7 @@ export const ReverseSeatIcon = ({
         rx="5"
         fill={fill}
         stroke={color}
-        strokeWidth="1.5"
+        strokeWidth="1"
       />
     </svg>
   );

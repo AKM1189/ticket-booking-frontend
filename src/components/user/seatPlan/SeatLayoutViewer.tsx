@@ -127,7 +127,7 @@ const SeatLayoutViewer = ({
       label: seatId,
       type: selectedType?.seatType?.name,
       price: typeDetail?.price || "",
-      countDown: 30,
+      countDown: 300,
     };
 
     if (seatExists) {
@@ -194,11 +194,10 @@ const SeatLayoutViewer = ({
             <div
               className={twMerge(
                 (isDisabled || isTemp || isBooked) &&
-                  "cursor-default pointer-events-none",
+                "cursor-default pointer-events-none",
               )}
-              title={`Seat ${seatId} ${
-                isDisabled ? "(Disabled)" : "(Available)"
-              }`}
+              title={`Seat ${seatId} ${isDisabled ? "(Disabled)" : "(Available)"
+                }`}
               onClick={() => addSeatsToBooking(seatId, selectedType)}
             >
               {/* {seatId} */}

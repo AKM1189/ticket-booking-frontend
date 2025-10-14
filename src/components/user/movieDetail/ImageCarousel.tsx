@@ -12,7 +12,7 @@ const ImageCarousel = ({ images }: ImageCarouselType) => {
     () =>
       images?.map((url) => (
         <Carousel.Slide key={url}>
-          <img className="w-[400px] h-[250px] rounded-md" src={url} />
+          <img className="w-[400px] h-[250px] rounded-md object-cover" src={url} />
         </Carousel.Slide>
       )),
     [images],

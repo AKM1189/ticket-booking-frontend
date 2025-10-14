@@ -31,6 +31,7 @@ import Profile from "../profile/Profile";
 import { useAuthStore } from "@/store/authStore";
 import { Role } from "@/types/AuthType";
 import Notifications from "../notifications/Notifications";
+import ThemeToggle from "@/components/layout/ThemeToggle";
 // import { useAuth } from "@/hooks/useAuth";
 
 interface AdminLayoutProps {
@@ -66,9 +67,7 @@ const AdminLayout = ({
   const [opened, { toggle, close }] = useDisclosure();
   const [navigationItems, setNavigationItems] = useState<any>([]);
   const { user } = useAuthStore();
-  const [mode, setMode] = useState(() => {
-    return localStorage.getItem("theme") || "dark";
-  });
+  const mode = localStorage.getItem("theme") || "dark";
   const { mutate: logout } = useLogoutMutation();
 
   useEffect(() => {
@@ -76,16 +75,6 @@ const AdminLayout = ({
       ? setNavigationItems(adminNavigationItems)
       : setNavigationItems(staffNavigationItems);
   }, [user]);
-
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", mode);
-    localStorage.setItem("theme", mode); // Persist choice
-  }, [mode]);
-
-  const handleThemeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-    if (value) setMode(value == "dark" ? "light" : "dark");
-  };
 
   const handleLogout = () => {
     logout();
@@ -148,30 +137,7 @@ const AdminLayout = ({
           </Group>
 
           <Group gap="md" justify="space-between">
-            <div className="cursor-pointer">
-              <Switch
-                size="sm"
-                color="var(--color-surface-hover)"
-                onLabel={
-                  <IconSun
-                    size={16}
-                    stroke={2.5}
-                    color="var(--mantine-color-yellow-4)"
-                  />
-                }
-                value={mode}
-                defaultChecked={mode === "dark"}
-                className="!cursor-pointer"
-                offLabel={
-                  <IconMoonStars
-                    size={16}
-                    stroke={2.5}
-                    color="var(--mantine-color-blue-6)"
-                  />
-                }
-                onChange={handleThemeChange}
-              />
-            </div>
+            <ThemeToggle />
 
             <Notifications />
             <Profile />
@@ -195,11 +161,10 @@ const AdminLayout = ({
                   close();
                   onTabChange(item.value);
                 }}
-                className={`w-full rounded-lg transition-colors !p-3 ${
-                  activeTab === item.value
-                    ? "!bg-primary !text-white"
-                    : "hover:!bg-surface"
-                }`}
+                className={`w-full rounded-lg transition-colors !p-3 ${activeTab === item.value
+                  ? "!bg-primary !text-white"
+                  : "hover:!bg-surface"
+                  }`}
               >
                 <Group gap="sm">
                   <item.icon size={20} />

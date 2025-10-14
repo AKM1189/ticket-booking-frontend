@@ -28,6 +28,7 @@ import { useAddBookingMutation } from "@/api/mutation/admin/bookingMutation";
 import { useBookingStore } from "@/store/bookingStore";
 import { routes } from "@/routes";
 import { useLoadingStore } from "@/store/useLoading";
+import { MonthPicker, MonthPickerInput } from '@mantine/dates';
 
 // Combined validation schema
 const checkoutSchema = z.object({
@@ -42,8 +43,7 @@ const checkoutSchema = z.object({
     .min(16, "Card number must be 16 digits")
     .max(19, "Invalid card number"),
   expiryDate: z
-    .string()
-    .regex(/^(0[1-9]|1[0-2])\/\d{2}$/, "Invalid expiry date (MM/YY)"),
+    .any(),
   cvv: z
     .string()
     .min(3, "CVV must be 3 digits")
@@ -98,7 +98,7 @@ const ConfirmBooking = () => {
       email: "",
       phone: "",
       cardNumber: "",
-      expiryDate: "",
+      expiryDate: new Date(),
       cvv: "",
       cardHolderName: "",
     },
@@ -248,7 +248,6 @@ const ConfirmBooking = () => {
                   <TextInput
                     label="Card Number"
                     placeholder="1234 5678 9012 3456"
-                    key={form.key("cardNumber")}
                     classNames={{
                       root: "mt-5",
                       label: "text-[16px] text-text",
@@ -267,9 +266,32 @@ const ConfirmBooking = () => {
                     autoFocus
                     value={form.getValues().cardNumber}
                   />
+                  {form.errors.cardNumber && <Text size="xs" c={'red'} mt={3}>{form.errors.cardNumber}</Text>}
+
+                  <TextInput
+                    key={form.key("cardNumber")}
+                    className="hidden"
+                    {...form.getInputProps("cardNumber")}
+                  />
 
                   <div className="grid grid-cols-2 gap-6">
-                    <TextInput
+                    <MonthPickerInput
+                      placeholder="Pick Month"
+                      valueFormat="MM/YY"
+                      label={<div className="mb-3.5">Expiry Date</div>}
+                      classNames={{
+                        root: "mt-5",
+                        input: "!bg-transparent !border-0 !border-b !rounded-none !text-text !text-sm !px-0",
+                        monthsListControl: "!bg-transparent hover:!bg-primary !text-text",
+                        yearsListControl: "!bg-transparent hover:!bg-primary !text-text",
+                        calendarHeaderControl: "hover:!bg-surface-light",
+                        calendarHeaderLevel: "hover:!bg-surface-light",
+
+                      }}
+                      {...form.getInputProps("expiryDate")}
+                    />
+                    {/* <TextInput
+                      type="month"
                       label="Expiry Date"
                       placeholder="MM/YY"
                       key={form.key("expiryDate")}
@@ -282,8 +304,7 @@ const ConfirmBooking = () => {
                         ),
                         error: "text-red-500",
                       }}
-                      {...form.getInputProps("expiryDate")}
-                    />
+                    /> */}
 
                     <TextInput
                       label="CVV"

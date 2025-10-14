@@ -39,17 +39,6 @@ const MovieDetail = () => {
     },
   ];
 
-  const renderTabContent = () => {
-    switch (activeTab?.id) {
-      case 1:
-        return <Summary movie={movie} />;
-      case 2:
-        return <Review movie={movie} refetchMovies={refetchMovies} />;
-      default:
-        return null;
-    }
-  };
-
   useEffect(() => {
     const activeEl = containerRef.current?.querySelector(
       `[data-id="${activeTab?.id}"]`,
@@ -61,7 +50,7 @@ const MovieDetail = () => {
         width: el.offsetWidth,
       });
     }
-  }, [activeTab, tabs]);
+  }, [activeTab]);
 
   useEffect(() => {
     setActiveTab(tabs[0]);
@@ -105,7 +94,13 @@ const MovieDetail = () => {
                 />
               </div>
 
-              <div className="mt-10">{renderTabContent()}</div>
+              <div className="mt-10">
+                {activeTab?.id === 1 ? (
+                  <Summary movie={movie} />
+                ) : (
+                  <Review movie={movie} refetchMovies={refetchMovies} />
+                )}
+              </div>
             </div>
           </div>
         </div>

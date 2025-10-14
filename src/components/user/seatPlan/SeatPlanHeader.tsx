@@ -135,14 +135,13 @@ const SeatPlanHeader = ({ schedule, onTimeExpired }: SeatPlanHeaderProps) => {
             <div className="flex flex-col items-center w-[230px]">
               <div className="flex items-center gap-2 mb-1">
                 <IconClock size={16} className="text-orange-400" />
-                <Text size="sm" className="text-orange-200">
+                <Text size="sm" className="!text-orange-200">
                   Time Left
                 </Text>
               </div>
               <div
-                className={`text-2xl font-bold ${
-                  timeLeft < 60 ? "text-red-400" : "text-orange-400"
-                }`}
+                className={`text-2xl font-bold ${timeLeft < 60 ? "text-red-400" : "text-orange-400"
+                  }`}
               >
                 {formatTime(timeLeft)}
               </div>

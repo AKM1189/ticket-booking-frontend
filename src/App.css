@@ -7,3 +7,4 @@
 @import "./styles/tailwind/_utilities.css";
 @import "./styles//mantine/_customStyle.css";
 @import "@mantine/charts/styles.css";
+@import '@mantine/dates/styles.css';

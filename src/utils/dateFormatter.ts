@@ -16,3 +16,10 @@ export const formatDate = (date: dayjs.Dayjs) => {
   if (months < 12) return `${months} month${months !== 1 ? "s" : ""} ago`;
   return `${years} year${years !== 1 ? "s" : ""} ago`;
 };
+
+export const formatToLocalDate = (date: string) => {
+  // const localdate = new Date(date).toDateString();
+  // const localTime = new Date(date).toTimeString();
+
+  return `${dayjs(date).format('DD-MM-YYYY')} ${dayjs(`${date}`).format(`HH:mm`)}`
+}

@@ -22,6 +22,8 @@ import { profileSchema } from "@/schema/AuthSchema";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { useConfirmModalStore } from "@/store/useConfirmModalStore";
 import Profile from "../admin/profile/Profile";
+import Notifications from "../admin/notifications/Notifications";
+import ThemeToggle from "./ThemeToggle";
 
 const Navbar = () => {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
@@ -80,9 +82,14 @@ const Navbar = () => {
           </NavLink>
         ))}
       </ul>
-      <div className="max-md:hidden">
-        {/* <Logout user={user} /> */}
-        <Profile role={Role.user} />
+
+      <div className="flex gap-5 items-center">
+        <ThemeToggle />
+        <Notifications />
+        <div className="max-md:hidden">
+          {/* <Logout user={user} /> */}
+          <Profile role={Role.user} />
+        </div>
       </div>
 
       <div

@@ -11,15 +11,23 @@ import { useReactToPrint } from "react-to-print";
 import domtoimage from "dom-to-image";
 import { useBookingStore } from "@/store/bookingStore";
 import { getBookingById } from "@/api/function/admin/bookingApi";
+import { useNavigate } from "react-router";
+import { routes } from "@/routes";
 
 const Ticket = () => {
   const [isLoading, setLoading] = useState(true);
   const ticketRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   const { currentBooking } = useBookingStore();
   const [bookingData, setBookingData] = useState<any>(null);
 
+
+
   useEffect(() => {
+    if (!currentBooking) {
+      navigate(routes.user.home)
+    }
     const getCurrentBooking = async () => {
       if (currentBooking) {
         const booking = await getBookingById(currentBooking);
@@ -72,7 +80,7 @@ const Ticket = () => {
     <div>
       <div className="flex flex-col items-center my-5">
         {/* <div className="w-10 h-10 bg-surface rounded-full mx-auto mb-[-18px] z-100 border-b border-gray-400"></div> */}
-        <div ref={ticketRef} className="rounded-2xl overflow-hidden">
+        <div ref={ticketRef} className="overflow-hidden">
           <TicketCard
             movie={bookingData?.movie}
             theatre={bookingData?.theatre}
@@ -127,7 +135,7 @@ const TicketCard: React.FC<TicketProps> = ({
   totalAmount,
 }) => {
   return (
-    <div className="min-w-[350px] bg-white border border-gray-400 p-6 text-darkGray max-w-[350px] select-none z-10">
+    <div className="min-w-[350px] rounded-[15px]  border border-gray-400 bg-white p-6 text-darkGray max-w-[350px] select-none z-10">
       <p className="text-gray-400 text-center text-[10px] mb-3 uppercase">
         Movie Palace Cinema
       </p>

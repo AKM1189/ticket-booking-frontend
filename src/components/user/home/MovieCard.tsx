@@ -26,14 +26,12 @@ const MovieCard = ({
 
   return (
     <div
-      className={`bg-surface group rounded-t-lg overflow-hidden max-w-[300px] ${
-        isMovieList ? "w-full" : "w-[300px]"
-      }`}
+      className={`bg-surface group rounded-lg overflow-hidden max-w-[300px] shadow-sm ${isMovieList ? "w-full" : "w-[300px]"
+        }`}
     >
       <div
-        className={`relative h-[400px] rounded-t-lg overflow-hidden cursor-pointer ${
-          isMovieList ? "w-full" : "w-[300px]"
-        }`}
+        className={`relative h-[400px] rounded-t-lg overflow-hidden cursor-pointer ${isMovieList ? "w-full" : "w-[300px]"
+          }`}
         onClick={handleNavigate}
       >
         <Image

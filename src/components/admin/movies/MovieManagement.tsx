@@ -55,6 +55,7 @@ import { usePermisson } from "@/hooks/usePermisson";
 import { permissionList } from "@/constants/permissons";
 import type { PaginationType } from "@/types/PagintationType";
 import DataNotFound from "@/ui/dataNotFound/DataNotFound";
+import { getStatusColor } from "@/utils/getMovieStatus";
 
 const languages = ["English", "Tamil", "Hindi", "Telugu", "Chinese"];
 const subtitles = ["English", "Tamil", "Hindi", "Telugu", "Chinese"];
@@ -329,20 +330,7 @@ const MovieManagement = ({
     );
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Now Showing":
-        return "#28a745";
-      case "Coming Soon":
-        return "#007bff";
-      case "Ticket Available":
-        return "#c29617";
-      case "Ended":
-        return "#6c757d";
-      default:
-        return "#6c757d";
-    }
-  };
+
   const inputStyle = {
     input: "dashboard-input placeholder:!text-muted",
     label: "!mb-2 !text-text",
@@ -610,9 +598,9 @@ const MovieManagement = ({
                 data={
                   genreList?.length > 0
                     ? genreList?.map((g) => ({
-                        value: g.id.toString(),
-                        label: g.name,
-                      }))
+                      value: g.id.toString(),
+                      label: g.name,
+                    }))
                     : []
                 }
                 // required
@@ -690,14 +678,14 @@ const MovieManagement = ({
                 // value={selectedPoster}
                 placeholder="Select Movie Poster"
                 {...form.getInputProps("poster")}
-                // onChange={handlePosterUpload}
+              // onChange={handlePosterUpload}
               />
             </Grid.Col>
             <ImagePreview
               imagePreviewUrls={posterPreviewUrl}
               removeImage={removePoster}
               clearAllImages={clearAllImages}
-              // selectedImages={selectedImages}
+            // selectedImages={selectedImages}
             />
 
             {/* Multiple Image Upload Section */}
@@ -729,7 +717,7 @@ const MovieManagement = ({
               isClearAll={true}
               removeImage={removeImage}
               clearAllImages={clearAllImages}
-              // selectedImages={selectedImages}
+            // selectedImages={selectedImages}
             />
 
             <Grid.Col span={12}>

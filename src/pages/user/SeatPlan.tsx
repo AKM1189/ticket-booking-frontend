@@ -126,7 +126,7 @@ const SeatPlan = () => {
         </div>
 
         {/* Selection Summary */}
-        <Card className="mt-8 max-w-4xl mx-auto !bg-surface !border-surface-hover shadow-lg">
+        <Card className="mt-8 max-w-4xl mx-auto !bg-surface !border-search-bg shadow-lg">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
             {/* Selected Seats */}
             <div className="text-center md:text-left">
@@ -146,7 +146,7 @@ const SeatPlan = () => {
                         size="lg"
                         variant="light"
                         color="blue"
-                        className="!bg-surface-hover !text-accent"
+                        className="!bg-search-bg !text-accent"
                       >
                         {seat.label}
                         {seat.countDown > 0 && (
@@ -211,7 +211,7 @@ const SeatPlan = () => {
                   size="lg"
                   disabled
                   variant="light"
-                  className="!rounded-xl px-8 !bg-surface-hover !text-muted"
+                  className="!rounded-xl px-8 !bg-search-bg !text-muted"
                 >
                   Select Seats First
                 </Button>

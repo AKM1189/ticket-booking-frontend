@@ -11,6 +11,10 @@ import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
 import { twMerge } from "tailwind-merge";
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
+dayjs.extend(isSameOrBefore);
+
+
 export type ShowDetailType = {
   id: number;
   theatre: {
@@ -51,24 +55,24 @@ const TicketPlan = () => {
   useEffect(() => {
     refetch();
   }, [selectedDate]);
+  console.log('selected date', selectedDate)
+  // useEffect(() => {
+  //   // const days: string[] = [];
+  //   // for (let i = 0; i <= 4; i++) {
+  //   //   const date = new Date();
+  //   //   date.setDate(date.getDate() + i);
+  //   //   days.push(date.toISOString().split("T")[0]);
+  //   // }
 
-  useEffect(() => {
-    // const days: string[] = [];
-    // for (let i = 0; i <= 4; i++) {
-    //   const date = new Date();
-    //   date.setDate(date.getDate() + i);
-    //   days.push(date.toISOString().split("T")[0]);
-    // }
-
-    setSelectedDate(showDate ?? dayjs().format("YYYY-MM-DD"));
-  }, []);
+  //   setSelectedDate(showDate ?? dayjs().format("YYYY-MM-DD"));
+  // }, []);
 
   useEffect(() => {
     setMovie(data?.data);
     const showDates: string[] = [];
 
     data?.data?.schedules?.map((s: ScheduleType) => {
-      if (!showDates.includes(s?.showDate)) {
+      if (!showDates.includes(s?.showDate) && dayjs().isSameOrBefore(dayjs(s?.showDate), 'day')) {
         showDates.push(s?.showDate);
       }
     });
@@ -126,8 +130,7 @@ const TicketPlan = () => {
                       <span>
                         {movie.subtitle?.map(
                           (item, index) =>
-                            `${item}${
-                              index !== movie.subtitle.length - 1 ? ", " : ""
+                            `${item}${index !== movie.subtitle.length - 1 ? ", " : ""
                             }`,
                         )}
                       </span>
@@ -152,7 +155,7 @@ const TicketPlan = () => {
                       className={twMerge(
                         "px-6 py-3 rounded-lg cursor-pointer bg-surface-hover text-text font-medium transition-all duration-200 hover:bg-surface-light hover:scale-105 shadow-sm",
                         selectedDate === item &&
-                          "bg-primary text-white hover:!bg-primary hover:!scale-105",
+                        "bg-primary text-white hover:!bg-primary hover:!scale-105",
                       )}
                       key={item}
                       onClick={() => setSelectedDate(item)}
@@ -195,7 +198,7 @@ const TicketPlan = () => {
                       {schedules?.map((item) => (
                         <div
                           key={item?.theatre?.location}
-                          // className="bg-surface rounded-xl p-6 shadow-sm border border-surface-hover"
+                        // className="bg-surface rounded-xl p-6 shadow-sm border border-surface-hover"
                         >
                           <ScheduleList
                             schedule={item}

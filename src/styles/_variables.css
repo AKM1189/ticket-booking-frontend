@@ -5,9 +5,11 @@
   --primary: #2a5adf; /* Brighter blue */
   --primary-hover: #244fcc; /* Slightly lighter hover blue */
   --surface-hover: #2e3e75; /* More visible blue hover */
+  --surface-border: #2e3e75;
+  --search-bg: #2e3e75;
   --surface-light: #344b94; /* Soft bluish light surface */
   --secondary: #8c6dff; /* Lightened secondary purple */
-  --accent: #ffd54f; /* Softer warm yellow */
+  --accent: #ffb700; /* Softer warm yellow */
   --text: #f0f4ff; /* Light bluish-white for better readability */
   --muted: #aab4c8; /* Softer muted gray-blue */
   --coolGray: #9aa3b8; /* Cooler light gray */
@@ -17,52 +19,88 @@
   --blueGray: #c2d1e8; /* Softer blue-gray */
   --coolBlue: #1a274a; /* Medium navy blue */
 
-  --disabled: #656565;
+  --disabled: #73767e;
 
-  --standard: #3f95ff;
-  --premium: #00d273;
-  --vip: #ff8f44;
-  --booked: #2a5adf;
-  --temp: #7192c3;
+  --standard: #7080fe;
+  --premium: #06b265;
+  --vip: #d75c81;
+  --booked: #3844a4;
+  --temp: #AF1B3F;
 
-  --user-standard: #1e40af;
-  --user-premium: #077336;
-  --user-vip: #70029c;
+    --user-premium: #00d273;
+  --user-vip: #ff8f44;
+  --user-booked: #2a5adf;
 
   --notiBorder: #465893; /* Medium navy blue */
 }
 
-[data-theme="light"] {
-  --background: #ffffff; /* pure white background */
-  --surface: #f5f5f5; /* light gray surfaces/cards */
-  --primary: #1a43bf; /* keep your brand blue */
-  --primary-hover: #153cb0; /* slightly darker hover */
-  --surface-hover: #e5e5e5; /* hover on cards/buttons */
-  --surface-light: #f0f0f0; /* subtle light surface variant */
-  --secondary: #7c4dff; /* secondary color */
-  --accent: #ffc107; /* accent color */
-  --text: #5b5b5b; /* main text in dark gray/black */
-  --muted: #6b7280; /* muted text / labels */
-  --coolGray: #9ca3af; /* general gray tone */
-  --notification: #1a43bf; /* notifications using primary color */
-  --lightGray: #ededed; /* very light gray for borders or dividers */
-  --darkGray: #4b5563; /* darker gray for subtle contrast */
-  --blueGray: #56677b; /* optional blue-gray accents */
-  --coolBlue: #e5e7eb; /* very light cool tone for backgrounds if needed */
+/* [data-theme="light"] {
+  --background: #ffffff;
+  --surface: #f5f5f5;
+  --primary: #1a43bf; 
+  --primary-hover: #153cb0; 
+  --surface-hover: #e5e5e5;
+  --surface-light: #f0f0f0; 
+  --secondary: #7c4dff;
+  --accent: #ffc107;
+  --text: #5b5b5b;
+  --muted: #6b7280; 
+  --coolGray: #9ca3af; 
+  --notification: #1a43bf;  
+  --lightGray: #ededed; 
+  --darkGray: #4b5563; 
+  --blueGray: #56677b;
+  --coolBlue: #e5e7eb; 
   --disabled: #cecece;
 
-  --standard: var(--color-primary);
-  --premium: #00894b;
-  --vip: #913a00;
-  --booked: #d2d2d2;
-  --temp: #a4a4a4;
+  --standard: #4f5ed3;
+  --premium: #009552;
+  --vip: #fd1a5e;
+  --booked: #dce0ff;
+  --temp: #AF1B3F;
 
   --user-standard: #1e40af;
   --user-premium: #077336;
   --user-vip: #70029c;
 
-  --notiBorder: rgb(119, 119, 119); /* Medium navy blue */
+  --notiBorder: rgb(119, 119, 119);
+} */
+
+[data-theme="light"] {
+  --background: #f7f9fc; /* Soft cool white background */
+  --surface: #ffffff; /* White surface for cards */
+  --primary: #2a5adf; /* Same bright blue for consistency */
+  --primary-hover: #3a6cff; /* Slightly lighter hover blue */
+  --surface-hover: #eef2ff; /* Very light blue hover */
+  --surface-border: #adbbe9;
+  --search-bg: #eef2ff; /* Very light blue hover */
+  --surface-light: #eef3ff; /* Subtle light bluish surface */
+  --secondary: #7558e6; /* Rich purple accent */
+  --accent: #ffb700; /* Warm yellow accent */
+  --text: #0a1b3a; /* Deep navy for readability */
+  --muted: #5a6b8a; /* Muted gray-blue for secondary text */
+  --coolGray: #d3dae8; /* Light cool gray */
+  --notification: #d9e3ff; /* Light blue notification background */
+  --lightGray: #f0f4fa; /* Slightly grayish background tone */
+  --darkGray: #505463; /* Dark gray for contrast */
+  --blueGray: #7a8db8; /* Cool blue-gray */
+  --coolBlue: #e3e9f9; /* Very light blue surface */
+
+  --disabled: #b5bac8; /* Soft gray for disabled state */
+
+  --standard: #4d63ff; /* Brighter standard blue */
+  --premium: #00a75f; /* Soft green */
+  --vip: #d43f6c; /* Vibrant pinkish red */
+  --booked: #9ba9ff; /* Muted soft blue */
+  --temp: #ff6b81; /* Warm pink-red */
+
+  --user-premium: #00b96b; /* Green highlight for premium user */
+  --user-vip: #ff914d; /* Orange highlight for VIP */
+  --user-booked: #2a5adf; /* Keep consistent bright blue */
+
+  --notiBorder: #b0bce6; /* Soft bluish border for notifications */
 }
+
 
 @theme {
   --color-selected-text: #e0e0e0;
@@ -71,7 +109,9 @@
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
   --color-surface-hover: var(--surface-hover);
+  --color-search-bg: var(--search-bg);
   --color-surface-light: var(--surface-light);
+  --color-surface-border: var(--surface-border);
   --color-secondary: var(--secondary);
   --color-accent: var(--accent);
   --color-text: var(--text);

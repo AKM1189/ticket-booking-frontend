@@ -1,6 +1,5 @@
 import { ReverseSeatIcon } from "@/assets/svgs/SeatIcon";
 import type { Seat } from "@/pages/user/SeatPlan";
-import { Tooltip } from "@mantine/core";
 import { twMerge } from "tailwind-merge";
 
 interface SeatListType {
@@ -26,29 +25,29 @@ const SeatLists = ({
     // Define elegant color schemes for different seat types
     const colorSchemes = {
       VIP: {
-        available: { fill: "var(--color-user-vip)", stroke: "#fbbf24" }, // Deep purple with gold border
-        selected: { fill: "#fbbf24", stroke: "#f59e0b" },
-        disabled: { fill: "#374151", stroke: "#6b7280" },
-        booked: { fill: "var(--color-surface-light", stroke: "#4b5563" },
-        temp: { fill: "#991b1b", stroke: "#f87171" },
+        available: { stroke: "var(--color-vip)", fill: "var(--surface)" }, // Deep purple with gold border
+        selected: { fill: "#fbbf24", stroke: "var(--surface)" },
+        disabled: { fill: "#374151", stroke: "var(--surface)" },
+        booked: { fill: "var(--booked)", stroke: "var(--surface)" },
+        temp: { fill: "var(--temp)", stroke: "var(--surface)" },
       },
       Premium: {
-        available: { fill: "var(--color-user-premium)", stroke: "#34d399" }, // Deep emerald with mint border
+        available: { stroke: "var(--color-premium)", fill: "var(--surface)" }, // Deep emerald with mint border
         // selected: { fill: "#10b981", stroke: "#6ee7b7" },
-        selected: { fill: "#fbbf24", stroke: "#f59e0b" },
+        selected: { fill: "#fbbf24", stroke: "var(--surface)" },
 
-        disabled: { fill: "#374151", stroke: "#6b7280" },
-        booked: { fill: "var(--color-surface-light", stroke: "#4b5563" },
-        temp: { fill: "#991b1b", stroke: "#f87171" },
+        disabled: { fill: "#374151", stroke: "var(--surface)" },
+        booked: { fill: "var(--booked)", stroke: "var(--surface)" },
+        temp: { fill: "var(--temp)", stroke: "var(--surface)" },
       },
       Standard: {
-        available: { fill: "var(--color-user-standard)", stroke: "#60a5fa" }, // Rich blue with sky border
+        available: { stroke: "var(--color-standard)", fill: "var(--surface)" }, // Rich blue with sky border
         // selected: { fill: "#3b82f6", stroke: "#93c5fd" },
-        selected: { fill: "#fbbf24", stroke: "#f59e0b" },
+        selected: { fill: "#fbbf24", stroke: "var(--surface)" },
 
-        disabled: { fill: "#374151", stroke: "#6b7280" },
-        booked: { fill: "var(--color-surface-light", stroke: "#4b5563" },
-        temp: { fill: "#991b1b", stroke: "#f87171" },
+        disabled: { fill: "#374151", stroke: "var(--surface)" },
+        booked: { fill: "var(--booked)", stroke: "var(--surface)" },
+        temp: { fill: "var(--temp)", stroke: "var(--surface)" },
       },
     };
 
@@ -66,7 +65,7 @@ const SeatLists = ({
   const colors = getSeatColors();
   const seatTypeName = seatType?.seatType?.name || "Standard";
   const price = seatType?.price || seat.price;
-
+  console.log('seat type name', seatTypeName)
   return (
     <div
       className={twMerge(
@@ -79,7 +78,7 @@ const SeatLists = ({
       )}
     >
       <ReverseSeatIcon
-        color={"var(--color-surface)"}
+        color={colors.stroke}
         fill={colors.fill}
         size="55"
         isSelected={isSelected}
@@ -88,10 +87,14 @@ const SeatLists = ({
       {/* Seat ID Label */}
       <div
         className={twMerge(
-          "absolute inset-0 flex items-center justify-center text-xs font-medium select-none pointer-events-none",
-          isSelected ? "text-gray-900" : "text-gray-300",
-          isBooked && "text-gray-500",
-          isTemp && "text-red-300",
+          `absolute inset-0 flex mt-4 justify-center text-xs font-medium select-none pointer-events-none`,
+          seatTypeName === 'Premium' && '!text-premium',
+          seatTypeName === 'VIP' && '!text-vip',
+          seatTypeName === 'Standard' && '!text-standard',
+          isSelected ? "!text-black text-gray-900" : "text-gray-300",
+          isBooked && "!text-gray-500",
+          isTemp && "!text-red-300",
+          isDisabled && "!text-gray-500",
         )}
       >
         {!isBooked && seat.id}

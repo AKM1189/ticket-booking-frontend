@@ -1,58 +1,11 @@
 import { Carousel } from "@mantine/carousel";
 import Autoplay from "embla-carousel-autoplay";
-import { useRef, useMemo, useEffect } from "react";
+import { useRef, useMemo, useEffect, useState } from "react";
 import { NavLink } from "react-router";
 import { routes } from "../../../routes";
-import MovieCard from "./MovieCard";
-import {
-  SortType,
-  type HomeMoviesType,
-  type MovieType,
-} from "@/types/MovieTypes";
-import { useMovieStore } from "@/store/useMovieStore";
+import { SortType, type HomeMoviesType } from "@/types/MovieTypes";
 import { MovieStatus } from "@/constants/movieConstants";
-
-const HomeMovies = () => {
-  const { showingMovies, comingMovies, availableMovies } = useMovieStore();
-  return (
-    <div className="min-h-[500px]">
-      <div className="flex justify-between items-baseline">
-        <div className="md:text-5xl text-3xl inline uppercase font-bold pb-5 border-b-4 border-accent">
-          Movies
-        </div>
-      </div>
-      <div className="flex flex-col gap-10">
-        {showingMovies?.length > 0 && (
-          <MovieCarousel
-            movies={showingMovies}
-            menu={SortType.showing}
-            type={MovieStatus.showing}
-          />
-        )}
-
-        {availableMovies?.length > 0 && (
-          <MovieCarousel
-            movies={availableMovies}
-            menu={"Ticket Available"}
-            delay={2000}
-            type={MovieStatus.available}
-          />
-        )}
-
-        {comingMovies?.length > 0 && (
-          <MovieCarousel
-            movies={comingMovies}
-            menu={SortType.comingSoon}
-            delay={2000}
-            type={MovieStatus.coming}
-          />
-        )}
-      </div>
-    </div>
-  );
-};
-
-export default HomeMovies;
+import MovieCard from "./MovieCard";
 
 interface MovieCarouselProps {
   movies: HomeMoviesType[];
@@ -60,64 +13,6 @@ interface MovieCarouselProps {
   type: MovieStatus;
   delay?: number;
 }
-// const MovieCarousel = ({
-//   movies,
-//   menu,
-//   type,
-//   delay = 2000,
-// }: MovieCarouselProps) => {
-//   const autoplay = useRef(Autoplay({ delay: 2000 }));
-//   const sortBy = menu === SortType.showing ? "now-showing" : "coming-soon";
-
-//   // Memoize slides to prevent recreation on every render
-//   const slides = useMemo(
-//     () =>
-//       movies.map((movie: HomeMoviesType) => (
-//         <Carousel.Slide key={movie.id} className="min-h-[500px]">
-//           {movie && <MovieCard movie={movie} type={type} />}
-//         </Carousel.Slide>
-//       )),
-//     [movies],
-//   );
-
-//   return (
-//     <div>
-//       <div className="mt-10 flex justify-between">
-//         <span className="text-xl font-semibold">{menu}</span>
-//         <NavLink
-//           to={"/" + routes.user.movies + "/sortBy/" + sortBy}
-//           className="text-accent underline"
-//         >
-//           See All
-//         </NavLink>
-//       </div>
-
-//       <div className="mt-10">
-//         <div
-//           style={{
-//             overflow: "hidden",
-//             maxWidth: "100%",
-//             minWidth: 250,
-//           }}
-//         >
-//           <Carousel
-//             withControls={false}
-//             type="container"
-//             draggable
-//             slideSize={{ base: "100%", "300px": "50%", "500px": "25%" }}
-//             slideGap={{ base: 0, "300px": "md", "500px": "lg" }}
-//             emblaOptions={{ loop: true, align: "start" }}
-//             plugins={[autoplay.current]}
-//             onMouseEnter={autoplay.current.stop}
-//             onMouseLeave={() => autoplay.current.play()}
-//           >
-//             {slides}
-//           </Carousel>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
 
 const MovieCarousel = ({
   movies,
@@ -126,13 +21,29 @@ const MovieCarousel = ({
   delay = 2000,
 }: MovieCarouselProps) => {
   const autoplay = useRef<ReturnType<typeof Autoplay> | null>(null);
+  const [showControls, setShowControls] = useState(true);
 
-  // Initialize Autoplay safely
   useEffect(() => {
     autoplay.current = Autoplay({ delay });
   }, [delay]);
 
   const sortBy = menu === SortType.showing ? "now-showing" : "coming-soon";
+
+  // Adjust based on screen width
+  useEffect(() => {
+    const checkControls = () => {
+      const width = window.innerWidth;
+      let visibleSlides = 1;
+      if (width >= 500) visibleSlides = 4;
+      else if (width >= 300) visibleSlides = 2;
+
+      setShowControls(movies.length > visibleSlides);
+    };
+
+    checkControls();
+    window.addEventListener("resize", checkControls);
+    return () => window.removeEventListener("resize", checkControls);
+  }, [movies.length]);
 
   const slides = useMemo(
     () =>
@@ -161,7 +72,7 @@ const MovieCarousel = ({
         style={{ overflow: "hidden", maxWidth: "100%", minWidth: 250 }}
       >
         <Carousel
-          // withControls={false}
+          withControls={showControls}
           controlSize={35}
           type="container"
           draggable
@@ -172,7 +83,7 @@ const MovieCarousel = ({
           onMouseEnter={() => autoplay.current?.stop()}
           onMouseLeave={() => autoplay.current?.play()}
           classNames={{
-            control: "!bg-surface-hover !text-white !border-none",
+            control: "!bg-surface-hover !text-text !border-none",
           }}
         >
           {slides}
@@ -181,3 +92,5 @@ const MovieCarousel = ({
     </div>
   );
 };
+
+export default MovieCarousel;

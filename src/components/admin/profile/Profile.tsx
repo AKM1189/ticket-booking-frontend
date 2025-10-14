@@ -27,9 +27,12 @@ import {
 import { useLoadingStore } from "@/store/useLoading";
 import { useConfirmModalStore } from "@/store/useConfirmModalStore";
 import { useLogoutMutation } from "@/api/mutation/authMutation";
+import { useNavigate } from "react-router-dom";
+import { routes } from "@/routes";
 
 const Profile = ({ role }: { role?: Role }) => {
   const { user } = useAuthStore();
+  const navigate = useNavigate();
   const [openProfileModal, setOpenProfileModal] = useState(false);
   const [openPasswordModal, setOpenPasswordModal] = useState(false);
   const { open: logoutConfirm } = useConfirmModalStore();
@@ -86,12 +89,20 @@ const Profile = ({ role }: { role?: Role }) => {
             Change Password
           </Menu.Item>
           {isUser && (
-            <Menu.Item
-              className="!text-sm !text-text hover:!bg-surface-hover max-sm:!text-xs"
-              onClick={() => handleLogout()}
-            >
-              Logout
-            </Menu.Item>
+            <div>
+              <Menu.Item
+                className="!text-sm !text-text hover:!bg-surface-hover max-sm:!text-xs"
+                onClick={() => navigate(routes.user.bookingHistory)}
+              >
+                Bookings
+              </Menu.Item>
+              <Menu.Item
+                className="!text-sm !text-text hover:!bg-surface-hover max-sm:!text-xs"
+                onClick={() => handleLogout()}
+              >
+                Logout
+              </Menu.Item>
+            </div>
           )}
         </Menu.Dropdown>
       </Menu>

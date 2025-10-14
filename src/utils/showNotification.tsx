@@ -24,7 +24,7 @@ export const showNotification = ({
       root: {
         top: "70px",
         position: "relative",
-        backgroundColor: "var(--color-surface-hover)",
+        backgroundColor: "var(--color-search-bg)",
         display: "flex",
       },
       title: {

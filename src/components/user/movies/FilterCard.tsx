@@ -34,9 +34,10 @@ const FilterCard = ({ title, data, type }: FilterCardProps) => {
                 key={item}
                 label={item}
                 checked={filterList[type].some((i) => i === item)}
-                color="var(--color-accent)"
+                color="var(--accent)"
+                iconColor="var(--color-accent)"
                 classNames={{
-                  input: "!bg-transparent",
+                  input: "!bg-surface",
                   label: "!cursor-pointer !text-sm sm:!text-base",
                 }}
                 onChange={(event) => handleFilter(event, item, type)}

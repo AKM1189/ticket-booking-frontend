@@ -31,7 +31,7 @@ export const addBooking = async (data: BookingInputType) => {
   return response.data;
 };
 
-export const cancelBooking = async (id: number) => {
-  const response = await api.delete(`${endpoints.admin.booking}/${id}`);
+export const cancelBooking = async (id: number, data: { reason: string }) => {
+  const response = await api.post(`${endpoints.admin.booking}/${id}`, data);
   return response.data;
 };

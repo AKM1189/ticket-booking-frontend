@@ -2,7 +2,7 @@ import { api } from "@/api/api";
 import { endpoints } from "@/api/endpoints";
 import type { CastInputType } from "@/types/CastTypes";
 
-export const getCasts = async (page: number, search: string) => {
+export const getCasts = async (page: number = 1, search: string = "") => {
   let parameters = "";
   if (search) parameters += "&search=" + search;
 

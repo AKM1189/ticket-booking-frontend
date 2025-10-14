@@ -197,7 +197,7 @@ const BookingForm = ({
           const selectedTheatre = theatres?.find(
             (theatre) => theatre?.id === user?.theatre?.id,
           );
-
+          console.log('selected theatre', selectedTheatre)
           if (selectedTheatre) {
             form.setFieldValue("theatreId", selectedTheatre.id.toString());
             updateSelectedInfo("theatre", selectedTheatre || null);
@@ -673,8 +673,8 @@ const BookingForm = ({
                             (item) =>
                               item.label +
                               (item.label !==
-                              selectedInfo.seats[selectedInfo.seats.length - 1]
-                                ?.label
+                                selectedInfo.seats[selectedInfo.seats.length - 1]
+                                  ?.label
                                 ? " ,"
                                 : ""),
                           )}
