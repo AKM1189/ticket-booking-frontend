@@ -29,7 +29,9 @@ export const useUpdateReviewMutation = () => {
       updateReview(data, id),
     onSuccess: (data) => {
       getSuccessNoti("Update Review", data, "Review successfully updated");
-      queryClient.invalidateQueries({ queryKey: ["reviews"] });
+      queryClient.invalidateQueries({
+        queryKey: ["userMovieDetail", data.movieId],
+      });
     },
     onError: (error) => {
       getErrorNoti("Update Review", error, "Review updating failed");
@@ -44,7 +46,9 @@ export const useDeleteReviewMutation = () => {
     mutationFn: ({ id }: { id: number }) => deleteReview(id),
     onSuccess: (data) => {
       getSuccessNoti("Delete Review", data, "Review successfully deleted");
-      queryClient.invalidateQueries({ queryKey: ["reviews"] });
+      queryClient.invalidateQueries({
+        queryKey: ["userMovieDetail", data.movieId],
+      });
     },
     onError: (error) => {
       getErrorNoti("Delete Review", error, "Review deleting failed");

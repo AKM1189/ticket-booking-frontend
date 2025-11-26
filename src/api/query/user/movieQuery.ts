@@ -49,7 +49,7 @@ export const useComingMovieQuery = () => {
 export const useMovieDetailQuery = (movieId: string) => {
   return useQuery({
     queryFn: () => getMovieDetail(movieId),
-    queryKey: ["userMovieDetail"],
+    queryKey: ["userMovieDetail", movieId],
     retry: 3,
     staleTime: 0,
   });

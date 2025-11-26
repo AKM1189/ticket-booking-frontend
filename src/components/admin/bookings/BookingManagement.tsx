@@ -19,6 +19,7 @@ import {
   Tooltip,
   Loader,
   Pagination,
+  Textarea,
 } from "@mantine/core";
 import { useDebouncedValue, useDisclosure } from "@mantine/hooks";
 import {
@@ -53,6 +54,7 @@ import { Role } from "@/types/AuthType";
 import type { PaginationType } from "@/types/PagintationType";
 import dayjs from "dayjs";
 import DataNotFound from "@/ui/dataNotFound/DataNotFound";
+import { useForm } from "@mantine/form";
 
 const BookingManagement = ({
   setCurrentComp,
@@ -77,6 +79,15 @@ const BookingManagement = ({
   );
   const { user } = useAuthStore();
   const [ticketOpen, setTicketOpen] = useState(false);
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const form = useForm({
+    initialValues: {
+      reason: "",
+    },
+    validate: {
+      reason: (value) => (!value ? "Please enter valid reason!" : null),
+    },
+  });
 
   const { open: openConfirm } = useConfirmModalStore();
 
@@ -92,7 +103,7 @@ const BookingManagement = ({
     isPending,
     refetch,
   } = useBookingQuery(
-    pagination.page,
+    pagination?.page,
     searchTerm,
     dateFilter,
     user?.role === Role.staff ? user.id : null,
@@ -100,6 +111,7 @@ const BookingManagement = ({
   );
 
   const { mutate: cancelBookingMutation } = useCancelBookingMutation();
+  const [cancelBooking, setCancelBooking] = useState<number | null>(null);
 
   const { hasAccess } = usePermisson();
 
@@ -117,36 +129,6 @@ const BookingManagement = ({
   useEffect(() => {
     refetch();
   }, [debouncedSearchTerm, dateFilter, pagination, statusFilter]);
-
-  // Memoize expensive calculations
-  // const { totalRevenue, stats } = useMemo(() => {
-  //   const total = bookings.length;
-  //   let confirmed = 0;
-  //   let pending = 0;
-  //   let cancelled = 0;
-  //   let revenue = 0;
-
-  //   // Single loop to calculate all stats
-  //   bookings.forEach((booking) => {
-  //     switch (booking.status) {
-  //       case "confirmed":
-  //         confirmed++;
-  //         revenue += parseFloat(booking?.totalAmount);
-  //         break;
-  //       case "pending":
-  //         pending++;
-  //         break;
-  //       case "cancelled":
-  //         cancelled++;
-  //         break;
-  //     }
-  //   });
-
-  //   return {
-  //     totalRevenue: revenue,
-  //     stats: { total, confirmed, pending, cancelled },
-  //   };
-  // }, [bookings]);
 
   const handleViewBooking = useCallback(
     (booking: BookingType) => {
@@ -173,6 +155,25 @@ const BookingManagement = ({
   };
 
   const labelStyle = "!text-blueGray";
+
+  const handleCancel = () => {
+    if (cancelBooking) {
+      cancelBookingMutation(
+        {
+          id: cancelBooking,
+          data: {
+            reason: "",
+          },
+        },
+        {
+          onSuccess: () => {
+            setCancelOpen(false);
+            setCancelBooking(null);
+          },
+        },
+      );
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -398,7 +399,7 @@ const BookingManagement = ({
                       <Table.Td>
                         <div>
                           <Text size="sm" fw={500}>
-                            {booking.schedule?.theatre?.name}
+                            {booking.schedule?.theatre?.location}
                           </Text>
                           <Text size="xs" c="dimmed">
                             {booking.schedule?.screen?.name}
@@ -495,16 +496,11 @@ const BookingManagement = ({
                                 variant="light"
                                 color="red"
                                 onClick={
-                                  () =>
-                                    openConfirm({
-                                      title: "Cancel Booking",
-                                      message:
-                                        "Are you sure you want to cancel this booking? This action cannot be reverted.",
-                                      onConfirm: () =>
-                                        cancelBookingMutation({
-                                          id: booking.id,
-                                        }),
-                                    })
+                                  () => {
+                                    setCancelOpen(true);
+                                    setCancelBooking(booking.id);
+                                  }
+
                                   // handleUpdateStatus(booking.id, "cancelled")
                                 }
                               >
@@ -521,6 +517,63 @@ const BookingManagement = ({
             </div>
           )}
         </div>
+        <Modal
+          opened={cancelOpen}
+          onClose={() => {
+            setCancelOpen(false);
+            setCancelBooking(null);
+          }}
+          title={`Cancel Booking`}
+          centered
+          // size="full"
+          // overlayProps={{ backgroundOpacity: 1, color: "var(--color-surface)" }}
+          // shadow="0"
+          classNames={{
+            header: "dashboard-bg",
+            content: "dashboard-bg h-full !min-w-[480px]",
+            close: "!text-text hover:!bg-surface-hover",
+          }}
+        >
+          <form onSubmit={form.onSubmit(handleCancel)}>
+            <Textarea
+              label={<div>Reason</div>}
+              placeholder="Write a reason for your cancellation"
+              minRows={8}
+              autosize
+              resize="vertical"
+              classNames={{
+                input:
+                  "!bg-transparent !text-text !border-surface-hover focus:!border-primary !p-3",
+                label: "!mb-2 !text-text",
+              }}
+              {...form.getInputProps("reason")}
+            />
+
+            <Group justify="end" mt={15} mb={5}>
+              <Button
+                variant="outline"
+                size="sm"
+                color="var(--color-primary)"
+                className="dashboard-btn"
+                onClick={() => {
+                  setCancelOpen(false);
+                }}
+              >
+                Cancel
+              </Button>
+
+              <Button
+                // variant="light"
+                type="submit"
+                size="sm"
+                color="red"
+                className="dashboard-btn"
+              >
+                Confirm
+              </Button>
+            </Group>
+          </form>
+        </Modal>
 
         {bookings?.length > 0 && (
           <Group justify="center" mt={"xl"}>

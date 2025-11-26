@@ -17,9 +17,10 @@ import {
   Stepper,
   Container,
   Box,
+  Alert,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   IconChevronLeft,
   IconTicket,
@@ -197,7 +198,7 @@ const BookingForm = ({
           const selectedTheatre = theatres?.find(
             (theatre) => theatre?.id === user?.theatre?.id,
           );
-          console.log('selected theatre', selectedTheatre)
+          console.log("selected theatre", selectedTheatre);
           if (selectedTheatre) {
             form.setFieldValue("theatreId", selectedTheatre.id.toString());
             updateSelectedInfo("theatre", selectedTheatre || null);
@@ -234,7 +235,6 @@ const BookingForm = ({
         updateSelectedInfo("showDate", showDate);
         if (showDate !== selectedInfo?.showDate) {
           form.resetField("showTime");
-          console.log("show time 1", showTime);
           updateSelectedInfo("showTime", null);
         }
         getTimeList();
@@ -242,6 +242,8 @@ const BookingForm = ({
       if (showTime) {
         updateSelectedInfo("showTime", showTime);
       }
+      updateSelectedInfo("seats", []);
+      setSelectedSeats([]);
     };
     updateFormData();
   }, [movieId, theatreId, screenId, showDate, showTime]);
@@ -251,6 +253,7 @@ const BookingForm = ({
     selectedInfo.seats?.map((seat) => {
       totalPrice += parseFloat(seat.price);
     });
+
     return totalPrice;
   };
 
@@ -323,6 +326,57 @@ const BookingForm = ({
     }
   };
 
+  const getTotalPrice = () => {
+    return selectedSeats.reduce((total, seat) => {
+      return total + (parseInt(seat.price) || 0);
+    }, 0);
+  };
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat("en-US").format(price);
+  };
+
+  const renderSeatLayout = useCallback(() => {
+    return (
+      selectedInfo.movie &&
+      selectedInfo.theatre &&
+      selectedInfo.screen &&
+      selectedInfo.showDate &&
+      selectedInfo.showTime &&
+      movieId &&
+      theatreId &&
+      screenId &&
+      showDate &&
+      showTime && (
+        <div>
+          <label className="!text-text text-sm mt-5">Select Seats</label>
+          <SeatLayoutViewer
+            key={selectedInfo.screen.id}
+            layout={{
+              rows: selectedInfo.screen?.rows,
+              seatsPerRow: selectedInfo.screen?.cols,
+              disabledSeats: selectedInfo.screen?.disabledSeats?.map((seat) =>
+                seat?.trim(),
+              ),
+              aisles: selectedInfo.screen?.aisles.map((aisle: any) =>
+                parseInt(aisle),
+              ),
+            }}
+            selectedInfo={selectedInfo}
+            updateSelectedInfo={updateSelectedInfo}
+            setSelectedSeats={setSelectedSeats}
+            selectedSeats={selectedSeats}
+            activeStep={activeStep}
+          />
+
+          {seatError && (
+            <p className="text-xs text-red-400 mt-4">{seatError}</p>
+          )}
+        </div>
+      )
+    );
+  }, [selectedInfo]);
+
   const prevStep = () => setActiveStep(activeStep - 1);
   return (
     <Container size="xl" px={0}>
@@ -365,7 +419,7 @@ const BookingForm = ({
                       placeholder="Select a branch"
                       data={theatres?.map((theatre) => ({
                         value: theatre.id.toString(),
-                        label: theatre.name,
+                        label: theatre.location,
                       }))}
                       leftSection={<IconBuilding size={16} />}
                       classNames={inputStyle}
@@ -408,49 +462,9 @@ const BookingForm = ({
                     </Grid.Col>
                   </Grid>
 
-                  {selectedInfo.movie &&
-                    selectedInfo.theatre &&
-                    selectedInfo.screen &&
-                    selectedInfo.showDate &&
-                    selectedInfo.showTime &&
-                    movieId &&
-                    theatreId &&
-                    screenId &&
-                    showDate &&
-                    showTime && (
-                      <div>
-                        <label className="!text-text text-sm mt-5">
-                          Select Seats
-                        </label>
-                        <SeatLayoutViewer
-                          key={selectedInfo.screen.id}
-                          layout={{
-                            rows: selectedInfo.screen?.rows,
-                            seatsPerRow: selectedInfo.screen?.cols,
-                            disabledSeats:
-                              selectedInfo.screen?.disabledSeats?.map((seat) =>
-                                seat?.trim(),
-                              ),
-                            aisles: selectedInfo.screen?.aisles.map(
-                              (aisle: any) => parseInt(aisle),
-                            ),
-                          }}
-                          selectedInfo={selectedInfo}
-                          updateSelectedInfo={updateSelectedInfo}
-                          setSelectedSeats={setSelectedSeats}
-                          selectedSeats={selectedSeats}
-                          activeStep={activeStep}
-                        />
+                  {renderSeatLayout()}
 
-                        {seatError && (
-                          <p className="text-xs text-red-400 mt-4">
-                            {seatError}
-                          </p>
-                        )}
-                      </div>
-                    )}
-
-                  {selectedInfo.seats?.length > 0 && (
+                  {/* {selectedInfo.seats?.length > 0 && (
                     <Paper
                       p="md"
                       className="!bg-transparent !shadow-none mx-auto"
@@ -458,7 +472,6 @@ const BookingForm = ({
                       <Text size="sm" fw={500} mb="xs" className="text-center">
                         Selected Seats: ({selectedInfo.seats?.length})
                       </Text>
-                      {/* <Group gap="xs" flex={"col"}> */}
                       <div className="flex flex-col gap-2">
                         {selectedInfo.seats?.map((seat) => {
                           return (
@@ -478,9 +491,73 @@ const BookingForm = ({
                           );
                         })}
                       </div>
-                      {/* </Group> */}
                     </Paper>
-                  )}
+                  )} */}
+                  <Card className="mt-2 max-w-4xl mx-auto !bg-surface !border-search-bg shadow-lg">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                      {/* Selected Seats */}
+                      <div className="text-center md:text-left">
+                        <Group
+                          gap="xs"
+                          className="mb-2 justify-center md:justify-start"
+                        >
+                          <IconTicket size={20} className="text-blue-400" />
+                          <Text size="lg" fw={600} className="!text-text">
+                            Selected Seats
+                          </Text>
+                        </Group>
+
+                        {selectedInfo.seats?.length > 0 ? (
+                          <div className="space-y-2">
+                            <div className="flex flex-wrap gap-2 justify-center md:justify-start">
+                              {selectedInfo.seats?.map((seat, index) => (
+                                <Badge
+                                  key={index}
+                                  size="lg"
+                                  variant="light"
+                                  color="blue"
+                                  className="!bg-search-bg !text-accent"
+                                >
+                                  {seat.label} -
+                                  {seat.countDown > 0 && (
+                                    <span className="ml-1 text-xs">
+                                      {seat.countDown}
+                                    </span>
+                                  )}
+                                </Badge>
+                              ))}
+                            </div>
+                            <Text size="sm" className="!text-muted">
+                              {selectedSeats.length} seat
+                              {selectedSeats.length !== 1 ? "s" : ""} selected
+                            </Text>
+                          </div>
+                        ) : (
+                          <Text size="md" className="!text-muted">
+                            No seats selected
+                          </Text>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Timer Warning */}
+                    {selectedSeats.some((seat) => seat.countDown < 30) && (
+                      <Alert
+                        icon={<IconClock size={16} />}
+                        title="Time Running Out!"
+                        color="orange"
+                        className="mt-4 !bg-surface-hover !border-surface-hover !text-text"
+                        classNames={{
+                          title: "!text-red-400",
+                        }}
+                      >
+                        <div className="!text-text">
+                          Some of your selected seats will expire soon. Complete
+                          your booking quickly!
+                        </div>
+                      </Alert>
+                    )}
+                  </Card>
                 </Stack>
               </Grid.Col>
 
@@ -521,7 +598,7 @@ const BookingForm = ({
                         <Group gap="xs">
                           {selectedInfo.movie?.genres?.map((item, index) => (
                             <Badge
-                              variant="light"
+                              variant="outline"
                               size="sm"
                               color={item?.color}
                               key={index}
@@ -673,8 +750,8 @@ const BookingForm = ({
                             (item) =>
                               item.label +
                               (item.label !==
-                                selectedInfo.seats[selectedInfo.seats.length - 1]
-                                  ?.label
+                              selectedInfo.seats[selectedInfo.seats.length - 1]
+                                ?.label
                                 ? " ,"
                                 : ""),
                           )}

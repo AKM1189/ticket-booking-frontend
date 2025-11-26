@@ -28,6 +28,7 @@ export const signupSchema = z
   })
   .refine(
     (data) => {
+      console.log("data", data);
       return data.password === data.confirmPassword;
     },
     {

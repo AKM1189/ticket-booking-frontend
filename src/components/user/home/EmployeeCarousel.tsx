@@ -52,7 +52,7 @@ const EmployeeCarousel = ({ employees }: EmployeeCarousel) => {
             controls: "!absolute !top-0 !top-44",
             control: "!bg-surface !text-white !border-surface",
           }}
-          emblaOptions={{ loop: true, align: "start" }}
+          emblaOptions={{ align: "start" }}
           plugins={[autoplay.current]}
           onMouseEnter={autoplay.current.stop}
           onMouseLeave={() => autoplay.current.play()}

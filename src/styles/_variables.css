@@ -25,9 +25,9 @@
   --premium: #06b265;
   --vip: #d75c81;
   --booked: #3844a4;
-  --temp: #AF1B3F;
+  --temp: #af1b3f;
 
-    --user-premium: #00d273;
+  --user-premium: #00d273;
   --user-vip: #ff8f44;
   --user-booked: #2a5adf;
 
@@ -100,7 +100,6 @@
 
   --notiBorder: #b0bce6; /* Soft bluish border for notifications */
 }
-
 
 @theme {
   --color-selected-text: #e0e0e0;

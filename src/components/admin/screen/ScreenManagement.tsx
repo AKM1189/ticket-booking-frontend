@@ -132,7 +132,12 @@ const ScreenManagement = () => {
   };
 
   useEffect(() => {
-    setTheatres(theatreData?.data);
+    if (theatreData?.data?.length > 0) {
+      const activeTheatres = theatreData?.data?.filter(
+        (item: TheatreType) => item.active,
+      );
+      setTheatres(activeTheatres);
+    }
   }, [theatreData]);
 
   useEffect(() => {
@@ -225,6 +230,7 @@ const ScreenManagement = () => {
             close();
             showLoading(false);
             setEditingScreen(null);
+            setSelectedTypeList([]);
           },
           onError: () => {
             showLoading(false);
@@ -239,6 +245,7 @@ const ScreenManagement = () => {
           onSuccess: () => {
             close();
             showLoading(false);
+            setSelectedTypeList([]);
           },
           onError: () => {
             showLoading(false);
@@ -246,7 +253,6 @@ const ScreenManagement = () => {
         },
       );
     }
-    close();
   };
   const modalStyle = {
     header: "dashboard-bg",
@@ -350,9 +356,7 @@ const ScreenManagement = () => {
                         </Text>
                       </Table.Td>
                       <Table.Td>
-                        <Text size="sm">
-                          {screen?.theatre?.name} ({screen?.theatre?.location})
-                        </Text>
+                        <Text size="sm">{screen?.theatre?.location}</Text>
                       </Table.Td>
                       <Table.Td>{screen.type}</Table.Td>
                       <Table.Td>{screen.capacity} seats</Table.Td>
@@ -520,7 +524,7 @@ const ScreenManagement = () => {
                 placeholder="Select branch"
                 data={theatres?.map((theatre) => ({
                   value: String(theatre?.id),
-                  label: `${theatre?.name} (${theatre?.location})`,
+                  label: `${theatre?.location} (${theatre?.city})`,
                 }))}
                 clearable
                 classNames={inputStyle}
@@ -596,8 +600,6 @@ const ScreenManagement = () => {
                 description="Specify number which will be multiply to the base price of each seat type"
                 {...form.getInputProps("multiplier")}
                 defaultValue={1.0}
-                min={0.5}
-                max={3}
               />
             </Grid.Col>
 

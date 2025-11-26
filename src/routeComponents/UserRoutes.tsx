@@ -18,28 +18,29 @@ import MovieTicket from "@/pages/user/MovieTicket";
 const UserRoutes = () => {
   return (
     <Routes>
-      <Route element={<ProtectedRoute allowedRoles={[Role.user]} />}>
-        <Route path={routes.user.home} element={<UserLayout />}>
-          <Route index element={<Home />} />
-          <Route path={routes.user.about} element={<About />} />
-          <Route path={routes.user.contact} element={<Contact />} />
-          <Route path={routes.user.termsOfUse} element={<TermsOfUse />} />
-          <Route path={routes.user.privacyPolicy} element={<PrivacyPolicy />} />
-          <Route path={routes.user.faq} element={<FAQ />} />
-          <Route path={routes.user.movies}>
-            <Route index element={<Movies />} />
-            <Route path="sortBy/:type?" element={<Movies />} />
-            <Route path=":id" element={<MovieDetail />} />
-          </Route>
+      <Route path={routes.user.home} element={<UserLayout />}>
+        <Route index element={<Home />} />
+        <Route path={routes.user.about} element={<About />} />
+        <Route path={routes.user.contact} element={<Contact />} />
+        <Route path={routes.user.termsOfUse} element={<TermsOfUse />} />
+        <Route path={routes.user.privacyPolicy} element={<PrivacyPolicy />} />
+        <Route path={routes.user.faq} element={<FAQ />} />
+        <Route path={routes.user.movies}>
+          <Route index element={<Movies />} />
+          <Route path="sortBy/:type?" element={<Movies />} />
+          <Route path=":id" element={<MovieDetail />} />
+        </Route>
+        <Route
+          element={<ProtectedRoute allowedRoles={[Role.user, Role.admin]} />}
+        >
+          <Route path={routes.user.ticketPlan} element={<TicketPlan />} />
+          <Route path={routes.user.booking + "/:id"} element={<Booking />} />
           <Route
-            element={<ProtectedRoute allowedRoles={[Role.user, Role.admin]} />}
-          >
-            <Route path={routes.user.ticketPlan} element={<TicketPlan />} />
-            <Route path={routes.user.booking + "/:id"} element={<Booking />} />
-            <Route path={routes.user.bookingHistory} element={<BookingHistory />} />
-            <Route path={routes.user.ticket} element={<MovieTicket />} />
-            <Route path={routes.admin.demo} element={<AdminAccessDemo />} />
-          </Route>
+            path={routes.user.bookingHistory}
+            element={<BookingHistory />}
+          />
+          <Route path={routes.user.ticket} element={<MovieTicket />} />
+          <Route path={routes.admin.demo} element={<AdminAccessDemo />} />
         </Route>
       </Route>
     </Routes>

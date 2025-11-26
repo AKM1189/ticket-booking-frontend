@@ -201,7 +201,6 @@ const AdminDashboard = ({
     }
 
     if (tableData?.data) {
-      console.log("upcoming", tableData?.data);
       setTableRecords({
         upcomingSchedules: tableData?.data?.upcomingSchedules,
         recentBookings: tableData?.data?.recentBookings,
@@ -470,13 +469,17 @@ const AdminDashboard = ({
                             <div>
                               <Text size="sm" fw={500}>
                                 {schedule.availableSeats -
-                                  schedule.bookedSeats?.split(",")?.length}
+                                  (schedule.bookedSeats
+                                    ? schedule.bookedSeats?.split(",")?.length
+                                    : 0)}
                                 /{schedule.availableSeats}
                               </Text>
                               <Text size="xs" c="dimmed">
                                 {Math.round(
                                   100 -
-                                    (schedule.bookedSeats?.split(",")?.length /
+                                    ((schedule.bookedSeats
+                                      ? schedule.bookedSeats?.split(",")?.length
+                                      : 0) /
                                       schedule.availableSeats) *
                                       100,
                                 )}

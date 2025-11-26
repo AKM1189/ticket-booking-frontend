@@ -14,6 +14,7 @@ export const useAddMovie = () => {
     onSuccess: (data) => {
       getSuccessNoti("Add Movie", data, "Movie successfully added");
       queryClient.invalidateQueries({ queryKey: ["movies"] });
+      queryClient.invalidateQueries({ queryKey: ["genres"] });
     },
     onError: (error) => {
       getErrorNoti("Add Movie", error, "Movie adding failed");
@@ -30,6 +31,7 @@ export const useUpdateMovie = () => {
     onSuccess: (data) => {
       getSuccessNoti("Update Movie", data, "Movie successfully updated");
       queryClient.invalidateQueries({ queryKey: ["movies"] });
+      queryClient.invalidateQueries({ queryKey: ["genres"] });
     },
     onError: (error) => {
       getErrorNoti("Update Movie", error, "Movie updating failed");
@@ -45,6 +47,7 @@ export const useDeleteMovie = () => {
     onSuccess: (data) => {
       getSuccessNoti("Delete Movie", data, "Movie successfully deleted");
       queryClient.invalidateQueries({ queryKey: ["movies"] });
+      queryClient.invalidateQueries({ queryKey: ["genres"] });
     },
     onError: (error) => {
       getErrorNoti("Delete Movie", error, "Movie deleting failed");

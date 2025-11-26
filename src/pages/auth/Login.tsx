@@ -14,11 +14,8 @@ import { twMerge } from "tailwind-merge";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { loginSchema } from "../../schema/AuthSchema";
 import { useLoginMutation } from "../../api/mutation/authMutation";
-import { Role } from "@/types/AuthType";
 import { getCurrentUser } from "@/api/function/authApi";
 import { useAuthStore } from "@/store/authStore";
-import { useGetUser } from "@/api/query/authQuery";
-// import { useAuth, useLoginAuth } from "@/hooks/useAuth";
 
 export type LoginDataType = {
   email: string | null;
@@ -28,15 +25,14 @@ export type LoginDataType = {
 const Login = () => {
   const [checked, setChecked] = useState(false);
   const { mutate } = useLoginMutation();
-  const navigate = useNavigate();
   const { setUser } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm({
     mode: "uncontrolled",
     initialValues: {
-      email: "",
-      password: "",
+      email: null,
+      password: null,
     },
     validate: zodResolver(loginSchema),
   });
@@ -106,15 +102,10 @@ const Login = () => {
             </Button>
           </form>
         </div>
-        <div className="flex justify-between mt-5">
-          <div>
-            <Checkbox
-              checked={checked}
-              label={<div className="text-muted ">Remember Me</div>}
-              color="var(--color-primary)"
-              onChange={(event) => setChecked(event.currentTarget.checked)}
-            />
-          </div>
+        <div className="flex justify-between flex-wrap mt-5">
+          <NavLink to={routes.user.home} className="text-sm text-muted">
+            Back To Home
+          </NavLink>
           <NavLink
             to={routes.auth.forgotPassword}
             className="text-muted text-sm"
@@ -128,12 +119,6 @@ const Login = () => {
             Sign up
           </NavLink>
         </div>
-        <NavLink
-          to={routes.user.home}
-          className="text-sm mt-5 flex items-center gap-2 ps-10 sm:ps-40 w-full text-muted"
-        >
-          Back To Home
-        </NavLink>
       </div>
     </div>
   );

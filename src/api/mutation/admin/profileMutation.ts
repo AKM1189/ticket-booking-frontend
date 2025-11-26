@@ -3,12 +3,10 @@ import type {
   PasswordInputType,
   ProfileInputType,
 } from "@/components/admin/profile/Profile";
-import { routes } from "@/routes";
 import { useAuthStore } from "@/store/authStore";
 import { getErrorNoti, getSuccessNoti } from "@/utils/showResponseNoti";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Cookies from "js-cookie";
-import { useNavigate } from "react-router";
 
 export const useUpdateProfileMutation = () => {
   const queryClient = useQueryClient();
@@ -30,9 +28,10 @@ export const useUpdateProfileMutation = () => {
   });
 };
 
-export const useChangePasswordMutation = () => {
+export const useChangePasswordMutation = (
+  showLoading: (value: boolean) => void,
+) => {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
   const { logout: removeUser } = useAuthStore();
   return useMutation({
     mutationFn: ({
@@ -45,12 +44,14 @@ export const useChangePasswordMutation = () => {
     onSuccess: (data) => {
       getSuccessNoti("Change Password", data, "Password successfully changed");
       removeUser();
+      showLoading(false);
       Cookies.remove("accessToken");
       queryClient.removeQueries({ queryKey: ["currentUser"] });
       queryClient.clear();
-      navigate(routes.auth.login);
+      window.location.href = "/login";
     },
     onError: (error) => {
+      showLoading(false);
       getErrorNoti("Change Password", error, "Password changing failed");
     },
   });

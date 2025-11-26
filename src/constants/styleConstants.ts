@@ -5,7 +5,7 @@ export const modalStyle = {
 };
 
 export const inputStyle = {
-  input: "dashboard-input placeholder:!text-muted",
+  input: "dashboard-input placeholder:!text-muted !text-sm",
   label: "!mb-2 !text-text",
 };
 

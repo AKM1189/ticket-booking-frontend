@@ -20,7 +20,7 @@ const MovieDetail = () => {
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState<null | TabType>(null);
   const [movie, setMovie] = useState<MovieDetailType | null>(null);
-  const { data, refetch: refetchMovies } = useMovieDetailQuery(id ?? "");
+  const { data, refetch: refetchMovie } = useMovieDetailQuery(id ?? "");
 
   const [underlineStyle, setUnderlineStyle] = useState<UnderlineStyleType>({
     left: undefined,
@@ -98,7 +98,7 @@ const MovieDetail = () => {
                 {activeTab?.id === 1 ? (
                   <Summary movie={movie} />
                 ) : (
-                  <Review movie={movie} refetchMovies={refetchMovies} />
+                  <Review movie={movie} refetchMovies={refetchMovie} />
                 )}
               </div>
             </div>

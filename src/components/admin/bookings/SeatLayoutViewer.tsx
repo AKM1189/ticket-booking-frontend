@@ -184,7 +184,7 @@ const SeatLayoutViewer = ({
         userId: user?.id,
       });
     } else {
-      if (selectedSeatList?.length <= 10) {
+      if (selectedSeatList?.length < 10) {
         const newList = [...selectedSeatList, newSeat];
         console.log("new list", newList);
         setSelectedSeats(newList);
@@ -238,21 +238,23 @@ const SeatLayoutViewer = ({
               className={twMerge(
                 "w-9 h-9 text-xs font-[400] flex items-center justify-center rounded-[5px] border  border-standard text-text/80",
                 selectedSeatList?.length <= 10 &&
-                "hover:bg-accent hover:text-black hover:border-accent cursor-pointer transition-color duration-100",
+                  "hover:bg-accent hover:text-black hover:border-accent cursor-pointer transition-color duration-100",
                 isDisabled &&
-                "bg-disabled border-0 text-text/30 cursor-default pointer-events-none",
+                  "bg-disabled border-0 text-text/30 cursor-default pointer-events-none",
                 selectedType?.seatType?.name === "Premium" &&
-                " border-premium text-premium",
+                  " border-premium text-premium",
                 selectedType?.seatType?.name === "VIP" && "border-vip text-vip",
-                selectedType?.seatType?.name === "Standard" && "border-standard text-standard",
+                selectedType?.seatType?.name === "Standard" &&
+                  "border-standard text-standard",
                 selectedSeat && "bg-accent text-black border-accent",
                 isTemp &&
-                "bg-temp border-0 hover:text-text hover:bg-darkGray cursor-default pointer-events-none",
+                  "bg-temp border-0 !text-red-300 hover:text-text hover:bg-darkGray cursor-default pointer-events-none",
                 (isBooked || isDisabled) &&
-                "bg-booked border-0 border-surface-light text-text/50 hover:bg-darkGray cursor-default pointer-events-none",
+                  "bg-booked border-0 border-surface-light text-text/50 hover:bg-darkGray cursor-default pointer-events-none",
               )}
-              title={`Seat ${seatId} ${isDisabled ? "(Disabled)" : "(Available)"
-                }`}
+              title={`Seat ${seatId} ${
+                isDisabled ? "(Disabled)" : "(Available)"
+              }`}
               onClick={() => addSeatsToBooking(seatId, selectedType)}
             >
               {seatId}
@@ -291,7 +293,13 @@ const SeatLayoutViewer = ({
   }
 
   return (
-    <Card padding="lg" radius="md" shadow="0" withBorder className="dashboard-bg">
+    <Card
+      padding="lg"
+      radius="md"
+      shadow="0"
+      withBorder
+      className="dashboard-bg"
+    >
       <Group justify="space-between" mb="md">
         <Group gap="md">
           <Group gap="xs">

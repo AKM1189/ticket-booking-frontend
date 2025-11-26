@@ -7,6 +7,7 @@ import {
   Avatar,
   Button,
   Drawer,
+  Image,
   Popover,
   Text,
   TextInput,
@@ -24,8 +25,11 @@ import { useConfirmModalStore } from "@/store/useConfirmModalStore";
 import Profile from "../admin/profile/Profile";
 import Notifications from "../admin/notifications/Notifications";
 import ThemeToggle from "./ThemeToggle";
+import { useThemeStore } from "@/store/userThemeStore";
+import { Theme } from "@/types/ThemeType";
 
 const Navbar = () => {
+  const { theme } = useThemeStore();
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [isNavOpen, setIsNavOpen] = useState(false);
   const { user } = useAuthStore();
@@ -49,7 +53,6 @@ const Navbar = () => {
     setIsNavOpen(false);
 
     for (const menu of navbarMenus) {
-      console.log("location", location?.pathname, "menu", menu?.path);
       if (
         location?.pathname === routes.user.home ||
         location?.pathname === "/" + menu?.path
@@ -57,17 +60,22 @@ const Navbar = () => {
         setActiveMenu(menu?.label);
         return;
       }
-      // else if () {
-      //   setActiveMenu(menu?.label);
-      //   return;
-      // }
     }
     setActiveMenu(null);
   }, [location.pathname]);
-
+  console.log("mode", theme);
   return (
     <div className="relative navbar w-full h-[80px] bg-surface z-10 shadow-md text-text flex items-center justify-between px-10">
-      <div className="text-base font-semibold uppercase">Logo</div>
+      <div>
+        <Image
+          src={
+            theme === Theme.dark
+              ? "/src/assets/movie-logo-dark.png"
+              : "/src/assets/movie-logo-light.png"
+          }
+          className="!h-[50px] max-sm:!h-[40px]"
+        />
+      </div>
       <ul className="max-md:hidden flex items-center justify-center gap-10 text-base font-semibold z-10">
         {navbarMenus.map((menu) => (
           <NavLink to={menu.path} key={menu.label}>
@@ -84,19 +92,30 @@ const Navbar = () => {
       </ul>
 
       <div className="flex gap-5 items-center">
-        <ThemeToggle />
-        <Notifications />
-        <div className="max-md:hidden">
-          {/* <Logout user={user} /> */}
-          <Profile role={Role.user} />
+        <div className="max-sm:hidden">
+          <ThemeToggle />
         </div>
-      </div>
-
-      <div
-        className="md:hidden absolute top-6 right-10 cursor-pointer"
-        onClick={() => setIsNavOpen(true)}
-      >
-        <IconMenu2 size={30} />
+        {user && <Notifications />}
+        <div className="">
+          {/* <Logout user={user} /> */}
+          {user ? (
+            <Profile role={Role.user} />
+          ) : (
+            <NavLink
+              className="text-base flex gap-1 items-center font-semibold bg-surface-hover rounded-md p-2 px-3"
+              to={routes.auth.login}
+            >
+              <IconLogin2 size={20} />
+              <Text>Login</Text>
+            </NavLink>
+          )}
+        </div>
+        <div
+          className="md:hidden relative cursor-pointer"
+          onClick={() => setIsNavOpen(true)}
+        >
+          <IconMenu2 size={30} />
+        </div>
       </div>
 
       <AnimatePresence>
@@ -107,7 +126,7 @@ const Navbar = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2, ease: "easeInOut" }}
-            className="fixed inset-0 z-[999] bg-background/90 flex flex-col items-center justify-center gap-20 md:hidden"
+            className="fixed top-0 left-0 w-screen h-screen z-[999] bg-background flex flex-col items-center justify-center gap-20 md:hidden"
           >
             <ul className="flex flex-col items-center justify-center gap-10 text-base font-semibold z-10">
               {navbarMenus.map((menu) => (
@@ -122,10 +141,10 @@ const Navbar = () => {
                   </li>
                 </NavLink>
               ))}
+              <li className="py-3">
+                <ThemeToggle />
+              </li>
             </ul>
-
-            <Logout user={user} />
-
             <div
               className="absolute top-14 right-14 cursor-pointer"
               onClick={() => setIsNavOpen(false)}

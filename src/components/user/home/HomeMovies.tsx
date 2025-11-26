@@ -6,6 +6,49 @@ import { routes } from "../../../routes";
 import { SortType, type HomeMoviesType } from "@/types/MovieTypes";
 import { MovieStatus } from "@/constants/movieConstants";
 import MovieCard from "./MovieCard";
+import { useMovieStore } from "@/store/useMovieStore";
+
+const HomeMovies = () => {
+  const { showingMovies, comingMovies, availableMovies } = useMovieStore();
+  return (
+    <div className="min-h-[500px]">
+      <div className="flex justify-between items-baseline">
+        <div className="md:text-5xl text-3xl inline uppercase font-bold pb-5 border-b-4 border-accent">
+          Movies
+        </div>
+      </div>
+      <div className="flex flex-col gap-10">
+        {showingMovies?.length > 0 && (
+          <MovieCarousel
+            movies={showingMovies}
+            menu={SortType.showing}
+            type={MovieStatus.showing}
+          />
+        )}
+
+        {availableMovies?.length > 0 && (
+          <MovieCarousel
+            movies={availableMovies}
+            menu={"Ticket Available"}
+            delay={2000}
+            type={MovieStatus.available}
+          />
+        )}
+
+        {comingMovies?.length > 0 && (
+          <MovieCarousel
+            movies={comingMovies}
+            menu={SortType.comingSoon}
+            delay={2000}
+            type={MovieStatus.coming}
+          />
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default HomeMovies;
 
 interface MovieCarouselProps {
   movies: HomeMoviesType[];
@@ -28,7 +71,6 @@ const MovieCarousel = ({
   }, [delay]);
 
   const sortBy = menu === SortType.showing ? "now-showing" : "coming-soon";
-
   // Adjust based on screen width
   useEffect(() => {
     const checkControls = () => {
@@ -37,17 +79,17 @@ const MovieCarousel = ({
       if (width >= 500) visibleSlides = 4;
       else if (width >= 300) visibleSlides = 2;
 
-      setShowControls(movies.length > visibleSlides);
+      setShowControls(movies?.length > visibleSlides);
     };
 
     checkControls();
     window.addEventListener("resize", checkControls);
     return () => window.removeEventListener("resize", checkControls);
-  }, [movies.length]);
+  }, [movies?.length]);
 
   const slides = useMemo(
     () =>
-      movies.map((movie) => (
+      movies?.map((movie) => (
         <Carousel.Slide key={movie.id} className="min-h-[500px]">
           <MovieCard movie={movie} type={type} />
         </Carousel.Slide>
@@ -78,7 +120,7 @@ const MovieCarousel = ({
           draggable
           slideSize={{ base: "100%", "300px": "50%", "500px": "25%" }}
           slideGap={{ base: 0, "300px": "md", "500px": "lg" }}
-          emblaOptions={{ loop: true, align: "start" }}
+          emblaOptions={{ align: "start" }}
           plugins={autoplay.current ? [autoplay.current] : []}
           onMouseEnter={() => autoplay.current?.stop()}
           onMouseLeave={() => autoplay.current?.play()}
@@ -92,5 +134,3 @@ const MovieCarousel = ({
     </div>
   );
 };
-
-export default MovieCarousel;

@@ -1,3 +1,4 @@
+import { getAboutInfo } from "@/api/function/user/aboutApi";
 import EmployeeCarousel from "@/components/user/home/EmployeeCarousel";
 import { Button } from "@mantine/core";
 import {
@@ -9,25 +10,26 @@ import {
   IconUser,
   IconUsers,
 } from "@tabler/icons-react";
+import { useEffect, useState } from "react";
 
 const employees = [
   {
     id: 1,
     name: "John Anderson",
     position: "Founder & CEO",
-    image: "/employees/emp8.jpg",
+    image: "/employees/emp5.jpg",
   },
   {
     id: 2,
     name: "Sarah Thompson",
     position: "Operations Manager",
-    image: "/employees/emp3.jpg",
+    image: "/employees/emp1.jpg",
   },
   {
     id: 5,
     name: "Emily Davis",
     position: "Creative Director",
-    image: "/employees/emp5.jpg",
+    image: "/employees/emp2.jpg",
   },
   {
     id: 3,
@@ -45,7 +47,7 @@ const employees = [
     id: 4,
     name: "David Kim",
     position: "Chief Financial Officer",
-    image: "/employees/emp1.jpg",
+    image: "/employees/emp3.jpg",
   },
   {
     id: 7,
@@ -56,13 +58,23 @@ const employees = [
 ];
 
 const About = () => {
+  const [info, setInfo] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const about = await getAboutInfo();
+      setInfo(about?.data);
+      console.log("about", about);
+    };
+    fetchData();
+  }, []);
   return (
     <div className="relative">
       <div
-        className={`relative w-full h-[500px] bg-[url("/movie-bg-11.jpg")] bg-no-repeat bg-cover`}
+        className={`relative w-full h-[300px] md:h-[600px] bg-[url("/movie_detail_bg_2.jpg")] bg-no-repeat bg-cover`}
       >
-        <div className="relative w-full h-full bg-surface/70 flex flex-col gap-5 justify-center">
-          <div className="flex justify-center items-center gap-10 uppercase text-5xl font-bold">
+        <div className="relative w-full h-full bg-black/30 flex flex-col gap-5 justify-center">
+          <div className="flex justify-center items-center gap-10 text-2xl md:text-7xl font-bold uppercase text-white">
             About Us
           </div>
         </div>
@@ -81,20 +93,22 @@ const About = () => {
             faster, and more enjoyable. At Movie Palace Cinema, we bring stories
             to life, one screen at a time.
           </p>
-
-          <Button className="mt-8 !rounded-full">Book Tickets</Button>
         </div>
         <div className="relative ">
           {/* <div className="md:w-[600px] max-w-[700px] rounded-lg p-10 px-20 bg-surface-hover"> */}
-          <img className="md:w-[500px] max-w-[700px]" src="/team3.png" alt="" />
+          <img
+            className="md:w-[650px] max-w-[700px]"
+            src="/movie-bg5.jpg"
+            alt=""
+          />
           {/* </div> */}
         </div>
       </div>
 
       <div className="flex gap-20 justify-between px-20 mt-40">
         <div className="relative">
-          <div className=" w-[700px] max-w-[700px] bg-surface-hover rounded-lg overflow-hidden">
-            <img className="w-full h-full" src="/movie-bg-13.jpg" alt="" />
+          <div className=" w-[600px] max-w-[700px] bg-surface-hover rounded-lg overflow-hidden">
+            <img className="w-full h-full" src="/movie-bg6.jpg" alt="" />
           </div>
           {/* <div className="absolute bottom-0 w-full h-[60px] bg-surface-hover rounded-lg"></div> */}
         </div>
@@ -139,28 +153,36 @@ const About = () => {
               <div className="p-3 border-2 border-secondary rounded-full">
                 <IconUser size={40} color="var(--color-secondary)" />
               </div>
-              <div className="text-3xl font-semibold mt-5">120+</div>
+              <div className="text-3xl font-semibold mt-5">
+                {info?.customerTotal}
+              </div>
               <span className="text-sm text-accent">Customers</span>
             </li>
             <li className="flex flex-col items-center">
               <div className="p-3 border-2 border-secondary rounded-full">
                 <IconMapPin size={40} color="var(--color-secondary)" />
               </div>
-              <div className="text-3xl font-semibold mt-5">10</div>
+              <div className="text-3xl font-semibold mt-5">
+                {info?.cityTotal}
+              </div>
               <span className="text-sm text-accent">Cities</span>
             </li>
             <li className="flex flex-col items-center">
               <div className="p-3 border-2 border-secondary rounded-full">
                 <IconBuilding size={40} color="var(--color-secondary)" />
               </div>
-              <div className="text-3xl font-semibold mt-5">12+</div>
+              <div className="text-3xl font-semibold mt-5">
+                {info?.theatreTotal}
+              </div>
               <span className="text-sm text-accent">Theatres</span>
             </li>
             <li className="flex flex-col items-center">
               <div className="p-3 border-2 border-secondary rounded-full">
                 <IconDeviceTv size={40} color="var(--color-secondary)" />
               </div>
-              <div className="text-3xl font-semibold mt-5">24+</div>
+              <div className="text-3xl font-semibold mt-5">
+                {info?.screenTotal}
+              </div>
               <span className="text-sm text-accent">Screens</span>
             </li>
           </ul>

@@ -3,6 +3,7 @@ import { endpoints } from "@/api/endpoints";
 import type { TheatreInputType } from "@/types/TheatreTypes";
 
 export const getTheatres = async (
+  page: number = 1,
   searchTerm?: string,
   status?: string | null,
 ) => {
@@ -10,7 +11,7 @@ export const getTheatres = async (
   if (searchTerm) parameters += "search=" + searchTerm + "&";
   if (status) parameters += "status=" + status.toLowerCase();
   const response = await api.get(
-    `${endpoints.admin.theatres}?${parameters || ""}`,
+    `${endpoints.admin.theatres}?page=${page}&${parameters || ""}`,
   );
   return response.data;
 };

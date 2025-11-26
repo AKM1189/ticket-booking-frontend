@@ -39,7 +39,7 @@
 }
 
 .dashboard-input {
-  @apply !bg-surface !text-text !border-surface-hover;
+  @apply !bg-surface !text-text !border-surface-hover placeholder:!text-sm;
 }
 
 .input-control {

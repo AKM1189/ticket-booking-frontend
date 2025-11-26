@@ -8,7 +8,6 @@ import {
   useComingMovieQuery,
   useShowingMovieQuery,
 } from "@/api/query/user/movieQuery";
-import { useShowingTheatresQuery } from "@/api/query/user/theatreQuery";
 
 const Home = () => {
   const { setMovies } = useMovieStore();
@@ -16,8 +15,6 @@ const Home = () => {
   const { data: showingMovies } = useShowingMovieQuery();
   const { data: availableMovies } = useAvailableMovieQuery();
   const { data: comingMovies } = useComingMovieQuery();
-
-  const { data: theatres } = useShowingTheatresQuery();
 
   useEffect(() => {
     setMovies(showingMovies?.data, "showing");
@@ -33,11 +30,11 @@ const Home = () => {
 
   return (
     <div className="">
-      <div className="relative w-full min-h-[600px] bg-surface">
+      <div className="relative w-full min-h-[650px]">
         <HomeCarousel />
       </div>
       <div className="sm:px-[50px] xl:px-[150px]">
-        <div className="relative h-[120px] bg-background flex flex-col justify-center ">
+        <div className="relative h-[120px] bg-background flex flex-col justify-center">
           <MovieSearchCard />
         </div>
         <div className="my-[200px] max-md:mt-[600px] mt-[200px] max-sm:px-5">

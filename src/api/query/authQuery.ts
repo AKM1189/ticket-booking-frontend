@@ -13,5 +13,6 @@ export const useGetUser = () => {
     queryKey: ["currentUser"],
     retry: false,
     staleTime: 0,
+    refetchOnWindowFocus: false,
   });
 };

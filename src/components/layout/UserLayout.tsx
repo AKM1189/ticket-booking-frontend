@@ -26,18 +26,16 @@ const UserLayout = () => {
 
   return (
     <div className="min-h-screen h-full min-w-screen bg-background">
-      {!isScrolled && (
-        <div className="absolute w-full z-10">
-          <Navbar />
-        </div>
-      )}
       <div
-        className={`max-md:hidden fixed top-0 w-full z-50 transition-transform duration-300 ease-in-out ${
-          isScrolled ? "translate-y-0 shadow-md" : "-translate-y-full"
+        className={`fixed top-0 w-full z-50 transition-all duration-300 ease-in-out ${
+          isScrolled
+            ? "shadow-md bg-background/80 backdrop-blur scale-[1.001] opacity-95"
+            : "bg-transparent shadow-none scale-100 opacity-100"
         }`}
       >
         <Navbar />
       </div>
+
       <div className="pt-[80px]">
         <div className="text-text max-w-screen min-h-svh">
           <Outlet />

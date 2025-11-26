@@ -29,6 +29,8 @@ import { useConfirmModalStore } from "@/store/useConfirmModalStore";
 import { useLogoutMutation } from "@/api/mutation/authMutation";
 import { useNavigate } from "react-router-dom";
 import { routes } from "@/routes";
+import Cookies from "js-cookie";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Profile = ({ role }: { role?: Role }) => {
   const { user } = useAuthStore();
@@ -136,6 +138,7 @@ const UpdateProfile = ({ openProfileModal, setOpenProfileModal }) => {
   const { showLoading } = useLoadingStore();
 
   const { mutate } = useUpdateProfileMutation();
+  const queryClient = useQueryClient();
 
   const form = useForm<ProfileInputType>({
     initialValues: {
@@ -195,6 +198,12 @@ const UpdateProfile = ({ openProfileModal, setOpenProfileModal }) => {
           onSuccess: () => {
             showLoading(false);
             setOpenProfileModal(false);
+            if (user.email !== values.email) {
+              Cookies.remove("accessToken");
+              queryClient.removeQueries({ queryKey: ["currentUser"] });
+              queryClient.clear();
+              window.location.href = "/login";
+            }
             form.reset();
           },
           onError: () => showLoading(false),
@@ -322,8 +331,8 @@ export type PasswordInputType = {
 
 const ChangePassword = ({ openPasswordModal, setOpenPasswordModal }) => {
   const { user } = useAuthStore();
-  const { mutate } = useChangePasswordMutation();
   const { showLoading } = useLoadingStore();
+  const { mutate } = useChangePasswordMutation(showLoading);
 
   const form = useForm({
     initialValues: {
@@ -361,10 +370,8 @@ const ChangePassword = ({ openPasswordModal, setOpenPasswordModal }) => {
         },
         {
           onSuccess: () => {
-            showLoading(false);
             setOpenPasswordModal(false);
           },
-          onError: () => showLoading(false),
         },
       );
     }

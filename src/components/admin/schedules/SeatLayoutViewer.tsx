@@ -17,7 +17,6 @@ const SeatLayoutViewer = ({
   theaterName,
   bookedSeats,
 }: SeatLayoutViewerProps) => {
-  console.log("layout", layout);
   const generateSeatGrid = useCallback(() => {
     const rows: JSX.Element[] = [];
     const rowLabels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -38,13 +37,16 @@ const SeatLayoutViewer = ({
           <div key={seatId} className="flex items-center">
             <div
               className={twMerge(
-                "w-8 h-8 text-xs font-[500] flex items-center justify-center rounded border-2  border-standard text-standard",
-                isDisabled && "bg-darkGray border-darkGray text-muted",
+                "w-9 h-9 text-xs font-[400] flex items-center justify-center rounded-[5px] border  border-standard text-text",
+                isDisabled &&
+                  "bg-disabled border-0 !text-muted cursor-default pointer-events-none",
                 selectedType?.seatType?.name === "Premium" &&
                   " border-premium text-premium",
                 selectedType?.seatType?.name === "VIP" && "border-vip text-vip",
+                selectedType?.seatType?.name === "Standard" &&
+                  "border-standard text-standard",
                 isBooked &&
-                  "bg-booked border-booked text-text/50 hover:text-text hover:bg-darkGray cursor-default pointer-events-none",
+                  "bg-booked border-0 border-surface-light text-text/50 hover:bg-darkGray cursor-default pointer-events-none",
               )}
               title={`Seat ${seatId} ${
                 isDisabled ? "(Disabled)" : "(Available)"
@@ -59,9 +61,6 @@ const SeatLayoutViewer = ({
 
       rows.push(
         <div key={row} className="flex items-center gap-1 mb-1 select-none">
-          {/* <div className="w-6 text-xs font-semibold text-center">
-            {rowLabel}
-          </div> */}
           <div className="flex gap-1">{seats}</div>
         </div>,
       );
@@ -117,14 +116,14 @@ const SeatLayoutViewer = ({
         </Group>
       </div>
 
-      <div className="bg-surface-hover p-4 rounded-lg overflow-scroll flex flex-col items-center">
+      <div className="bg-surface-hover p-4 rounded-lg">
         <div className="text-center mb-4">
-          <div className="bg-surface font-semibold text-text w-[350px] h-[30px] rounded-lg inline-block select-none">
+          <div className="bg-surface ms-6 font-semibold text-text w-[350px] h-[30px] rounded-lg inline-block select-none">
             <div className="mt-1">SCREEN</div>
           </div>
         </div>
 
-        <div className="">
+        <div className="max-sm:max-w-[400px] max-w-[600px] mx-auto overflow-x-auto p-2">
           <div className="">{generateSeatGrid()}</div>
         </div>
       </div>

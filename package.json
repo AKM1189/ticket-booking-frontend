@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emailjs/browser": "^4.4.1",
     "@emotion/react": "^11.14.0",
     "@mantine/carousel": "^8.2.8",
     "@mantine/charts": "^8.2.8",

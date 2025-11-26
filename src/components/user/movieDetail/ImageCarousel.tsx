@@ -12,7 +12,10 @@ const ImageCarousel = ({ images }: ImageCarouselType) => {
     () =>
       images?.map((url) => (
         <Carousel.Slide key={url}>
-          <img className="w-[400px] h-[250px] rounded-md object-cover" src={url} />
+          <img
+            className="w-[400px] h-[250px] rounded-md object-cover"
+            src={url}
+          />
         </Carousel.Slide>
       )),
     [images],
@@ -27,9 +30,7 @@ const ImageCarousel = ({ images }: ImageCarouselType) => {
       // slideSize="33.33333%"
       slideSize={{ sm: "100%", md: "33.33%" }}
       slideGap="md"
-      emblaOptions={{
-        loop: true,
-      }}
+      emblaOptions={{ align: "start" }}
       plugins={[autoplay.current]}
     >
       {slides}

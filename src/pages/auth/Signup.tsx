@@ -1,6 +1,6 @@
 import { NavLink } from "react-router";
 import { routes } from "../../routes";
-import { TextInput } from "@mantine/core";
+import { PasswordInput, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { twMerge } from "tailwind-merge";
 import { zodResolver } from "mantine-form-zod-resolver";
@@ -25,10 +25,10 @@ const Signup = () => {
     mode: "uncontrolled",
     initialValues: {
       name: "",
-      email: "",
+      email: null,
       phoneNo: "",
       password: "",
-      confirmPassword: "",
+      confirmPassword: null,
     },
     validate: zodResolver(signupSchema),
   });
@@ -81,22 +81,6 @@ const Signup = () => {
               {...form.getInputProps("email")}
             />
 
-            {/* <TextInput
-            //   label="Phone Number"
-            //   placeholder="Enter Your Phone Number"
-            //   key={form.key("phoneNo")}
-            //   classNames={{
-            //     root: "mt-5",
-            //     label: "text-[16px]",
-            //     input: twMerge(
-            //       "login-input",
-            //       form.errors.phoneNo && "border-red-500",
-            //     ),
-            //     error: "text-red-500",
-            //   }}
-            //   {...form.getInputProps("phoneNo")}
-            // /> */}
-
             <div className="mt-5">
               <label className="text-sm text-text font-medium">
                 Phone Number
@@ -111,7 +95,7 @@ const Signup = () => {
               />
               <p className="text-xs text-red-400 mt-1">{form.errors.phoneNo}</p>
             </div>
-            <TextInput
+            <PasswordInput
               label="Password"
               placeholder="Enter Your Password"
               key={form.key("password")}
@@ -126,7 +110,7 @@ const Signup = () => {
               }}
               {...form.getInputProps("password")}
             />
-            <TextInput
+            <PasswordInput
               label="Confirm Password"
               placeholder="Retype Your Password"
               key={form.key("confirmPassword")}

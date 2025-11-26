@@ -2,11 +2,12 @@ import { getAllTheatres, getTheatres } from "@/api/function/admin/theatreApi";
 import { useQuery } from "@tanstack/react-query";
 
 export const useTheatreQuery = (
+  page: number = 1,
   searchTerm?: string,
   status?: string | null,
 ) => {
   return useQuery({
-    queryFn: () => getTheatres(searchTerm, status),
+    queryFn: () => getTheatres(page, searchTerm, status),
     queryKey: ["theatres"],
     retry: 5,
   });

@@ -39,6 +39,7 @@ import { usePermisson } from "@/hooks/usePermisson";
 import { permissionList } from "@/constants/permissons";
 import type { PaginationType } from "@/types/PagintationType";
 import DataNotFound from "@/ui/dataNotFound/DataNotFound";
+import { inputStyle } from "@/constants/styleConstants";
 
 const colorOptions = [
   { label: "red", value: "#dc3545" },
@@ -69,7 +70,7 @@ const GenreManagement = () => {
   const [debouncedSearchTerm] = useDebouncedValue(searchTerm, 300);
 
   const { data, refetch, isPending } = useGenreQuery(
-    pagination.page,
+    pagination?.page,
     debouncedSearchTerm,
   );
 
@@ -81,6 +82,7 @@ const GenreManagement = () => {
 
   useEffect(() => {
     setGenres(data?.data);
+    setPagination(data?.pagination);
   }, [data]);
 
   useEffect(() => {
@@ -92,6 +94,9 @@ const GenreManagement = () => {
       label: "",
       description: "",
       color: "blue",
+    },
+    validate: {
+      label: (value) => (!value ? "Genre Name is required" : null),
     },
   });
 
@@ -119,21 +124,25 @@ const GenreManagement = () => {
     };
 
     if (editingGenre) {
-      editGenre({ data: genreData, id: editingGenre.id });
+      editGenre(
+        { data: genreData, id: editingGenre.id },
+        {
+          onSuccess: () => close(),
+        },
+      );
     } else {
-      addGenre({ data: genreData });
+      addGenre(
+        { data: genreData },
+        {
+          onSuccess: () => close(),
+        },
+      );
     }
     // refetch();
-    close();
   };
 
   const handleDeleteGenre = (id: number) => {
     deleteGenre({ id });
-  };
-
-  const inputStyle = {
-    input: "dashboard-input",
-    label: "!mb-2 !text-text",
   };
 
   return (
@@ -394,7 +403,6 @@ const GenreManagement = () => {
             <TextInput
               label="Genre Name"
               placeholder="Enter genre name"
-              required
               {...form.getInputProps("label")}
               classNames={inputStyle}
             />

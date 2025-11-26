@@ -1,66 +1,118 @@
-import { Button, ThemeIcon } from "@mantine/core";
-import { Link } from "react-router-dom";
+import { Button, Text, ThemeIcon } from "@mantine/core";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import {
-  IconBrandFacebook,
   IconBrandFacebookFilled,
-  IconBrandGoogle,
   IconBrandGoogleFilled,
-  IconBrandInstagram,
   IconBrandInstagramFilled,
-  IconBrandTwitter,
-  IconBrandTwitterFilled,
+  IconBrandXFilled,
 } from "@tabler/icons-react";
 import { routes } from "@/routes";
 
 const Footer = () => {
+  const navigate = useNavigate();
   return (
     <div className="w-full bottom-0 footer mt-[150px] relative min-h-[100px] px-[20px] md:px-[50px] lg:px-[150px]  bg-surface">
       {/* <SubscribeCard /> */}
-      <div className="pt-[50px] pb-[30px] border-b border-coolGray flex justify-between">
-        <span className="text-lg text-accent uppercase font-semibold">
-          Movie Palace
-        </span>
+      <div className="pt-[50px] pb-[20px] border-b border-coolGray flex justify-between items-center">
+        <div>
+          <NavLink to={routes.user.home}>
+            <span className="text-lg text-accent uppercase font-semibold">
+              Movie Palace
+            </span>
+          </NavLink>
+          <div className="flex flex-col gap-1.5 mt-2">
+            <Text size="sm" color={"var(--muted)"}>
+              Email: info@moviepalace.com
+            </Text>
+            <Text size="sm" color={"var(--muted)"}>
+              Phone: +1 (555) 123-4567
+            </Text>
+          </div>
+        </div>
         <span className="flex gap-3">
-          <ThemeIcon radius={100} color={'var(--primary)'} size={32} className="!cursor-pointer">
-            <IconBrandFacebookFilled size={20} />
-          </ThemeIcon>
-          <ThemeIcon radius={100} color={'var(--primary)'} size={32} className="!cursor-pointer">
-            <IconBrandTwitterFilled size={20} />
-          </ThemeIcon>
-          <ThemeIcon radius={100} color={'var(--primary)'} size={32} className="!cursor-pointer">
-            <IconBrandGoogleFilled size={20} />
-          </ThemeIcon>
-          <ThemeIcon radius={100} color={'var(--primary)'} size={32} className="!cursor-pointer">
-            <IconBrandInstagramFilled size={20} />
-          </ThemeIcon>
+          <a target="_blank" href="https://www.facebook.com" title="Facebook">
+            <ThemeIcon
+              radius={100}
+              color={"var(--primary)"}
+              size={32}
+              className="!cursor-pointer"
+            >
+              <IconBrandFacebookFilled size={20} />
+            </ThemeIcon>
+          </a>
+
+          <a target="_blank" href="https://www.x.com" title="X">
+            <ThemeIcon
+              radius={100}
+              color={"var(--primary)"}
+              size={32}
+              className="!cursor-pointer"
+            >
+              <IconBrandXFilled size={20} />
+            </ThemeIcon>
+          </a>
+          <a target="_blank" href="https://www.google.com" title="Google">
+            <ThemeIcon
+              radius={100}
+              color={"var(--primary)"}
+              size={32}
+              className="!cursor-pointer"
+            >
+              <IconBrandGoogleFilled size={20} />
+            </ThemeIcon>
+          </a>
+          <a target="_blank" href="https://www.instagram.com" title="Instagram">
+            <ThemeIcon
+              radius={100}
+              color={"var(--primary)"}
+              size={32}
+              className="!cursor-pointer"
+            >
+              <IconBrandInstagramFilled size={20} />
+            </ThemeIcon>
+          </a>
         </span>
       </div>
-      <div className="flex max-sm:flex-col pb-10 gap-5 max-sm:items-center justify-between py-8 text-text text-sm max-sm:text-xs">
+      <div className="flex max-sm:flex-col pb-7 gap-5 max-sm:items-center justify-between py-5 text-text text-sm max-sm:text-xs">
         <ul className="flex gap-5 text-muted">
           <li>
-            <Link to={routes.user.about} className="hover:text-accent transition-colors">
+            <Link
+              to={routes.user.about}
+              className="hover:text-accent transition-colors"
+            >
               About
             </Link>
           </li>
           <li>
-            <Link to={routes.user.termsOfUse} className="hover:text-accent transition-colors">
+            <Link
+              to={routes.user.termsOfUse}
+              className="hover:text-accent transition-colors"
+            >
               Terms of Use
             </Link>
           </li>
           <li>
-            <Link to={routes.user.privacyPolicy} className="hover:text-accent transition-colors">
+            <Link
+              to={routes.user.privacyPolicy}
+              className="hover:text-accent transition-colors"
+            >
               Privacy Policy
             </Link>
           </li>
           <li>
-            <Link to={routes.user.faq} className="hover:text-accent transition-colors">
+            <Link
+              to={routes.user.faq}
+              className="hover:text-accent transition-colors"
+            >
               FAQ
             </Link>
           </li>
         </ul>
         <div className="text-muted">
           Copyright © 2025. All Rights Reserved By{" "}
-          <span className="text-accent"> Movie Palace</span>
+          <NavLink to={routes.user.home}>
+            <span className="text-accent cursor-pointer"> Movie Palace</span>
+          </NavLink>
         </div>
       </div>
     </div>

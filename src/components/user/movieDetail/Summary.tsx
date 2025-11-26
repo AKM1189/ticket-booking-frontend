@@ -15,6 +15,9 @@ const Summary = ({ movie }: SummaryType) => {
       <div>
         <div className="title">Cast</div>
         <div className="flex gap-16 mt-10">
+          {movie?.casts?.length === 0 && (
+            <div className="text-muted text-sm">No movie casts</div>
+          )}
           {useMemo(
             () =>
               movie?.casts?.map((cast) => (
@@ -22,7 +25,7 @@ const Summary = ({ movie }: SummaryType) => {
                   <div className="border-2 border-primary inline-block rounded-full p-2">
                     <img
                       src={cast?.image?.url}
-                      className="rounded-full w-32 h-32 border-4 border-primary"
+                      className="rounded-full w-32 h-32 border-4 border-primary object-cover"
                       alt=""
                     />
                   </div>

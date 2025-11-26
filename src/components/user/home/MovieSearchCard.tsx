@@ -11,6 +11,9 @@ import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { twMerge } from "tailwind-merge";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+
+dayjs.extend(customParseFormat);
 
 interface MovieSearchBoxProps {
   theatres: TheatreType[];
@@ -89,7 +92,7 @@ const MovieSearchCard = () => {
     const { theatreId, date, movieId } = values;
     const data = await searchMovie(
       theatreId,
-      dayjs(date).format("YYYY-MM-DD"),
+      dayjs(date, "DD-MM-YYYY").format("YYYY-MM-DD"),
       movieId,
     );
     if (data?.data[0]) {
@@ -106,7 +109,7 @@ const MovieSearchCard = () => {
   };
 
   return (
-    <div className="absolute left-[50%] translate-x-[-50%] top-[50px] sm:top-[-60%] mt-[-50px] min-h-[200px] w-full bg-search-bg rounded-md sm:rounded-lg p-8 px-5 sm:p-10">
+    <div className="absolute left-[50%] translate-x-[-50%] top-[50px] sm:top-[-60%] mt-[-50px] min-h-[200px] w-full bg-search-bg/90 rounded-md sm:rounded-lg p-8 px-5 sm:p-10">
       <div className="text-lg md:text-2xl mb-2 uppercase">
         Welcome to <span className="text-accent font-bold">Movie Palace</span>
       </div>
@@ -137,7 +140,7 @@ const MovieSearchCard = () => {
                 input: twMerge(
                   "max-md:!text-sm",
                   form.errors.theatreId &&
-                  "placeholder:!text-[#9ca4b1] !border-[#9fa7b9]",
+                    "placeholder:!text-[#9ca4b1] !border-[#9fa7b9]",
                 ),
                 option: "max-md:!text-sm",
                 error: "placeholder:!text-white",
@@ -162,7 +165,7 @@ const MovieSearchCard = () => {
                 input: twMerge(
                   "max-md:!text-sm",
                   form.errors.date &&
-                  "placeholder:!text-[#9ca4b1] !border-[#9fa7b9]",
+                    "placeholder:!text-[#9ca4b1] !border-[#9fa7b9]",
                 ),
                 option: "max-md:!text-sm",
               }}
@@ -188,7 +191,7 @@ const MovieSearchCard = () => {
                 input: twMerge(
                   "max-md:!text-sm",
                   form.errors.movieId &&
-                  "placeholder:!text-[#9ca4b1] !border-[#9fa7b9]",
+                    "placeholder:!text-[#9ca4b1] !border-[#9fa7b9]",
                 ),
                 option: "max-md:!text-sm",
               }}

@@ -56,6 +56,7 @@ import { permissionList } from "@/constants/permissons";
 import type { PaginationType } from "@/types/PagintationType";
 import DataNotFound from "@/ui/dataNotFound/DataNotFound";
 import { getStatusColor } from "@/utils/getMovieStatus";
+import { minsToHMin } from "@/utils/timeFormatter";
 
 const languages = ["English", "Tamil", "Hindi", "Telugu", "Chinese"];
 const subtitles = ["English", "Tamil", "Hindi", "Telugu", "Chinese"];
@@ -93,7 +94,7 @@ const MovieManagement = ({
   });
 
   const { data, refetch, isPending } = useMovieQuery(
-    pagination.page,
+    pagination?.page,
     searchTerm,
     statusFilter,
   );
@@ -112,11 +113,12 @@ const MovieManagement = ({
 
   useEffect(() => {
     setMovies(data?.data);
+    setPagination(data?.pagination);
   }, [data]);
 
   useEffect(() => {
     refetch();
-  }, [debouncedSearchTerm, statusFilter]);
+  }, [debouncedSearchTerm, statusFilter, pagination?.page]);
 
   const form = useForm({
     // mode: "uncontrolled",
@@ -330,7 +332,6 @@ const MovieManagement = ({
     );
   };
 
-
   const inputStyle = {
     input: "dashboard-input placeholder:!text-muted",
     label: "!mb-2 !text-text",
@@ -381,7 +382,7 @@ const MovieManagement = ({
       >
         <Group mb="md">
           <TextInput
-            placeholder="Search movies by name"
+            placeholder="Search movies by title"
             leftSection={<IconSearch size={16} />}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -445,13 +446,15 @@ const MovieManagement = ({
                           </div>
                         </Group>
                       </Table.Td>
-                      <Table.Td>{movie.duration}</Table.Td>
+                      <Table.Td>
+                        {minsToHMin(parseInt(movie.duration))}
+                      </Table.Td>
                       <Table.Td>
                         <Group gap="xs">
                           {movie?.genres.map((genre: any) => (
                             <Badge
                               key={genre.id}
-                              variant="light"
+                              // variant="light"
                               color={genre.color}
                               size="sm"
                             >
@@ -598,9 +601,9 @@ const MovieManagement = ({
                 data={
                   genreList?.length > 0
                     ? genreList?.map((g) => ({
-                      value: g.id.toString(),
-                      label: g.name,
-                    }))
+                        value: g.id.toString(),
+                        label: g.name,
+                      }))
                     : []
                 }
                 // required
@@ -678,14 +681,14 @@ const MovieManagement = ({
                 // value={selectedPoster}
                 placeholder="Select Movie Poster"
                 {...form.getInputProps("poster")}
-              // onChange={handlePosterUpload}
+                // onChange={handlePosterUpload}
               />
             </Grid.Col>
             <ImagePreview
               imagePreviewUrls={posterPreviewUrl}
               removeImage={removePoster}
               clearAllImages={clearAllImages}
-            // selectedImages={selectedImages}
+              // selectedImages={selectedImages}
             />
 
             {/* Multiple Image Upload Section */}
@@ -717,7 +720,7 @@ const MovieManagement = ({
               isClearAll={true}
               removeImage={removeImage}
               clearAllImages={clearAllImages}
-            // selectedImages={selectedImages}
+              // selectedImages={selectedImages}
             />
 
             <Grid.Col span={12}>

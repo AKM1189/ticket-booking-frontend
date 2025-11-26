@@ -80,13 +80,6 @@ export const MovieList = ({ movieList, type }: MoviesProps) => {
                       </div>
                     )}
 
-                    {type === movieType.showing && (
-                      <div className="flex gap-2 items-center">
-                        <IconStarFilled color={"var(--color-accent)"} />
-                        {movie.rating}
-                      </div>
-                    )}
-
                     <div className="flex gap-2 items-center text-muted">
                       <label>Language:</label>
                       {movie.language?.map(

@@ -6,11 +6,11 @@ import { IconChevronRight } from "@tabler/icons-react";
 import { IconChevronLeft } from "@tabler/icons-react";
 
 const images = [
-  "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-1.png",
-  "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-2.png",
-  "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-3.png",
-  "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-4.png",
-  "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-5.png",
+  "/movie-bg1.jpg",
+  "/movie-bg2.jpg",
+  "/movie-bg3.jpg",
+  "/movie-bg4.jpg",
+  "/movie-bg5.jpg",
 ];
 
 function HomeCarousel() {
@@ -22,7 +22,15 @@ function HomeCarousel() {
     () =>
       images.map((url) => (
         <Carousel.Slide key={url}>
-          <Image src={url} />
+          <div>
+            <Image
+              src={url}
+              w={"100%"}
+              h={650}
+              className="!object-cover"
+              fit="cover"
+            />
+          </div>
         </Carousel.Slide>
       )),
     [],
@@ -37,9 +45,7 @@ function HomeCarousel() {
       withControls={true}
       nextControlIcon={<IconChevronRight />}
       previousControlIcon={<IconChevronLeft />}
-      emblaOptions={{
-        loop: true,
-      }}
+      emblaOptions={{ align: "start" }}
       plugins={[autoplay.current]}
       classNames={{
         container: "!max-h-[600px]",

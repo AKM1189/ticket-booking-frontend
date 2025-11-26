@@ -15,7 +15,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { IconCheck, IconPlus, IconSearch, IconX } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import type { CastSelectionType, CastType } from "@/types/CastTypes";
-import { useCastQuery } from "@/api/query/admin/castQuery";
+import { useAllCastQuery, useCastQuery } from "@/api/query/admin/castQuery";
 
 interface CastSelectorProps {
   selectedCasts: CastSelectionType[];
@@ -34,7 +34,7 @@ const CastSelector = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [casts, setCasts] = useState([]);
 
-  const { data } = useCastQuery();
+  const { data } = useAllCastQuery();
 
   useEffect(() => {
     setCasts(data?.data);
@@ -144,7 +144,7 @@ const CastSelector = ({
           close: "!text-text hover:!bg-surface-hover",
         }}
       >
-        <Stack gap="md">
+        <Stack gap="md" className="">
           <TextInput
             placeholder="Search cast members..."
             leftSection={<IconSearch size={16} />}
@@ -157,6 +157,7 @@ const CastSelector = ({
             cols={{ base: 1, sm: 2 }}
             spacing="sm"
             mah={400}
+            className="!overflow-y-scroll"
             style={{ overflow: "auto" }}
           >
             {filteredCasts.map((cast: CastType) => {
@@ -170,7 +171,7 @@ const CastSelector = ({
                   padding="sm"
                   radius="md"
                   withBorder
-                  className={`cursor-pointer transition-colors duration-200 !text-text ${
+                  className={`cursor-pointer transition-colors duration-200 !min-h-[65px] !text-text ${
                     isSelected
                       ? "!bg-surface-hover !border-surface-hover"
                       : "!bg-surface !border-surface-hover"

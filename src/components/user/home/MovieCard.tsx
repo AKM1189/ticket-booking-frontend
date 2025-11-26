@@ -26,12 +26,14 @@ const MovieCard = ({
 
   return (
     <div
-      className={`bg-surface group rounded-lg overflow-hidden max-w-[300px] shadow-sm ${isMovieList ? "w-full" : "w-[300px]"
-        }`}
+      className={`bg-surface group rounded-lg overflow-hidden max-w-[350px] shadow-sm ${
+        isMovieList ? "w-full" : "w-[350px]"
+      }`}
     >
       <div
-        className={`relative h-[400px] rounded-t-lg overflow-hidden cursor-pointer ${isMovieList ? "w-full" : "w-[300px]"
-          }`}
+        className={`relative h-[400px] rounded-t-lg overflow-hidden cursor-pointer ${
+          isMovieList ? "w-full" : "w-[350px]"
+        }`}
         onClick={handleNavigate}
       >
         <Image
@@ -46,7 +48,7 @@ const MovieCard = ({
       <div className="p-5 flex justify-between items-center">
         <span>
           <div
-            className="text-text text-xl font-semibold mb-1 cursor-pointer"
+            className="text-text text-lg font-semibold mb-1 cursor-pointer max-w-[170px] truncate"
             onClick={handleNavigate}
           >
             {movie.title}

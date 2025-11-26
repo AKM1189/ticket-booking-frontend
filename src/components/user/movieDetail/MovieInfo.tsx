@@ -102,7 +102,9 @@ const MovieInfo = ({ movie, isTicketPlan = false }: MovieInfoType) => {
                     <div className="flex items-center gap-3">
                       <IconStarFilled color="var(--color-accent)" size={20} />
                       <span className="text-lg font-semibold">
-                        {movie.rating.slice(0, 3)} / 10
+                        {parseInt(movie.rating) === 0
+                          ? "N/A"
+                          : movie.rating.slice(0, 3) + " / 10"}
                       </span>
                     </div>
                   </div>

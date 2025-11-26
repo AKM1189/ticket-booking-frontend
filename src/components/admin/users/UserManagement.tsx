@@ -66,7 +66,7 @@ const UserManagement = () => {
   const { data, isPending, refetch } = useUserQuery(
     searchTerm,
     activeTab,
-    pagination.page,
+    pagination?.page,
   );
   const { mutate: addUserMutation } = useAddUserMutation();
   const { mutate: updateUserMutation } = useUpdateUserMutation(
@@ -286,16 +286,19 @@ const UserManagement = () => {
                             </Table.Td>
                             <Table.Td>
                               <Group gap="xs">
-                                <ActionIcon
-                                  variant="light"
-                                  color="orange"
-                                  disabled={
-                                    !hasAccess(permissionList.updateUser)
-                                  }
-                                  onClick={() => handleEditUser(user)}
-                                >
-                                  <IconEdit size={16} />
-                                </ActionIcon>
+                                {(activeTab === Role.admin ||
+                                  activeTab === Role.staff) && (
+                                  <ActionIcon
+                                    variant="light"
+                                    color="orange"
+                                    disabled={
+                                      !hasAccess(permissionList.updateUser)
+                                    }
+                                    onClick={() => handleEditUser(user)}
+                                  >
+                                    <IconEdit size={16} />
+                                  </ActionIcon>
+                                )}
 
                                 {user.active ? (
                                   user.email !== currentUser?.email && (
@@ -436,7 +439,7 @@ const UserManagement = () => {
               <Select
                 label="Branch"
                 data={theatres?.data?.map((theatre) => ({
-                  label: theatre?.name,
+                  label: theatre?.location,
                   value: theatre?.id?.toString(),
                 }))}
                 classNames={inputStyle}

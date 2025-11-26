@@ -148,11 +148,9 @@ const SeatPlan = () => {
                         color="blue"
                         className="!bg-search-bg !text-accent"
                       >
-                        {seat.label}
+                        {seat.label} -
                         {seat.countDown > 0 && (
-                          <span className="ml-1 text-xs">
-                            ({seat.countDown}s)
-                          </span>
+                          <span className="ml-1 text-xs">{seat.countDown}</span>
                         )}
                       </Badge>
                     ))}

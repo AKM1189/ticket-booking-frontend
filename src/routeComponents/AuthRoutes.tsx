@@ -5,6 +5,7 @@ import AuthLayout from "@/pages/auth/AuthLayout";
 import { routes } from "@/routes";
 import { Role } from "@/types/AuthType";
 import { LoadingOverlay } from "@mantine/core";
+import { useEffect } from "react";
 import { Navigate, Outlet, Route, Routes } from "react-router";
 
 const AuthRoutes = () => {
@@ -31,7 +32,17 @@ export default AuthRoutes;
 
 const PublicRoute = () => {
   const { data: user, isLoading } = useGetUser();
-  console.log("user", user);
+  useEffect(() => {
+    if (isLoading) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isLoading]);
+
   if (isLoading)
     return (
       <div>
@@ -39,6 +50,7 @@ const PublicRoute = () => {
         <LoadingOverlay
           visible={true}
           zIndex={1000}
+          pos={"fixed"}
           overlayProps={{
             radius: "sm",
             blur: 1,

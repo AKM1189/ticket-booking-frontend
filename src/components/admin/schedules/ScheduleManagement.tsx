@@ -144,12 +144,21 @@ const ScheduleManagement = ({ openScheduleModal, setOpenScheduleModal }) => {
   }, [scheduleData]);
 
   useEffect(() => {
-    setTheatre(theatreData?.data);
+    if (theatreData?.data?.length > 0) {
+      const activeTheatres = theatreData?.data?.filter(
+        (item: TheatreType) => item.active,
+      );
+      setTheatre(activeTheatres);
+    }
   }, [theatreData]);
 
   useEffect(() => {
     setMovies(movieData?.data);
   }, [movieData]);
+
+  useEffect(() => {
+    form.setFieldValue("screenId", "");
+  }, [form.values.theatreId]);
 
   useEffect(() => {
     refetch();
@@ -372,7 +381,7 @@ const ScheduleManagement = ({ openScheduleModal, setOpenScheduleModal }) => {
                         </Text>
                       </Table.Td>
                       <Table.Td>
-                        <Text size="sm">{schedule?.theatre?.name}</Text>
+                        <Text size="sm">{schedule?.theatre?.location}</Text>
                       </Table.Td>
                       <Table.Td>
                         <Text size="sm">
@@ -394,13 +403,15 @@ const ScheduleManagement = ({ openScheduleModal, setOpenScheduleModal }) => {
                         <Group gap="xs">
                           <Badge
                             color={getOccupancyColor(
+                              schedule.availableSeats -
+                                (schedule.bookedSeats?.length ?? 0),
                               schedule.availableSeats,
-                              schedule.screen.capacity,
                             )}
                             variant="outline"
                           >
                             {schedule.bookedSeats?.length ?? 0}/
-                            {schedule.screen.capacity}
+                            {schedule.screen.capacity -
+                              schedule.screen.disabledSeats.length}
                           </Badge>
                           <Text size="xs" className="!text-blueGray" c="dimmed">
                             {Math.round(
@@ -532,7 +543,7 @@ const ScheduleManagement = ({ openScheduleModal, setOpenScheduleModal }) => {
                 placeholder="Select a branch"
                 data={theatres?.map((theatre) => ({
                   value: theatre.id.toString(),
-                  label: `${theatre.name} (${theatre.location})`,
+                  label: `${theatre.location} (${theatre.city})`,
                 }))}
                 classNames={inputStyle}
                 {...form.getInputProps("theatreId")}

@@ -19,6 +19,7 @@ import {
 import { useLoadingStore } from "@/store/useLoading";
 import { showNotification } from "@/utils/showNotification";
 import { StatusType } from "@/types/NotificationType";
+import { inputStyle } from "@/constants/styleConstants";
 
 interface CastModalProps {
   opened: boolean;
@@ -33,6 +34,7 @@ const CastModal = ({ opened, onClose, cast }: CastModalProps) => {
   const { mutate: updateCastMutation } = useUpdateCastMutation();
   const { showLoading } = useLoadingStore();
   const [selectedImg, setSelectedImg] = useState<File | null>(null);
+  const [imageError, setImageError] = useState(false);
 
   const form = useForm<CastInputType>({
     initialValues: {
@@ -57,6 +59,7 @@ const CastModal = ({ opened, onClose, cast }: CastModalProps) => {
     } else {
       form.reset();
       setImagePreview(null);
+      setImageError(false);
     }
   }, [cast, opened]);
 
@@ -75,7 +78,7 @@ const CastModal = ({ opened, onClose, cast }: CastModalProps) => {
   };
 
   const handleSubmit = async (values: CastInputType) => {
-    // setIsSubmitting(true);
+    if (!selectedImg) return;
 
     try {
       if (cast) {
@@ -140,10 +143,6 @@ const CastModal = ({ opened, onClose, cast }: CastModalProps) => {
       setIsSubmitting(false);
     }
   };
-  const inputStyle = {
-    input: "dashboard-input max-w-md",
-    label: "!mb-2 !text-text",
-  };
   return (
     <Modal
       opened={opened}
@@ -172,17 +171,19 @@ const CastModal = ({ opened, onClose, cast }: CastModalProps) => {
 
           <FileInput
             label="Profile Image"
-            placeholder="Upload image"
+            placeholder={<div className="text-sm">Upload image</div>}
             leftSection={<IconUpload size={16} />}
             accept="image/*"
             onChange={handleImageChange}
             classNames={inputStyle}
           />
+          {imageError && (
+            <p className="text-red-400 text-xs">Image is required!</p>
+          )}
 
           <TextInput
             label="Name"
             placeholder="Enter cast member name"
-            required
             classNames={inputStyle}
             {...form.getInputProps("name")}
           />
@@ -190,7 +191,6 @@ const CastModal = ({ opened, onClose, cast }: CastModalProps) => {
           <TextInput
             label="Role"
             placeholder="e.g., Actor, Director, Producer"
-            required
             classNames={inputStyle}
             {...form.getInputProps("role")}
           />
@@ -207,6 +207,10 @@ const CastModal = ({ opened, onClose, cast }: CastModalProps) => {
               type="submit"
               loading={isSubmitting}
               className="dashboard-btn"
+              onClick={() => {
+                if (!selectedImg) setImageError(true);
+                else setImageError(false);
+              }}
             >
               {cast ? "Update" : "Add"} Cast
             </Button>

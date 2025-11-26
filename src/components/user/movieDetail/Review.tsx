@@ -1,29 +1,31 @@
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { IconPencil, IconTrash } from "@tabler/icons-react";
-import RatingModal from "./RatingModal";
 import { Avatar, Button, Rating, ThemeIcon } from "@mantine/core";
-import { useAuthStore } from "@/store/authStore";
-import dayjs from "dayjs";
-import { twMerge } from "tailwind-merge";
 import { useDisclosure } from "@mantine/hooks";
-import { useDeleteReviewMutation } from "@/api/mutation/user/reviewMutation";
+import { useNavigate } from "react-router";
+import { twMerge } from "tailwind-merge";
+import dayjs from "dayjs";
+
+import RatingModal from "./RatingModal";
+import { useAuthStore } from "@/store/authStore";
 import { useLoadingStore } from "@/store/useLoading";
 import { useConfirmModalStore } from "@/store/useConfirmModalStore";
+import { useDeleteReviewMutation } from "@/api/mutation/user/reviewMutation";
 import { formatDate } from "@/utils/dateFormatter";
-
-interface ReviewType {
-  movie: any;
-  refetchMovies: () => void;
-}
+import { routes } from "@/routes";
 
 export type ReviewData = {
-  id: null | number;
+  id: number | null;
   rating: string | "";
   review: string | "";
 };
 
-// fetch review separately
-const Review = ({ movie, refetchMovies }: ReviewType) => {
+interface ReviewProps {
+  movie: any;
+  refetchMovies: () => void;
+}
+
+const Review = ({ movie, refetchMovies }: ReviewProps) => {
   const { user } = useAuthStore();
   const [opened, { open, close }] = useDisclosure(false);
   const [reviewData, setReviewData] = useState<ReviewData>({
@@ -32,11 +34,27 @@ const Review = ({ movie, refetchMovies }: ReviewType) => {
     review: "",
   });
   const [isEditing, setIsEditing] = useState(false);
-  const { mutate: deleteReview } = useDeleteReviewMutation();
+
   const { showLoading } = useLoadingStore();
   const { open: showConfirm } = useConfirmModalStore();
+  const { mutate: deleteReview } = useDeleteReviewMutation();
+  const navigate = useNavigate();
 
-  const handleEdit = (item) => {
+  // Check if current user has already reviewed
+  const isUserReviewed = useMemo(() => {
+    return movie?.reviews?.some((r) => r?.user?.id === user?.id);
+  }, [movie?.reviews, user]);
+
+  // Reset reviewData when modal closes
+  useEffect(() => {
+    if (!opened) {
+      setIsEditing(false);
+      setReviewData({ id: null, rating: "", review: "" });
+    }
+  }, [opened]);
+
+  // Edit review
+  const handleEdit = (item: any) => {
     setIsEditing(true);
     setReviewData({
       id: item.id,
@@ -46,17 +64,17 @@ const Review = ({ movie, refetchMovies }: ReviewType) => {
     open();
   };
 
-  const handleDelete = (item) => {
+  // Delete review
+  const handleDelete = (item: any) => {
     showConfirm({
       title: "Delete Review",
-      message: "Are you sure you want to delete review for this movie?",
+      message: "Are you sure you want to delete your review?",
       onConfirm: () =>
         deleteReview(
           { id: item.id },
           {
             onSuccess: () => {
-              refetchMovies();
-              close();
+              refetchMovies(); // refetch movie to update reviews and rating
               showLoading(false);
             },
             onError: () => {
@@ -67,55 +85,55 @@ const Review = ({ movie, refetchMovies }: ReviewType) => {
     });
   };
 
-  const isUserReviewed = () =>
-    useCallback(
-      movie?.reviews?.some((review) => review?.user?.id === user?.id),
-      [movie],
-    );
+  const handleWriteReview = () => {
+    if (!user) {
+      navigate(routes.auth.login);
+    } else open();
+  };
 
+  // Render reviews
   const reviewElements = useMemo(() => {
-    return movie?.reviews?.map((item, index) => (
+    const reviews = movie?.reviews || [];
+    if (!reviews.length) return null;
+
+    return reviews.map((item, index) => (
       <div
+        key={item.id || index}
         className={twMerge(
           "relative border-b py-3 mt-3",
-          index !== movie?.reviews?.length - 1
+          index !== reviews.length - 1
             ? "border-surface-hover"
             : "border-surface",
         )}
       >
-        <div
-          key={item.id || index}
-          className={twMerge(
-            "relative flex justify-between flex-wrap items-start",
-          )}
-        >
+        <div className="relative flex justify-between flex-wrap items-start">
           <div className="flex min-w-[250px] gap-3 items-center">
             <div className="border border-primary rounded-full w-14 h-14 flex justify-center items-center p-1">
-              {!movie?.reviews?.user?.image?.url ? (
+              {!item?.user?.image?.url ? (
                 <Avatar w={40} h={40} color="var(--color-primary)" />
               ) : (
                 <img
-                  src={item?.user?.image?.url}
+                  src={item.user.image.url}
                   className="rounded-full w-10 h-10 border-2 border-primary"
-                  alt=""
+                  alt={item.user.name}
                 />
               )}
             </div>
-
             <div>
               <div className="uppercase text-base font-semibold">
-                {item?.user?.name}
+                {item.user.name}
               </div>
             </div>
           </div>
+
           <div className="flex-1">
             <div className="mb-3">
-              <Rating defaultValue={item.rating} size={20} readOnly />
+              <Rating size={20} value={item.rating} readOnly />
             </div>
             <p className="text-blueGray text-sm">{item.description}</p>
           </div>
-          {/* <div className="flex flex-col items-end gap-3 mt-1"> */}
-          {item?.user?.id === user?.id && (
+
+          {item.user.id === user?.id && (
             <div className="absolute top-1 right-0 flex gap-3">
               <ThemeIcon
                 variant="light"
@@ -129,7 +147,7 @@ const Review = ({ movie, refetchMovies }: ReviewType) => {
               <ThemeIcon
                 variant="light"
                 size={30}
-                color={"red"}
+                color="red"
                 className="!cursor-pointer"
                 onClick={() => handleDelete(item)}
               >
@@ -137,32 +155,31 @@ const Review = ({ movie, refetchMovies }: ReviewType) => {
               </ThemeIcon>
             </div>
           )}
-
-          {/* </div> */}
         </div>
         <p className="text-muted text-end p-0 text-xs mt-2">
           {formatDate(dayjs(item.reviewDate))}
         </p>
       </div>
     ));
-  }, [movie?.reviews]);
+  }, [movie?.reviews, user]);
 
   return (
-    <div className="">
+    <div>
       <div className="text-end mt-5">
-        {!isUserReviewed() && (
+        {!isUserReviewed && (
           <Button
             size="lg"
             className="!rounded-full !px-8 !py-0 !text-blueGray !text-sm !shadow-lg hover:!shadow-xl !transition-all !duration-300"
             variant="outline"
-            onClick={open}
+            onClick={handleWriteReview}
           >
             Write a Review
           </Button>
         )}
       </div>
-      {movie && movie?.reviews?.length <= 0 ? (
-        <div className="w-full h-[200px] flex justify-center items-center">
+
+      {movie?.reviews?.length === 0 ? (
+        <div className="w-full h-[200px] flex justify-center items-center text-muted text-sm">
           No reviews available for this movie.
         </div>
       ) : (

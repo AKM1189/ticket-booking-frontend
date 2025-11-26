@@ -51,7 +51,7 @@ const PlayTrailer = ({ videoId, onClose }: PlayTrailerType) => {
           className="absolute top-0 right-0 cursor-pointer"
           onClick={onClose}
         >
-          <IconX size={40} />
+          <IconX size={40} color="var(--surface-light)" />
         </div>
         {videoId ? (
           <Skeleton visible={loading}>

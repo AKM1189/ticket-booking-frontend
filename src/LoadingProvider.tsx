@@ -7,6 +7,7 @@ const LoadingProvider = ({ children }) => {
   useEffect(() => {
     if (isLoading) {
       document.body.style.overflow = "hidden";
+      console.log("is Loading....", isLoading);
     } else {
       document.body.style.overflow = "";
     }

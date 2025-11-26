@@ -143,7 +143,7 @@ const SeatLayoutViewer = ({
         userId: user?.id,
       });
     } else {
-      if (selectedSeats?.length <= 10) {
+      if (selectedSeats?.length < 10) {
         const newList = [...selectedSeats, newSeat];
         setSelectedSeats(newList);
         setSelectedSeats(newList);
@@ -194,10 +194,11 @@ const SeatLayoutViewer = ({
             <div
               className={twMerge(
                 (isDisabled || isTemp || isBooked) &&
-                "cursor-default pointer-events-none",
+                  "cursor-default pointer-events-none",
               )}
-              title={`Seat ${seatId} ${isDisabled ? "(Disabled)" : "(Available)"
-                }`}
+              title={`Seat ${seatId} ${
+                isDisabled ? "(Disabled)" : "(Available)"
+              }`}
               onClick={() => addSeatsToBooking(seatId, selectedType)}
             >
               {/* {seatId} */}
@@ -288,10 +289,13 @@ const SeatLayoutViewer = ({
           </Text>
         </div>
 
-        <div className="flex justify-center">
+        {/* <div className="flex justify-center">
           <div className="seat-grid-container inline-flex flex-col items-center justify-center space-y-2">
             {generateSeatGrid()}
           </div>
+        </div> */}
+        <div className="max-sm:max-w-full max-w-[1100px] mx-auto overflow-x-auto p-2">
+          <div className="">{generateSeatGrid()}</div>
         </div>
       </Card>
     </div>

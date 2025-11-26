@@ -40,7 +40,7 @@ export const useLoginMutation = () => {
   return useMutation({
     mutationFn: ({ data }: { data: LoginDataType }) => login(data),
     onSuccess: async (data) => {
-      // getSuccessNoti("Login Success", data, "You have logged in successfully!");
+      getSuccessNoti("Login Success", data, "You have logged in successfully!");
       Cookies.set("accessToken", data?.accessToken, {
         expires: 3 * 24 * 60 * 60,
       });
@@ -120,7 +120,6 @@ export const useLogoutMutation = () => {
     onSuccess: (data) => {
       removeUser();
       Cookies.remove("accessToken");
-      // getSuccessNoti("Logout", data, "You have logout successfully");
       queryClient.removeQueries({ queryKey: ["currentUser"] });
       queryClient.clear();
       navigate(routes.auth.login);

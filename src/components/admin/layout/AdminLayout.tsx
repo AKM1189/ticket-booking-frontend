@@ -32,6 +32,8 @@ import { useAuthStore } from "@/store/authStore";
 import { Role } from "@/types/AuthType";
 import Notifications from "../notifications/Notifications";
 import ThemeToggle from "@/components/layout/ThemeToggle";
+import { useThemeStore } from "@/store/userThemeStore";
+import { Theme } from "@/types/ThemeType";
 // import { useAuth } from "@/hooks/useAuth";
 
 interface AdminLayoutProps {
@@ -67,7 +69,7 @@ const AdminLayout = ({
   const [opened, { toggle, close }] = useDisclosure();
   const [navigationItems, setNavigationItems] = useState<any>([]);
   const { user } = useAuthStore();
-  const mode = localStorage.getItem("theme") || "dark";
+  const { theme } = useThemeStore();
   const { mutate: logout } = useLogoutMutation();
 
   useEffect(() => {
@@ -127,7 +129,7 @@ const AdminLayout = ({
             <div>
               <Image
                 src={
-                  mode === "dark"
+                  theme === Theme.dark
                     ? "/src/assets/movie-logo-dark.png"
                     : "/src/assets/movie-logo-light.png"
                 }
@@ -161,10 +163,11 @@ const AdminLayout = ({
                   close();
                   onTabChange(item.value);
                 }}
-                className={`w-full rounded-lg transition-colors !p-3 ${activeTab === item.value
-                  ? "!bg-primary !text-white"
-                  : "hover:!bg-surface"
-                  }`}
+                className={`w-full rounded-lg transition-colors !p-3 ${
+                  activeTab === item.value
+                    ? "!bg-primary !text-white"
+                    : "hover:!bg-surface"
+                }`}
               >
                 <Group gap="sm">
                   <item.icon size={20} />

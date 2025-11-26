@@ -14,7 +14,7 @@ export const navbarMenus = [
     path: routes.user.about,
   },
   {
-    label: "Contact",
+    label: "Contact us",
     path: routes.user.contact,
   },
 ];

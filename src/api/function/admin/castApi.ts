@@ -12,6 +12,11 @@ export const getCasts = async (page: number = 1, search: string = "") => {
   return response.data;
 };
 
+export const getAllCasts = async () => {
+  const response = await api.get(`${endpoints.admin.casts}/all`);
+  return response.data;
+};
+
 export const addCast = async (data: CastInputType) => {
   const response = await api.post(endpoints.admin.casts, data, {
     headers: {

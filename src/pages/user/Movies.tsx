@@ -8,9 +8,9 @@ const Movies = () => {
   return (
     <div>
       <div className="relative">
-        <div className="w-full h-[300px] md:h-[600px] bg-[url('https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-1.png')]">
-          <div className="w-full h-full bg-surface/70 flex flex-col gap-5 justify-center items-center">
-            <div className="text-2xl md:text-7xl font-bold uppercase">
+        <div className="w-full h-[300px] md:h-[600px] bg-[url('/movie_detail_bg.jpg')] bg-no-repeat bg-cover">
+          <div className="w-full h-full bg-black/30 flex flex-col gap-5 justify-center items-center text-white">
+            <div className="text-2xl md:text-7xl font-bold uppercase ">
               Get <span className="text-accent">Movie</span> Tickets
             </div>
             <div className="text-base md:text-2xl max-w-[800px] text-center">

@@ -1,12 +1,23 @@
 import { useGetUser } from "@/api/query/authQuery";
-import { Login } from "@/pages";
 import { routes } from "@/routes";
 import { LoadingOverlay } from "@mantine/core";
+import { useEffect } from "react";
 import { Navigate, Outlet } from "react-router";
 
 const ProtectedRoute = ({ allowedRoles }) => {
   const { data: user, isLoading } = useGetUser();
+  useEffect(() => {
+    if (isLoading) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
 
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isLoading]);
   if (isLoading) {
     return (
       <div>

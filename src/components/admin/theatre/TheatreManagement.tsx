@@ -61,6 +61,7 @@ const TheatreManagement = () => {
   });
 
   const { data, isPending, refetch } = useTheatreQuery(
+    pagination?.page,
     searchTerm,
     statusFilter,
   );
@@ -149,7 +150,7 @@ const TheatreManagement = () => {
             onClick={handleAddTheater}
             className="dashboard-btn"
           >
-            Add Theatre
+            Add Branch
           </Button>
         )}
       </Group>

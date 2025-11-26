@@ -62,8 +62,8 @@ const Notifications = () => {
   const { mutate: readAllNotiMutation } = useReadAllNotiMutation();
 
   useEffect(() => {
-    setActiveTab('new')
-  }, [])
+    setActiveTab("new");
+  }, []);
 
   // useEffect(() => {
   //   refetch();
@@ -160,7 +160,7 @@ const Notifications = () => {
           minHeight: 450,
           overflowY: "auto",
         }}
-        className="noti-dropdown"
+        className="noti-dropdown !shadow-md"
       >
         <div className="py-2">
           <Tabs

@@ -36,6 +36,7 @@ export const endpoints = {
     movieFilter: "/user/movies/filter-list",
     reviews: "user/reviews",
     bookings: "/user/bookings",
+    about: "/user/about/info",
   },
 
   auth: {

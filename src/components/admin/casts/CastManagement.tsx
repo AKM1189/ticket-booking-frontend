@@ -51,7 +51,7 @@ const CastManagement = () => {
   });
 
   const { data, refetch, isPending } = useCastQuery(
-    pagination.page,
+    pagination?.page,
     searchQuery,
   );
 
@@ -60,6 +60,7 @@ const CastManagement = () => {
 
   useEffect(() => {
     setCasts(data?.data);
+    setPagination(data?.pagination);
   }, [data]);
 
   useEffect(() => {
