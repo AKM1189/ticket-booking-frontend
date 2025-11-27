@@ -342,7 +342,7 @@ const TheatreManagement = () => {
               Cancel
             </Button>
             <Button type="submit" className="dashboard-btn">
-              {editingTheatre ? "Update" : "Add"} Genre
+              {editingTheatre ? "Update" : "Add"} Branch
             </Button>
           </Group>
         </form>
