@@ -5,8 +5,10 @@ import { endpoints } from "./endpoints";
 import { authApi } from "./AuthApi";
 import { routes } from "@/routes";
 
+const baseURL = `${import.meta.env.VITE_BASE_URL}/api`;
+
 export const api: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_BASE_URL,
+  baseURL,
   headers: {
     "Content-Type": "application/json",
   },
