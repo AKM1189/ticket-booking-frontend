@@ -1,6 +1,5 @@
 import { getAboutInfo } from "@/api/function/user/aboutApi";
 import EmployeeCarousel from "@/components/user/home/EmployeeCarousel";
-import { Button } from "@mantine/core";
 import {
   IconBuilding,
   IconDeviceTv,

@@ -1,4 +1,4 @@
-import { Button, Group, Loader, Title, Text } from "@mantine/core";
+import { Button, Group, Loader, Title } from "@mantine/core";
 import {
   IconCalendar,
   IconClock,
@@ -22,11 +22,9 @@ const Ticket = () => {
   const { currentBooking } = useBookingStore();
   const [bookingData, setBookingData] = useState<any>(null);
 
-
-
   useEffect(() => {
     if (!currentBooking) {
-      navigate(routes.user.home)
+      navigate(routes.user.home);
     }
     const getCurrentBooking = async () => {
       if (currentBooking) {

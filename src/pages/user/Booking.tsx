@@ -2,20 +2,13 @@ import { getScheduleDetail } from "@/api/function/user/scheduleApi";
 import SeatPlanHeader from "@/components/user/seatPlan/SeatPlanHeader";
 import { routes } from "@/routes";
 import { useUserBookingStore } from "@/store/userBookingStore";
-import {
-  Alert,
-  Button,
-  Loader,
-  LoadingOverlay,
-  Modal,
-  Text,
-} from "@mantine/core";
+import { Alert, Button, Modal, Text } from "@mantine/core";
 import {
   IconAlertTriangle,
   IconClock,
   IconInfoCircle,
 } from "@tabler/icons-react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import SeatPlan from "./SeatPlan";
 import ConfirmBooking from "./ConfirmBooking";

@@ -28,7 +28,6 @@ import {
   IconTrash,
   IconSearch,
   IconUpload,
-  IconMovie,
 } from "@tabler/icons-react";
 import { useForm } from "@mantine/form";
 import type { MovieType, MovieInputType } from "@/types/MovieTypes";
@@ -40,7 +39,7 @@ import {
   useDeleteMovie,
   useUpdateMovie,
 } from "@/api/mutation/admin/movieMutation";
-import { useAllGenreQuery, useGenreQuery } from "@/api/query/admin/genreQuery";
+import { useAllGenreQuery } from "@/api/query/admin/genreQuery";
 import ImagePreview from "./ImagePreview";
 import { CastSelector } from "../casts";
 import { urlToFile } from "@/utils/imageUploads";
@@ -49,8 +48,6 @@ import { zodResolver } from "mantine-form-zod-resolver";
 import { movieSchema } from "@/schema/MovieSchema";
 import dayjs from "dayjs";
 import { useConfirmModalStore } from "@/store/useConfirmModalStore";
-import { useAuthStore } from "@/store/authStore";
-import { Role } from "@/types/AuthType";
 import { usePermisson } from "@/hooks/usePermisson";
 import { permissionList } from "@/constants/permissons";
 import type { PaginationType } from "@/types/PagintationType";

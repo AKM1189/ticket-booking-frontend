@@ -3,18 +3,10 @@ import {
   useUpdateReviewMutation,
 } from "@/api/mutation/user/reviewMutation";
 import { useLoadingStore } from "@/store/useLoading";
-import {
-  Button,
-  Modal,
-  NumberInput,
-  Rating,
-  Text,
-  Textarea,
-} from "@mantine/core";
+import { Button, Modal, Rating, Textarea } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import type { ReviewData } from "./Review";
 import { useEffect } from "react";
-import { useMovieStore } from "@/store/useMovieStore";
 
 interface RatingModal {
   movieId: number;
@@ -36,7 +28,6 @@ const RatingModal = ({
   const { mutate: addReview } = useAddReviewMutation();
   const { mutate: updateReview } = useUpdateReviewMutation();
   const { showLoading } = useLoadingStore();
-  const { setActiveTab } = useMovieStore();
 
   const form = useForm({
     mode: "uncontrolled",

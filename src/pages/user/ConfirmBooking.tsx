@@ -28,7 +28,7 @@ import { useAddBookingMutation } from "@/api/mutation/admin/bookingMutation";
 import { useBookingStore } from "@/store/bookingStore";
 import { routes } from "@/routes";
 import { useLoadingStore } from "@/store/useLoading";
-import { MonthPicker, MonthPickerInput } from '@mantine/dates';
+import { MonthPickerInput } from "@mantine/dates";
 
 // Combined validation schema
 const checkoutSchema = z.object({
@@ -42,8 +42,7 @@ const checkoutSchema = z.object({
     .string()
     .min(16, "Card number must be 16 digits")
     .max(19, "Invalid card number"),
-  expiryDate: z
-    .any(),
+  expiryDate: z.any(),
   cvv: z
     .string()
     .min(3, "CVV must be 3 digits")
@@ -141,7 +140,7 @@ const ConfirmBooking = () => {
     const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
     const matches = v.match(/\d{4,16}/g);
     const match = (matches && matches[0]) || "";
-    const parts = [];
+    const parts: string[] = [];
     for (let i = 0, len = match.length; i < len; i += 4) {
       parts.push(match.substring(i, i + 4));
     }
@@ -266,7 +265,11 @@ const ConfirmBooking = () => {
                     autoFocus
                     value={form.getValues().cardNumber}
                   />
-                  {form.errors.cardNumber && <Text size="xs" c={'red'} mt={3}>{form.errors.cardNumber}</Text>}
+                  {form.errors.cardNumber && (
+                    <Text size="xs" c={"red"} mt={3}>
+                      {form.errors.cardNumber}
+                    </Text>
+                  )}
 
                   <TextInput
                     key={form.key("cardNumber")}
@@ -281,12 +284,14 @@ const ConfirmBooking = () => {
                       label={<div className="mb-3.5">Expiry Date</div>}
                       classNames={{
                         root: "mt-5",
-                        input: "!bg-transparent !border-0 !border-b !rounded-none !text-text !text-sm !px-0",
-                        monthsListControl: "!bg-transparent hover:!bg-primary !text-text",
-                        yearsListControl: "!bg-transparent hover:!bg-primary !text-text",
+                        input:
+                          "!bg-transparent !border-0 !border-b !rounded-none !text-text !text-sm !px-0",
+                        monthsListControl:
+                          "!bg-transparent hover:!bg-primary !text-text",
+                        yearsListControl:
+                          "!bg-transparent hover:!bg-primary !text-text",
                         calendarHeaderControl: "hover:!bg-surface-light",
                         calendarHeaderLevel: "hover:!bg-surface-light",
-
                       }}
                       {...form.getInputProps("expiryDate")}
                     />

@@ -1,4 +1,4 @@
-import { Card, Text, Group, Badge, Alert } from "@mantine/core";
+import { Card, Text, Alert } from "@mantine/core";
 import { type SeatLayoutType } from "@/types/AdminTypes";
 import { useCallback, useEffect, useState, type JSX } from "react";
 import { twMerge } from "tailwind-merge";
@@ -6,7 +6,7 @@ import io from "socket.io-client";
 import { useAuthStore } from "@/store/authStore";
 import type { SelectedSeatType } from "@/pages/user/SeatPlan";
 import type { ScheduleWithSeatList } from "@/types/ScheduleTypes";
-import { IconInfoCircle, IconUsers, IconClock } from "@tabler/icons-react";
+import { IconInfoCircle } from "@tabler/icons-react";
 import SeatLists from "./SeatList";
 import SeatLegend from "./SeatLegend";
 
@@ -17,11 +17,6 @@ interface SeatLayoutViewerProps {
   selectedSeats: SelectedSeatType[];
 }
 
-interface TempSeat {
-  seatId: string;
-  userId: string;
-  // expiresAt: number; // timestamp when the 2 minutes expire
-}
 export const socket = io("http://localhost:3000");
 const SeatLayoutViewer = ({
   layout,
@@ -32,11 +27,10 @@ const SeatLayoutViewer = ({
   // const [socket, setSocket] = useState<any>(null);
   const [bookedSeats, setBookedSeats] = useState<string[]>([]);
   const [tempSeats, setTempSeats] = useState<any[]>([]);
-  const [resetTimer, setResetTimer] = useState(200);
 
   const { user } = useAuthStore();
 
-  const { movie, theatre, screen, seatTypeList, showDate, showTime } = schedule;
+  const { screen } = schedule;
 
   const [isConnected, setIsConnected] = useState(socket.connected);
 
@@ -180,11 +174,11 @@ const SeatLayoutViewer = ({
             (s: any) => s?.userId !== user?.id && s?.seatId === seatId,
           );
 
-        const selectedSeat =
-          tempSeats?.length > 0 &&
-          tempSeats?.some(
-            (s: any) => s?.userId === user?.id && s?.seatId === seatId,
-          );
+        // const selectedSeat =
+        //   tempSeats?.length > 0 &&
+        //   tempSeats?.some(
+        //     (s: any) => s?.userId === user?.id && s?.seatId === seatId,
+        //   );
 
         // selectedSeatList?.find(
         //   (seat) => seat?.label === seatId,
@@ -229,15 +223,15 @@ const SeatLayoutViewer = ({
     return rows;
   }, [layout, tempSeats, selectedSeats, schedule]);
 
-  const getSeatLabel = (typeName: string): string => {
-    const seatType = schedule?.priceList?.find(
-      (item) => item.name === typeName,
-    );
-    if (seatType) {
-      return `${seatType.name} ($${seatType.price})`;
-    }
-    return typeName;
-  };
+  // const getSeatLabel = (typeName: string): string => {
+  //   const seatType = schedule?.priceList?.find(
+  //     (item) => item.name === typeName,
+  //   );
+  //   if (seatType) {
+  //     return `${seatType.name} ($${seatType.price})`;
+  //   }
+  //   return typeName;
+  // };
 
   // if (isLoading) {
   //   return (
@@ -247,18 +241,7 @@ const SeatLayoutViewer = ({
   //   );
   // }
 
-  const getSeatStats = () => {
-    const totalSeats =
-      layout.rows * layout.seatsPerRow - layout.disabledSeats.length;
-    const bookedCount =
-      (schedule?.bookedSeats?.length || 0) + bookedSeats.length;
-    const tempCount = tempSeats?.length;
-    const availableCount = totalSeats - bookedCount - tempCount;
-
-    return { totalSeats, bookedCount, tempCount, availableCount };
-  };
-
-  const stats = getSeatStats();
+  // const stats = getSeatStats();
 
   return (
     <div className="space-y-6">

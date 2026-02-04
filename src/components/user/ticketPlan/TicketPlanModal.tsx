@@ -6,7 +6,7 @@ import { useUserBookingStore } from "@/store/userBookingStore";
 import type { MovieDetailType } from "@/types/MovieTypes";
 import { minsToHMin } from "@/utils/timeFormatter";
 import { Badge, Button, Grid, Group, Image, Modal } from "@mantine/core";
-import { IconBadgeCc, IconClock } from "@tabler/icons-react";
+import { IconClock } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router";
 

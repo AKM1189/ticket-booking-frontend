@@ -1,5 +1,5 @@
 import { Button, Text, ThemeIcon } from "@mantine/core";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import {
   IconBrandFacebookFilled,
   IconBrandGoogleFilled,
@@ -9,7 +9,6 @@ import {
 import { routes } from "@/routes";
 
 const Footer = () => {
-  const navigate = useNavigate();
   return (
     <div className="w-full bottom-0 footer mt-[150px] relative min-h-[100px] px-[20px] md:px-[50px] lg:px-[150px]  bg-surface">
       {/* <SubscribeCard /> */}

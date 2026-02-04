@@ -25,7 +25,6 @@ import {
   IconSearch,
   IconEye,
   IconCancel,
-  IconDeviceTv,
 } from "@tabler/icons-react";
 import SeatLayoutViewer from "./SeatLayoutViewer";
 import { useForm } from "@mantine/form";

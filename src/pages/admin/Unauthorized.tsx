@@ -1,6 +1,6 @@
 import { routes } from "@/routes";
 import { Button } from "@mantine/core";
-import { NavLink, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 
 const Unauthorized = () => {
   const navigate = useNavigate();

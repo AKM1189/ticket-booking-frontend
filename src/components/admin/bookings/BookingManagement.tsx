@@ -12,11 +12,6 @@ import {
   Modal,
   Grid,
   Button,
-  Stack,
-  Paper,
-  Divider,
-  Avatar,
-  Tooltip,
   Loader,
   Pagination,
   Textarea,
@@ -28,22 +23,14 @@ import {
   IconCheck,
   IconCalendar,
   IconTicket,
-  IconClock,
   IconBan,
   IconPlus,
   IconX,
-  IconEdit,
-  IconTrash,
-  IconUser,
-  IconMail,
-  IconMapPin,
   IconCurrencyDollar,
 } from "@tabler/icons-react";
 import { useBookingQuery } from "@/api/query/admin/bookingQuery";
 import type { BookingType } from "@/types/BookingType";
-import { useConfirmModalStore } from "@/store/useConfirmModalStore";
 import { useCancelBookingMutation } from "@/api/mutation/admin/bookingMutation";
-import { useNavigate } from "react-router";
 import { BookingCompType } from "./BookingPage";
 import { useBookingStore } from "@/store/bookingStore";
 import Ticket from "./Ticket";
@@ -88,8 +75,6 @@ const BookingManagement = ({
       reason: (value) => (!value ? "Please enter valid reason!" : null),
     },
   });
-
-  const { open: openConfirm } = useConfirmModalStore();
 
   const [pagination, setPagination] = useState<PaginationType>({
     page: 1,

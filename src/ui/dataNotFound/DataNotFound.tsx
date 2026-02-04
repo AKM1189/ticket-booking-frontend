@@ -1,6 +1,5 @@
 import { Text } from "@mantine/core";
 import {
-  IconDashboard,
   IconMovie,
   IconBuilding,
   IconCalendar,

@@ -117,7 +117,7 @@ export const useLogoutMutation = () => {
 
   return useMutation({
     mutationFn: logout,
-    onSuccess: (data) => {
+    onSuccess: (_data) => {
       removeUser();
       Cookies.remove("accessToken");
       queryClient.removeQueries({ queryKey: ["currentUser"] });

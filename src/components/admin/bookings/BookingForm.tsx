@@ -143,8 +143,7 @@ const BookingForm = ({
       customerName: (value) => (!value ? "Customer name is required" : null),
     },
   });
-  const { movieId, theatreId, screenId, showDate, showTime, customerName } =
-    form.values;
+  const { movieId, theatreId, screenId, showDate, showTime } = form.values;
 
   const getTheatres = async (): Promise<TheatreType[]> => {
     const theatres = await getTheatresByShow(movieId);
@@ -324,16 +323,6 @@ const BookingForm = ({
         setSeatError("Please select seats to book!");
       }
     }
-  };
-
-  const getTotalPrice = () => {
-    return selectedSeats.reduce((total, seat) => {
-      return total + (parseInt(seat.price) || 0);
-    }, 0);
-  };
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("en-US").format(price);
   };
 
   const renderSeatLayout = useCallback(() => {
@@ -592,7 +581,9 @@ const BookingForm = ({
                             )
                           </div> */}
                           <Badge variant="outline" size="md" className="">
-                            {minsToHMin(parseInt(selectedInfo.movie?.duration))}{" "}
+                            {minsToHMin(
+                              parseInt(selectedInfo.movie?.duration),
+                            )}{" "}
                           </Badge>
                         </Group>
                         <Group gap="xs">

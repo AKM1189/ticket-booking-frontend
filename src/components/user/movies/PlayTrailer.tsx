@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import YouTube, { type YouTubeProps } from "react-youtube";
 
-import { Skeleton, Text, Title } from "@mantine/core";
+import { Skeleton, Text } from "@mantine/core";
 
 import "@/styles/css/skeletonStyle.css";
 import { IconError404, IconX } from "@tabler/icons-react";

@@ -254,7 +254,7 @@ const UserManagement = () => {
                     </Table.Thead>
                     <Table.Tbody>
                       {users &&
-                        users?.map((user, index) => (
+                        users?.map((user) => (
                           <Table.Tr key={user.id}>
                             <Table.Td>{user.id}</Table.Td>
                             <Table.Td>
@@ -382,8 +382,8 @@ const UserManagement = () => {
                 editingUser.role === Role.staff
                   ? "Staff"
                   : editingUser.role === Role.admin
-                  ? "Admin"
-                  : "Customer"
+                    ? "Admin"
+                    : "Customer"
               }`
             : `Add New ${form.values.role === Role.staff ? "Staff" : "Admin"}`
         }

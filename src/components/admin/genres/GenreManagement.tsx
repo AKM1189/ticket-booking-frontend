@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Title,
   Button,
@@ -22,8 +22,6 @@ import {
   IconTrash,
   IconSearch,
   IconTable,
-  IconTags,
-  IconGrid3x3,
   IconGridDots,
 } from "@tabler/icons-react";
 import { useForm } from "@mantine/form";

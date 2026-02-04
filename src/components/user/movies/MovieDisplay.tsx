@@ -1,8 +1,6 @@
-import { MovieStatus, movieType } from "@/constants/movieConstants";
-import type { MovieDetailType, MovieType } from "@/types/MovieTypes";
-import { twMerge } from "tailwind-merge";
+import { MovieStatus } from "@/constants/movieConstants";
+import type { MovieDetailType } from "@/types/MovieTypes";
 import MovieCard from "../home/MovieCard";
-
 import { useState, useMemo } from "react";
 import { NavLink } from "react-router";
 import { routes } from "@/routes";
@@ -16,7 +14,7 @@ import {
 } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { minsToHMin } from "@/utils/timeFormatter";
-import { Badge, Divider, Image } from "@mantine/core";
+import { Badge, Image } from "@mantine/core";
 import { getRating } from "@/utils/getRating";
 
 interface MoviesProps {

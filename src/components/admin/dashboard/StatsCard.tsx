@@ -1,5 +1,4 @@
 import { Card, Text, Group, ThemeIcon, Skeleton } from "@mantine/core";
-import { IconTrendingUp, IconTrendingDown } from "@tabler/icons-react";
 import "@/styles/css/tableStyle.css";
 
 interface StatsCardProps {
@@ -18,7 +17,6 @@ const StatsCard = ({
   title,
   value,
   icon,
-  trend,
   color = "blue",
   isLoading,
 }: StatsCardProps) => {

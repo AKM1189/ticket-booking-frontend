@@ -1,7 +1,6 @@
 import { useGetUser } from "@/api/query/authQuery";
 import { routes } from "@/routes";
-import { Role } from "@/types/AuthType";
-import { Navigate, useNavigate } from "react-router";
+import { Navigate } from "react-router";
 
 // export const useAuth = () => {
 //   const { data: user } = useGetUser();

@@ -1,9 +1,8 @@
-import { NavLink, useNavigate } from "react-router";
+import { NavLink } from "react-router";
 import { routes } from "../../routes";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   TextInput,
-  Checkbox,
   PasswordInput,
   Button,
   Loader,
@@ -23,7 +22,6 @@ export type LoginDataType = {
 };
 
 const Login = () => {
-  const [checked, setChecked] = useState(false);
   const { mutate } = useLoginMutation();
   const { setUser } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);

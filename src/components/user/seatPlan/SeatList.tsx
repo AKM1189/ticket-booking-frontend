@@ -64,8 +64,8 @@ const SeatLists = ({
 
   const colors = getSeatColors();
   const seatTypeName = seatType?.seatType?.name || "Standard";
-  const price = seatType?.price || seat.price;
-  console.log('seat type name', seatTypeName)
+  // const price = seatType?.price || seat.price;
+  console.log("seat type name", seatTypeName);
   return (
     <div
       className={twMerge(
@@ -88,9 +88,9 @@ const SeatLists = ({
       <div
         className={twMerge(
           `absolute inset-0 flex mt-4 justify-center text-xs font-medium select-none pointer-events-none`,
-          seatTypeName === 'Premium' && '!text-premium',
-          seatTypeName === 'VIP' && '!text-vip',
-          seatTypeName === 'Standard' && '!text-standard',
+          seatTypeName === "Premium" && "!text-premium",
+          seatTypeName === "VIP" && "!text-vip",
+          seatTypeName === "Standard" && "!text-standard",
           isSelected ? "!text-black text-gray-900" : "text-gray-300",
           isBooked && "!text-gray-500",
           isTemp && "!text-red-300",

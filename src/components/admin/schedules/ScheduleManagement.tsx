@@ -27,10 +27,7 @@ import {
 } from "@tabler/icons-react";
 import { useForm } from "@mantine/form";
 import type { MovieType } from "@/types/MovieTypes";
-import {
-  useAllTheatresQuery,
-  useTheatreQuery,
-} from "@/api/query/admin/theatreQuery";
+import { useAllTheatresQuery } from "@/api/query/admin/theatreQuery";
 import type { TheatreType } from "@/types/TheatreTypes";
 import { useAllMoviesQuery } from "@/api/query/admin/movieQuery";
 import type { ScreenType } from "@/types/ScreenTypes";

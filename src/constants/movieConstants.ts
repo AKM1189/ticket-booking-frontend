@@ -1,5 +1,3 @@
-import { SortType } from "@/types/MovieTypes";
-
 export const movieType = {
   showing: "Now Showing",
   coming: "Coming Soon",

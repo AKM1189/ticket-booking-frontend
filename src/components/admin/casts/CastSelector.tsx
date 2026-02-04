@@ -15,7 +15,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { IconCheck, IconPlus, IconSearch, IconX } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import type { CastSelectionType, CastType } from "@/types/CastTypes";
-import { useAllCastQuery, useCastQuery } from "@/api/query/admin/castQuery";
+import { useAllCastQuery } from "@/api/query/admin/castQuery";
 
 interface CastSelectorProps {
   selectedCasts: CastSelectionType[];

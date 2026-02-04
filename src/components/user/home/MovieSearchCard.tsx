@@ -14,11 +14,6 @@ import { twMerge } from "tailwind-merge";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 
 dayjs.extend(customParseFormat);
-
-interface MovieSearchBoxProps {
-  theatres: TheatreType[];
-}
-
 const selectBoxStyle = {
   root: {
     minWidth: "150px",

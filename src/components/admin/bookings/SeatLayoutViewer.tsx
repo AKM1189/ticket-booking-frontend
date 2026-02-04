@@ -22,11 +22,6 @@ interface SeatLayoutViewerProps {
   activeStep: number;
 }
 
-interface TempSeat {
-  seatId: string;
-  userId: string;
-  // expiresAt: number; // timestamp when the 2 minutes expire
-}
 export const socket = io("http://localhost:3000");
 const SeatLayoutViewer = ({
   layout,
@@ -34,12 +29,10 @@ const SeatLayoutViewer = ({
   updateSelectedInfo,
   selectedSeats,
   setSelectedSeats,
-  activeStep,
 }: SeatLayoutViewerProps) => {
-  const [seatTypeList, setSeatTypeList] = useState<SeatTypeTypes[]>([]);
+  const [_seatTypeList, setSeatTypeList] = useState<SeatTypeTypes[]>([]);
   const [bookedSeats, setBookedSeats] = useState<string[]>([]);
   const [tempSeats, setTempSeats] = useState<any[]>([]);
-  const [resetTimer, setResetTimer] = useState(200);
 
   const { data: seatTypeData } = useSeatTypeQuery();
   const { user } = useAuthStore();
@@ -66,12 +59,9 @@ const SeatLayoutViewer = ({
     showTime || "",
   );
 
-  const [isConnected, setIsConnected] = useState(socket.connected);
-
   useEffect(() => {
     function onConnect() {
       console.log("socket connected");
-      setIsConnected(true);
 
       if (schedule) {
         socket.emit("join schedule", String(schedule?.id));
@@ -80,8 +70,6 @@ const SeatLayoutViewer = ({
 
     function onDisconnect() {
       console.log("socket disconnected");
-
-      setIsConnected(false);
     }
 
     socket.on("connect", onConnect);

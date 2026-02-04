@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import HomeCarousel from "@/components/user/home/HomeCarousel";
 import HomeMovies from "@/components/user/home/HomeMovies";
 import MovieSearchCard from "@/components/user/home/MovieSearchCard";

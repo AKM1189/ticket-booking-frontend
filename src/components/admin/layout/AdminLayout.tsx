@@ -1,10 +1,8 @@
 import {
   AppShell,
-  Avatar,
   Burger,
   Group,
   Image,
-  Switch,
   Text,
   UnstyledButton,
 } from "@mantine/core";
@@ -20,10 +18,8 @@ import {
   IconLogout,
   IconDeviceTv,
   IconUserStar,
-  IconBell,
 } from "@tabler/icons-react";
 import { AdminTabType } from "@/types/AdminTypes";
-import { IconSun, IconMoonStars } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { useLogoutMutation } from "@/api/mutation/authMutation";
 import { useConfirmModalStore } from "@/store/useConfirmModalStore";

@@ -15,13 +15,7 @@ import {
   Title,
 } from "@mantine/core";
 import { useDebouncedValue, useDisclosure } from "@mantine/hooks";
-import {
-  IconEdit,
-  IconPlus,
-  IconSearch,
-  IconTrash,
-  IconUserStar,
-} from "@tabler/icons-react";
+import { IconEdit, IconPlus, IconSearch, IconTrash } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import type { CastType } from "@/types/CastTypes";
 import CastModal from "./CastModal";

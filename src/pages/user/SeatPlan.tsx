@@ -1,27 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "@/styles/css/seatStyle.css";
-import {
-  Button,
-  Card,
-  Text,
-  Group,
-  Badge,
-  Alert,
-  Loader,
-  Modal,
-} from "@mantine/core";
-import { NavLink, useParams, useNavigate } from "react-router";
-import SeatPlanHeader from "@/components/user/seatPlan/SeatPlanHeader";
-import { routes } from "@/routes";
-import type { ScheduleWithSeatList } from "@/types/ScheduleTypes";
-import { getScheduleDetail } from "@/api/function/user/scheduleApi";
+import { Button, Card, Text, Group, Badge, Alert } from "@mantine/core";
 import SeatLayoutViewer from "@/components/user/seatPlan/SeatLayoutViewer";
-import {
-  IconTicket,
-  IconClock,
-  IconInfoCircle,
-  IconAlertTriangle,
-} from "@tabler/icons-react";
+import { IconTicket, IconClock, IconInfoCircle } from "@tabler/icons-react";
 import { useUserBookingStore } from "@/store/userBookingStore";
 import { BookingStage } from "@/constants/bookingConstants";
 

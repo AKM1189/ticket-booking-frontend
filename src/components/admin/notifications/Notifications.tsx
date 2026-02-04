@@ -3,22 +3,9 @@ import {
   useReadNotiMutation,
 } from "@/api/mutation/notiMutation";
 import { useNotiQuery } from "@/api/query/admin/notificationQuery";
-import { NOTI_TYPE } from "@/constants/notiConstants";
-import {
-  Popover,
-  Button,
-  List,
-  Text,
-  Title,
-  Group,
-  Tabs,
-  Badge,
-  ThemeIcon,
-  Loader,
-} from "@mantine/core";
+import { Popover, Text, Group, Tabs, ThemeIcon, Loader } from "@mantine/core";
 import {
   IconBell,
-  IconBellFilled,
   IconBellZ,
   IconCancel,
   IconCheck,

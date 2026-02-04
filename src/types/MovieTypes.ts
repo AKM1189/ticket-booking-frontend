@@ -1,4 +1,3 @@
-import type React from "react";
 import type { GenreType } from "./GenreTypes";
 import type { UserType } from "./UserType";
 
