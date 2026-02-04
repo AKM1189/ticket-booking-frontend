@@ -22,7 +22,7 @@ interface SeatLayoutViewerProps {
   activeStep: number;
 }
 
-export const socket = io("http://localhost:3000");
+export const socket = io(import.meta.env.VITE_BASE_URL);
 const SeatLayoutViewer = ({
   layout,
   selectedInfo,
