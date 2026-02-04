@@ -81,12 +81,15 @@ const TicketPlan = () => {
   // group schedules by theatre
   const groupedSchedules = useMemo(() => {
     if (!schedules) return {};
-    return schedules.reduce((acc, schedule) => {
-      const loc = schedule.theatre.location;
-      if (!acc[loc]) acc[loc] = [];
-      acc[loc].push(schedule);
-      return acc;
-    }, {} as Record<string, ShowDetailType[]>);
+    return schedules.reduce(
+      (acc, schedule) => {
+        const loc = schedule.theatre.location;
+        if (!acc[loc]) acc[loc] = [];
+        acc[loc].push(schedule);
+        return acc;
+      },
+      {} as Record<string, ShowDetailType[]>,
+    );
   }, [schedules]);
 
   return (

@@ -70,8 +70,8 @@ const Navbar = () => {
         <Image
           src={
             theme === Theme.dark
-              ? "/src/assets/movie-logo-dark.png"
-              : "/src/assets/movie-logo-light.png"
+              ? "/movie-logo-dark.png"
+              : "/movie-logo-light.png"
           }
           className="!h-[50px] max-sm:!h-[40px]"
         />
